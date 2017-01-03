@@ -10,7 +10,7 @@
   "author": "Smruti Padhy",
   "license": "MIT",
   "devDependencies": {
-    "electron-prebuilt": "^1.4.11"
+    "electron": "^1.4.11"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
