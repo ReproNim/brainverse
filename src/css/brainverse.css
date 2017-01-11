@@ -1,7 +1,7 @@
 body { padding-top: 70px; }
 input[type=text] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
+    width: 80%;
+    padding: 10px 10px;
+    margin: 4px 0;
     box-sizing: border-box;
 }

@@ -9,7 +9,7 @@
 
     <!-- Bootstrap -->
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/project.css" rel="stylesheet">
+    <link href="css/brainverse.css" rel="stylesheet">
 
   </head>
   <body>
@@ -57,23 +57,27 @@
       </div>
         <div class="col-xs-9">
           <div>
-           <h3>Project Name Here</h3>
+           <h2>Project Name Here</h2>
            <p style="font-size:90%">Project description</p>
          </div>
          <div class="jumbotron">
-           <form>
-             <p>
-               <label>Funding Sources</label>
+           <form id="pre-project">
+             <div id="funding">
+              <h3>Funding Sources</h3>
+               <input type="button" onclick="add_fields('funding', 'funding_source[]')" id="addFund" value="+" style="float: right;" class="btn btn-outline-info">
                <input type="text" name="funding_source">
-             </p>
-             <p>
-               <label>Collaborators</label>
+             </div>
+             <div id="collabs">
+               <h3>Collaborators</h3>
+               <input type="button" onclick="add_fields('collabs', 'collaborators[]')" id="addCollab" value="+" style="float: right;" class="btn btn-outline-info">
                <input type="text" name="collaborators">
-             </p>
-             <p>
-               <label>Publications</label>
+             </div>
+             <div id="pubs">
+               <h3>Publications</h3>
+               <input type="button" onclick="add_fields('pubs', 'publications[]')" id="addPub" value="+" style="float: right;" class="btn btn-outline-info">
                <input type="text" name="publications">
-             </p>
+             </div>
+           </form>
           </div>
           <p><a class="btn btn-primary btn-lg" href="#" role="button">Create an Experiment</a></p>
           </div>
@@ -81,6 +85,7 @@
     </div>
 </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="fields.js"></script>
     <script>
       window.$ = window.jQuery = require('jquery')
       require('bootstrap')
