@@ -60,30 +60,42 @@
            <h2>Project Name Here</h2>
            <p style="font-size:90%">Project description</p>
          </div>
-         <div class="jumbotron">
+         <div class="container-fluid">
            <form id="pre-project">
              <div id="funding">
-              <h3>Funding Sources</h3>
-               <input type="button" onclick="add_fields('funding', 'funding_source[]')" id="addFund" value="+" style="float: right;" class="btn btn-outline-info">
-               <input type="text" name="funding_source">
+              <h4>Funding Sources</h4>
+               <input type="button" onclick="addField('funding', 'funding_source[]')"
+               id="addFund" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="funding_source" placeholder="Funding information">
              </div>
              <div id="collabs">
-               <h3>Collaborators</h3>
-               <input type="button" onclick="add_fields('collabs', 'collaborators[]')" id="addCollab" value="+" style="float: right;" class="btn btn-outline-info">
-               <input type="text" name="collaborators">
+               <h4>Collaborators</h4>
+               <input type="button" onclick="addField('collabs', 'collaborators[]')"
+               id="addCollab" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="collaborators" placeholder="Collaborator information">
              </div>
              <div id="pubs">
-               <h3>Publications</h3>
-               <input type="button" onclick="add_fields('pubs', 'publications[]')" id="addPub" value="+" style="float: right;" class="btn btn-outline-info">
-               <input type="text" name="publications">
+               <h4>Publications</h4>
+               <input type="button" onclick="addField('pubs', 'publications[]')"
+               id="addPub" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="publications" placeholder="Publication information">
              </div>
            </form>
           </div>
-          <p><a class="btn btn-primary btn-lg" href="#" role="button">Create an Experiment</a></p>
+          <br>
+          <div class="col">
+            <div class="row-sm-2">
+              <button type="button" class="btn btn-success">Save</button>
+            </div>
+            <br>
+            <div class="row-sm-2">
+              <a class="btn btn-primary btn-lg" href="#" role="button">Create an Experiment</a>
+            </div>
           </div>
+        </div>
       </div>
     </div>
-</div>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="fields.js"></script>
     <script>
