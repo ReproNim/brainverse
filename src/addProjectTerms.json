@@ -1,0 +1,34 @@
+{
+  "Investigation" : [
+    "InvestigationProcess",
+    "Model Specification",
+    "Investigation Collection",
+    "Model",
+    "Group",
+    "Constrast",
+    "Task",
+    "Condition"
+  ],
+  "Session" : [
+    "Session Acquisition",
+    "DataCollection"
+  ],
+  "Series" : [
+    "AnatomyImagingAcquistion",
+    "TaskBasedImagingAcquistion",
+    "AnatomicalScan",
+    "MRScanner"
+  ],
+  "Study" : [
+    "Hypothesis"
+  ],
+  "Acquisition" : [
+    "MRI Acquisition",
+    "Demographics"
+  ],
+  "Project Information" : [
+    "Publications",
+    "Funding Sources",
+    "Collaborators"
+  ]
+}
