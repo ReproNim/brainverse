@@ -1,0 +1,2 @@
+exports.clientId = ''
+exports.clientSecret = ''
