@@ -1,5 +1,10 @@
 module.exports = () => {
 
+  const path = require('path')
+  const fileUpload = require('express-fileupload')
+
+  app.use(fileUpload())
+
   app.get('/', function(req, res){
     res.render('index')
   })
@@ -29,7 +34,7 @@ module.exports = () => {
       let sampleFile = req.files.sampleFile;
 
       // Use the mv() method to place the file somewhere on your server
-      sampleFile.mv(path.join(__dirname,'/uploads/',req.files.sampleFile.name), function(err) {
+      sampleFile.mv(path.join(__dirname,'/../../uploads/',req.files.sampleFile.name), function(err) {
         if (err)
           return res.status(500).send(err)
 

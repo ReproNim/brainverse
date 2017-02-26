@@ -3,7 +3,7 @@
 module.exports = () => {
 
   const express = require('express')
-  const fileUpload = require('express-fileupload')
+  //const fileUpload = require('express-fileupload')
   const session = require('express-session')
   const cookieParser = require('cookie-parser')
   const flash = require('express-flash')
@@ -12,7 +12,7 @@ module.exports = () => {
 
   app = express()
 
-  app.use(fileUpload())
+  //app.use(fileUpload())
   app.use(cookieParser('secret'))
   app.use(session({cookie: { maxAge: 60000 }}))
   app.use(flash())
@@ -28,24 +28,11 @@ module.exports = () => {
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
 
-// Load available modules for Routes
-  modules = {
-  	app: app,
-  	express: express,
-  	flash: flash,
-  	fs: fs,
-  	path: path,
-  	session: session,
-    cookieParser: cookieParser,
-    fileUpload: fileUpload
-  }
-
-
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {
     console.log('reading routes file')
   	if(~filename.indexOf('.js'))
-  		require(path.join(__dirname, 'routes/'+filename))(modules)
+  		require(path.join(__dirname, 'routes/'+filename))(app)
   })
 
   app.listen(3000, function(){
