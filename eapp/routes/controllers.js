@@ -2,6 +2,10 @@ module.exports = () => {
 
   const path = require('path')
   const fileUpload = require('express-fileupload')
+  const bodyParser = require('body-parser')
+  const writeJsonFile = require('write-json-file')
+
+  const jsonParser = bodyParser.json()
 
   app.use(fileUpload())
 
@@ -9,23 +13,39 @@ module.exports = () => {
     res.render('index')
   })
 
-
-  app.get('/addProject', function(req,res){
+  app.get('/projects/new', function(req,res){
     const loadJsonFile = require('load-json-file')
-    console.log('loading terms file')
+    console.log('loading Terms file')
     loadJsonFile('eapp/public/terms/addProjectTerms.json').then(ob => {
       console.log(ob)
       res.render('addProject',{json:ob})
     })
   })
 
-  app.get('/projects/new', function(req,res){
+  app.post('/projects/new', jsonParser, function(req, res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('recived at server side')
+    console.log(req.body)
+    writeJsonFile('uploads/proj-info-test.json', req.body).then(() => {
+      console.log('done')
+    })
+    res.send('success')
+  })
+
+  app.get('/projects/:id',function(req,res){
+    res.send('project info for id'+ req.params.id)
+  })
+
+  app.post('/projects/:id', jsonParser,function(req,res){
+    res.send('project info updated!')
+  })
+
+  app.get('/upload', function(req,res){
     console.log('server side')
-    //res.send('Hello World')
     res.render('sampleUpload')
   })
 
-  app.post('/projects/new',function(req,res){
+  app.post('/upload',function(req,res){
     console.log(req.files);
     if (!req.files)
       return res.status(400).send('No files were uploaded.');
@@ -42,10 +62,25 @@ module.exports = () => {
         res.render('index', { expressFlash: req.flash('success')})
 
       })
-    })
+  })
 
+  app.get('/experiments/new', function(req,res){
+    res.send('TODO: create new experiment form')
+  })
+
+  app.post('/experiments/new', jsonParser,function(req,res){
+    res.send('TODO:received experiments info!')
+  })
+
+  app.get('/experiments/:id',function(req,res){
+    res.send('experiment info for id'+ req.params.id)
+  })
+
+  app.post('/experiments/:id', jsonParser,function(req,res){
+    res.send('experiment info updated!')
+  })
 
   app.get('/query',function(req,res){
-    res.send('query is called')
+    res.send('TODO: query is called')
   })
 }

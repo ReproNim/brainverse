@@ -51,9 +51,9 @@ mixin button(style, href, size)
         block
 //- End of Button mixin
 
-mixin checkbox(text,name,id)
+mixin checkbox(text,name,id,val)
     .checkbox
-        input(type="checkbox",name=name,id=id)
+        input(type="checkbox",name=name,id=id,value=val)
         = text
 
 mixin showAlert(alerts)

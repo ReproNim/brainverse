@@ -6,6 +6,7 @@ module.exports = () => {
   //const fileUpload = require('express-fileupload')
   const session = require('express-session')
   const cookieParser = require('cookie-parser')
+  const bodyParser = require('body-parser')
   const flash = require('express-flash')
   const path = require('path')
   const fs = require('fs')
@@ -15,6 +16,7 @@ module.exports = () => {
   //app.use(fileUpload())
   app.use(cookieParser('secret'))
   app.use(session({cookie: { maxAge: 60000 }}))
+  //app.use(bodyParser.json())
   app.use(flash())
 
 
@@ -28,11 +30,16 @@ module.exports = () => {
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
 
+  modules = {
+    app: app,
+    bodyParser: bodyParser
+  }
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {
     console.log('reading routes file')
   	if(~filename.indexOf('.js'))
-  		require(path.join(__dirname, 'routes/'+filename))(app)
+  		require(path.join(__dirname, 'routes/'+filename))(modules)
+      //(app)
   })
 
   app.listen(3000, function(){

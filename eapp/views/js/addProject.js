@@ -1,5 +1,10 @@
    // Save the project information entered and the selected fields
   // The information is saved in a local file named 'proj-info.json'
+  //const remote = require('electron').remote
+  //const path = require('path')
+  //const url = require('url')
+
+  //let bwin = remote.getCurrentWindow()
   let chkboxSelectedArray = []
   let saveObj = {}
 
@@ -21,6 +26,16 @@
     saveObj["Description"] = document.getElementById("proj-desc").value
     saveObj["fields"] = chkboxSelectedArray
 
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:3000/projects/new",
+      contentType: "application/json",
+      data: JSON.stringify(saveObj),
+      success: function(data){
+        console.log('success')
+        $("#saveMessage").append("<p> Your Project Information Saved!</p>")
+      }
+      })
+    //bwin.loadURL('http://localhost:3000')
     console.log('done')
   }
-    
