@@ -30,16 +30,11 @@ module.exports = () => {
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
 
-  modules = {
-    app: app,
-    bodyParser: bodyParser
-  }
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {
     console.log('reading routes file')
   	if(~filename.indexOf('.js'))
-  		require(path.join(__dirname, 'routes/'+filename))(modules)
-      //(app)
+  		require(path.join(__dirname, 'routes/'+filename))(app)
   })
 
   app.listen(3000, function(){

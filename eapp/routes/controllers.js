@@ -73,14 +73,14 @@ module.exports = () => {
   })
 
   app.get('/experiments/:id',function(req,res){
-    res.send('experiment info for id'+ req.params.id)
+    res.send('TODO:experiment info for id'+ req.params.id)
   })
 
   app.post('/experiments/:id', jsonParser,function(req,res){
-    res.send('experiment info updated!')
+    res.send('TODO:experiment info updated!')
   })
 
-  app.get('/query',function(req,res){
+  app.post('/query',jsonParser,function(req,res){
     res.send('TODO: query is called')
   })
 }
