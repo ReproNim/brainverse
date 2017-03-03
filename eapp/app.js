@@ -3,7 +3,6 @@
 module.exports = () => {
 
   const express = require('express')
-  //const fileUpload = require('express-fileupload')
   const session = require('express-session')
   const cookieParser = require('cookie-parser')
   const bodyParser = require('body-parser')
@@ -13,10 +12,8 @@ module.exports = () => {
 
   app = express()
 
-  //app.use(fileUpload())
   app.use(cookieParser('secret'))
   app.use(session({cookie: { maxAge: 60000 }}))
-  //app.use(bodyParser.json())
   app.use(flash())
 
 
@@ -24,6 +21,7 @@ module.exports = () => {
   app.set('view engine', 'pug')
 
   app.use(express.static(path.join(__dirname, 'public/css')))
+  app.use(express.static(path.join(__dirname, 'public/html')))
   app.use(express.static(path.join(__dirname, 'public/terms')))
   app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
   app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))

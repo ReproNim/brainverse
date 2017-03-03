@@ -5,6 +5,7 @@ module.exports = () => {
   const bodyParser = require('body-parser')
   const writeJsonFile = require('write-json-file')
 
+
   const jsonParser = bodyParser.json()
 
   app.use(fileUpload())
@@ -13,12 +14,18 @@ module.exports = () => {
     res.render('index')
   })
 
+  app.get('/getTerms', function(req,res){
+
+    res.send('getTerms called')
+  })
+
   app.get('/projects/new', function(req,res){
     const loadJsonFile = require('load-json-file')
     console.log('loading Terms file')
     loadJsonFile('eapp/public/terms/addProjectTerms.json').then(ob => {
       console.log(ob)
-      res.render('addProject',{json:ob})
+      res.json(ob)
+      //res.render('addProject',{json:ob})
     })
   })
 
