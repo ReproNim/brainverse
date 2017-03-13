@@ -22,6 +22,7 @@ module.exports = () => {
 
   app.use(express.static(path.join(__dirname, 'public/css')))
   app.use(express.static(path.join(__dirname, 'public/html')))
+  app.use(express.static(path.join(__dirname, 'public/js')))
   app.use(express.static(path.join(__dirname, 'public/terms')))
   app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
   app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))
@@ -35,6 +36,11 @@ module.exports = () => {
   		require(path.join(__dirname, 'routes/'+filename))(app)
   })
 
+  fs.mkdir(path.join(__dirname,'/../uploads/'),function(err){
+    if(err){
+      console.log('directory exists. No need to create it')
+    }
+  })
   app.listen(3000, function(){
     console.log('Example app listening on port 3000')
   })
