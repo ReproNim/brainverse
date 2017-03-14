@@ -35,10 +35,11 @@ module.exports = () => {
     })
   })
 
-  app.get('/ndar-terms', function(req,res){
-    let url = ndarUrl + "?type=Clinical%20Assessments&source=NDAR&category=Demographics"
+  app.post('/ndar-terms/forms', jsonParser, function(req,res){
+    //let url = ndarUrl + "?type=Clinical%20Assessments&source=NDAR&category=Demographics"
+    let url = ndarUrl + "?type=" + encodeURI(req.body['type'])+ "&source="+ encodeURI(req.body['source']) + "&category=" + encodeURI(req.body['category'])
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
-      console.log(body)
+    //  console.log(body)
       res.send(body)
     })
   })

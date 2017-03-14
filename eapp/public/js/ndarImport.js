@@ -5,6 +5,7 @@ let termsKey = []
 let categories = []
 let ntypes = []
 let nsources = []
+let nparamObj = {}
 
 $.ajax({
   type: "GET",
@@ -15,7 +16,8 @@ $.ajax({
     let dE = JSON.parse(data)
     ntypes = dE.list
     for (let i=0;i<ntypes.length;i++){
-        $("#ndar-type").append('<option value='+ ntypes[i]+'>'+ ntypes[i] +'</option>')
+        console.log(ntypes[i])
+        $("#ndar-type").append('<option value="'+ ntypes[i]+'">'+ ntypes[i] +'</option>')
         //count++
     }
   }
@@ -30,7 +32,7 @@ $.ajax({
     let dE = JSON.parse(data)
     nsources = dE.list
     for (let i=0;i<nsources.length;i++){
-        $("#ndar-source").append('<option value='+ nsources[i]+'>'+ nsources[i] +'</option>')
+        $("#ndar-source").append('<option value="'+ nsources[i]+'">'+ nsources[i] +'</option>')
         //count++
     }
   }
@@ -45,7 +47,7 @@ $.ajax({
     let dE = JSON.parse(data)
     categories = dE.list
     for (let i=0;i<categories.length;i++){
-        $("#ndar-cat").append('<option value='+ categories[i]+'>'+ categories[i] +'</option>')
+        $("#ndar-cat").append('<option value="'+ categories[i]+'">'+ categories[i] +'</option>')
         //count++
     }
   }
@@ -67,6 +69,41 @@ $.ajax({
     }
   }
 })
+
+function getDataForms(e1){
+  e1.preventDefault()
+  $("#btn-dataForms").remove()
+  nparamObj['type'] = document.getElementById("ndar-type").value
+  nparamObj['source'] = $("#ndar-source").val()
+  nparamObj['category'] = $("#ndar-cat").val()
+  console.log(nparamObj)
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:3000/ndar-terms/forms",
+    contentType: "application/json",
+    data: JSON.stringify(nparamObj),
+    success: function(data){
+      console.log('get forms success')
+      let dE = JSON.parse(data)
+      console.log(dE)
+      $("#ndar-dd").append('<select class="form-control" id="ndar-forms">\
+          <option value="ddform">Select a form</option>\
+          </select>')
+      for (let i=0;i<dE.length;i++){
+          $("#ndar-forms").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+          //count++
+      }
+    /*  $("#pjInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+      <a href="#" class="close" data-dismiss="alert">&times;</a>\
+  <strong>Project Terms Information Saved in /uploads !</strong>\
+</div>')*/
+      //$("#pjInfoSaveMsg").append('<br>')
+      //$("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
+      //$("#pj-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+    }
+  })
+
+}
 
 // Save the project information entered and the selected fields
 // The information is saved in a local file named 'proj-info.json'
@@ -116,6 +153,7 @@ function projectListPage(){
 function mainpage(){
   window.location.href = "http://localhost:3000"
 }
-$('#btn-pjInfoSave').click(saveProjInfo)
-$('#pj-list').click(projectListPage)
-$('#pj-back').click(mainpage)
+$('#btn-dataForms').click(getDataForms)
+//$('#btn-pjInfoSave').click(saveProjInfo)
+//$('#pj-list').click(projectListPage)
+//$('#pj-back').click(mainpage)
