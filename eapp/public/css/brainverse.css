@@ -1,1 +1,6 @@
 body { padding-top: 70px; }
+.form-check {
+    display: block;
+    float: left;
+    width: 25%;
+}
