@@ -1,6 +1,55 @@
 let count = 1
 let chkboxSelectedArray = []
 let saveObj = {}
+let termsKey = []
+let categories = []
+let ntypes = []
+let nsources = []
+
+$.ajax({
+  type: "GET",
+  url: "http://localhost:3000/ndar-types",
+  accept: "application/json",
+  success: function(data){
+    console.log('success')
+    let dE = JSON.parse(data)
+    ntypes = dE.list
+    for (let i=0;i<ntypes.length;i++){
+        $("#ndar-type").append('<option value='+ ntypes[i]+'>'+ ntypes[i] +'</option>')
+        //count++
+    }
+  }
+})
+
+$.ajax({
+  type: "GET",
+  url: "http://localhost:3000/ndar-sources",
+  accept: "application/json",
+  success: function(data){
+    console.log('success')
+    let dE = JSON.parse(data)
+    nsources = dE.list
+    for (let i=0;i<nsources.length;i++){
+        $("#ndar-source").append('<option value='+ nsources[i]+'>'+ nsources[i] +'</option>')
+        //count++
+    }
+  }
+})
+
+$.ajax({
+  type: "GET",
+  url: "http://localhost:3000/ndar-categories",
+  accept: "application/json",
+  success: function(data){
+    console.log('success')
+    let dE = JSON.parse(data)
+    categories = dE.list
+    for (let i=0;i<categories.length;i++){
+        $("#ndar-cat").append('<option value='+ categories[i]+'>'+ categories[i] +'</option>')
+        //count++
+    }
+  }
+})
 
 $.ajax({
   type: "GET",
@@ -9,7 +58,7 @@ $.ajax({
   success: function(data){
     console.log('success')
     let dE = JSON.parse(data)
-    let termsKey = dE.dataElements
+    termsKey = dE.dataElements
     for (let i=0;i<termsKey.length;i++){
         $("#div-projectFields").append('<div class="form-check"><label class="form-check-label">\
           <input class="form-check-input" type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].name +'">\

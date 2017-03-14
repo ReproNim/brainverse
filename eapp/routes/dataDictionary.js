@@ -14,7 +14,7 @@ module.exports = () => {
   app.get('/ndar-categories', function(req, res){
     let url = ndarUrl + "/categories"
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
-      console.log(body)
+      //console.log(body)
       res.send(body)
     })
   })
@@ -22,7 +22,15 @@ module.exports = () => {
   app.get('/ndar-types', function(req, res){
     let url = ndarUrl + "/types"
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
-      console.log(body)
+      //console.log(body)
+      res.send(body)
+    })
+  })
+
+  app.get('/ndar-sources', function(req, res){
+    let url = ndarUrl + "/sources"
+    request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
+      //console.log(body)
       res.send(body)
     })
   })

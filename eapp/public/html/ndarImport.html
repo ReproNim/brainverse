@@ -57,13 +57,14 @@
       </div>
         <div class="col-xs-9">
           <div class="">
-            <p><h1>Import from NDAR Data Dictionary</h1></p>
+            <p><h3>Import from NDAR Data Dictionary</h3></p>
+            <br>
             <div>
               <form>
                 <div class="form-group row">
                   <label for="remote-dir" class="col-xs-2 col-form-label">Acquisition Object Name</label>
                   <div class="col-xs-7">
-                  <input class="form-control" type="text" placeholder="Project Name here" id="proj-name">
+                  <input class="form-control" type="text" placeholder="Acquisition Object Name here" id="proj-name">
                   </div>
                 </div>
                 <div class="form-group row">
@@ -73,7 +74,32 @@
                   </div>
                 </div>
                 <br>
-                <p><h4> Select fields ... </h4></p>
+                <div class="form-group row">
+                  <label for="ndar-type" class="col-xs-2 col-form-label">Type</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-type">
+                    <option value="type">Select a Type</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-source" class="col-xs-2 col-form-label">Source</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-source">
+                    <option value="source">Select a Source</option>
+                    <option value="NDAR">NDAR</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-category" class="col-xs-2 col-form-label">Category</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-cat">
+                    <option value="cat">Select a Category</option>
+                    </select>
+                  </div>
+                </div>
+                <p><h4> Select fields for your form </h4></p>
                 <div id="div-projectFields">
                 </div>
                 <button id= "btn-pjInfoSave" type="submit" class="btn btn-primary">Save</button>
