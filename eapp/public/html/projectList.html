@@ -8,8 +8,8 @@
     <title>BrainVerse</title>
 
     <!-- Bootstrap -->
-    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/brainverse.css" rel="stylesheet">
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/brainverse.css" rel="stylesheet">
 
   </head>
   <body>
@@ -46,30 +46,31 @@
       <div class="row">
         <div class="col-xs-3" >
           <div class="well">
-            <ul class="nav nav-list">
-              <li class="nav-header">BrainVerse</li>
-              <li class="active"><a href="#">Overview</a></li>
-              <li><a href="project.html">Projects</a></li>
-              <li><a href="#">Workflows</a></li>
-              <li><a href="#">Executions</a></li>
-            </ul>
+           <ul class="nav nav-list">
+            <li class="nav-header"><a href="index.html">BrainVerse</a></li>
+            <li class="active"><a href="#">Overview </a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Workflows</a></li>
+            <li><a href="#">Executions</a></li>
+          </ul>
           </div>
-        </div>
+      </div>
         <div class="col-xs-9">
-          <div class="jumbotron">
-            <h1>BrainVerse</h1>
-            <p> Collaborative Electronic Laboratory Notebook</p>
-            <p><a class="btn btn-primary btn-lg" href="https://github.com/ReproNim/brainverse" role="button">Learn more &raquo;</a></p>
+          <div class="">
+            <p><h1>Project List</h1></p>
+            <div>
+
+            </div>
           </div>
-          <p><a class="btn btn-primary btn-lg" href="addProject.html" role="button" id="addProjectButton"> Add a Project </a></p>
-          <p><a class="btn btn-primary btn-lg" href="addExperiment.html" role="button" id="addExperimentButton"> Add an Experiment </a></p>
         </div>
       </div>
     </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script>
-      window.$ = window.jQuery = require('jquery')
-      require('bootstrap')
+    <script src='/dist/jquery/jquery.min.js'>
     </script>
-   </body>
+    <script>
+      try{
+      $ = jQuery = module.exports
+      }catch(e){}
+    </script>
+  </body>
 </html>

@@ -5,24 +5,29 @@ const BrowserWindow = electron.BrowserWindow
 const {dialog} = require('electron')
 const path = require('path')
 const url = require('url')
+const fs = require('fs')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 function createWindow () {
+  app.server = require(__dirname + '/eapp/app')();
+
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1200, height: 800})
 
+  
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
+  /*mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes: true
-  }))
+  }))*/
 
+  mainWindow.loadURL('http://localhost:3000')
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

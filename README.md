@@ -8,8 +8,7 @@
 ## To Begin
 ```bash
 # Clone this repository
-git clone https://github.com/electron/electron-quick-start
-
+git clone https://github.com/ReproNim/brainverse.git
 # Go into the repository
 cd brainverse
 
