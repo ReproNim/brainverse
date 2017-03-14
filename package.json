@@ -2,7 +2,7 @@
   "name": "BrainVerse",
   "version": "0.0.1",
   "description": "",
-  "main": "src/main.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron .",
     "test:e2e": "./node_modules/mocha/bin/mocha tests/mainWindow-test.js"
@@ -18,10 +18,20 @@
     "spectron": "^3.5.0"
   },
   "dependencies": {
+    "body-parser": "^1.16.1",
     "bootstrap": "^3.3.7",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
     "csv": "^1.1.0",
+    "express": "^4.14.1",
+    "express-fileupload": "^0.1.1",
+    "express-flash": "0.0.2",
+    "express-messages": "^1.0.1",
+    "express-session": "^1.15.1",
     "jquery": "^3.1.1",
     "load-json-file": "^2.0.0",
+    "pug": "^2.0.0-beta11",
+    "uuid-random": "^1.0.5",
     "write-json-file": "^2.0.0"
   }
 }
