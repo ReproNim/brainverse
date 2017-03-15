@@ -46,6 +46,7 @@ module.exports = () => {
 
   app.get('/ndar-terms/:shortName', function(req,res){
     let url = ndarUrl + "/" + req.params.shortName
+    console.log(url)
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
       //console.log(body)
       res.send(body)
