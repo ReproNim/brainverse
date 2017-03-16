@@ -11,6 +11,22 @@ module.exports = () => {
   const jsonParser = bodyParser.json()
   let ndarUrl = "https://ndar.nih.gov/api/datadictionary/v2/datastructure"
 
+  app.post('/dictionaries/new', jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('recived at server side')
+    //console.log(req.body)
+    let term_info = req.body
+    term_info['DictionaryID'] = uuid()
+    console.log(term_info)
+    pid = term_info['DictionaryID'].split('-')
+    pname = term_info['shortName'].split(' ')
+    let cpath = 'uploads/termforms/terms-'+ pname[0]+'-'+ pid[0] +'.json'
+    writeJsonFile(cpath, req.body).then(() => {
+      console.log('done')
+      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ pname[0]+'-'+ pid[0] +'.json'})
+    })
+  })
+
   app.get('/ndar-categories', function(req, res){
     let url = ndarUrl + "/categories"
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
@@ -48,6 +64,10 @@ module.exports = () => {
     let url = ndarUrl + "/" + req.params.shortName
     console.log(url)
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
+      let cpath = 'uploads/dataDictionary/' + req.params.shortName +'.json'
+      writeJsonFile(cpath,JSON.parse(body)).then(()=>{
+        console.log('data dictionary saved!')
+      })
       //console.log(body)
       res.send(body)
     })

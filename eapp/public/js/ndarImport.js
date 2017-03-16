@@ -6,6 +6,8 @@ let categories = []
 let ntypes = []
 let nsources = []
 let nparamObj = {}
+let shortName = ''
+let termsIndex = {}
 
 $('[data-toggle="tooltip"]').tooltip()
 /*
@@ -96,10 +98,14 @@ function getDataForms(e1){
 
 function getDataDictionary(e3){
   e3.preventDefault()
-  $("#btn-dd-selected").remove()
+  //$("#btn-dd-selected").prop("disabled", true)
+  $("#div-projectFields").empty()
+  count = 1
+  //chkboxSelectedArray = []
   $("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
 
   console.log(encodeURI($('#ndar-forms').val()))
+  shortName = encodeURI($('#ndar-forms').val())
 
   let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-forms").val())
   console.log("nUrl",nUrl)
@@ -114,8 +120,9 @@ function getDataDictionary(e3){
       termsKey = dE.dataElements
       console.log(termsKey[0])
       for (let i=0;i<termsKey.length;i++){
+          termsIndex[termsKey[i].id] = termsKey[i]
           $("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
-            <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].name +'"\
+            <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
             >' +termsKey[i].name +'</label></div>')
             count++
       }
@@ -131,42 +138,49 @@ function saveProjInfo(e){
   for (let i=1; i<count; i++){
     if(document.getElementById("projfield-" + i).checked){
       console.log(document.getElementById("projfield-"+ i).checked)
-      chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
+      //chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
+      chkboxSelectedArray.push(termsIndex[document.getElementById("projfield-"+ i).value])
     } else{
       console.log("checkbox is not selected")
     }
   }
 
   console.log(chkboxSelectedArray)
+  if (typeof(Storage) !== "undefined") {
+    sessionStorage.setItem('termform', JSON.stringify(chkboxSelectedArray))
+} else {
+    console.log('no storage support')
+}
 
   //Save the data entered
-  saveObj['ProjectID'] = ''
+  saveObj['DictionaryID'] = ''
+  saveObj['shortName'] = shortName
   saveObj["Name"] = document.getElementById("proj-name").value
   saveObj["Description"] = document.getElementById("proj-desc").value
   saveObj["fields"] = chkboxSelectedArray
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/projects/new",
+    url: "http://localhost:3000/dictionaries/new",
     contentType: "application/json",
     data: JSON.stringify(saveObj),
     success: function(data){
       console.log('success')
-
-      $("#pjInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+      $("#div-projectFields").empty()
+      $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Project Terms Information Saved in /uploads !</strong>\
+  <strong>Terms Information Saved in /uploads/dataDictionary !</strong>\
 </div>')
-      $("#pjInfoSaveMsg").append('<br>')
-      $("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
-      $("#pj-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+      $("#termsInfoSaveMsg").append('<br>')
+      $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Form </button><br>')
+      $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
     }
   })
   console.log('done')
 }
 
 function projectListPage(){
-  window.location.href = "http://localhost:3000/projectList.html"
+  window.location.href = "http://localhost:3000/acquistionForm.html"
 }
 
 function mainpage(){
@@ -175,6 +189,6 @@ function mainpage(){
 
 $("#btn-dataForms").click(getDataForms)
 $("#btn-dd-selected").click(getDataDictionary)
-//$('#btn-pjInfoSave').click(saveProjInfo)
-//$('#pj-list').click(projectListPage)
-//$('#pj-back').click(mainpage)
+$('#btn-pjInfoSave').click(saveProjInfo)
+$('#terms-list').click(projectListPage)
+$('#terms-back').click(mainpage)

@@ -39,8 +39,20 @@ module.exports = () => {
   fs.mkdir(path.join(__dirname,'/../uploads/'),function(err){
     if(err){
       console.log('directory exists. No need to create it')
+    }else{
+      fs.mkdir(path.join(__dirname,'/../uploads/dataDictionary'),function(err1){
+        if(err1){
+          console.log('sub-directory:dataDictionary exists. No need to create it')
+        }
+      })
+      fs.mkdir(path.join(__dirname,'/../uploads/termforms'),function(err2){
+        if(err2){
+          console.log('sub-directory:termforms exists. No need to create it')
+        }
+      })
     }
   })
+
   app.listen(3000, function(){
     console.log('Example app listening on port 3000')
   })
