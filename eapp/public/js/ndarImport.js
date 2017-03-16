@@ -169,7 +169,7 @@ function saveProjInfo(e){
       $("#div-projectFields").empty()
       $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Terms Information Saved in /uploads/dataDictionary !</strong>\
+  <strong>Terms Information Saved in uploads/termforms!</strong>\
 </div>')
       $("#termsInfoSaveMsg").append('<br>')
       $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Form </button><br>')
