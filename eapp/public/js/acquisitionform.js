@@ -1,9 +1,11 @@
 let saveObj = {}
 $('[data-toggle="tooltip"]').tooltip()
 
-let selectedFields = JSON.parse(sessionStorage.getItem('termform'))
-console.log(selectedFields)
+let termform = JSON.parse(localStorage.getItem('termform'))
+console.log("selectedFields",termform)
+let selectedFields = termform['fields']
 console.log(selectedFields.length)
+//console.log("x",x.length)
 
 
 for (let i=0; i<selectedFields.length; i++){
@@ -84,11 +86,11 @@ function saveAqInfo(e){
     saveObj[lb] = $("#ndar-"+ i).val()
   }
 
-  if (typeof(Storage) !== "undefined") {
-    sessionStorage.setItem('termform', JSON.stringify(saveObj))
+  /*if (typeof(Storage) !== "undefined") {
+    localStorage.setItem('termform', JSON.stringify(saveObj))
   } else {
     console.log('no storage support')
-  }
+  }*/
 
   //Save the data entered
   $.ajax({

@@ -146,18 +146,27 @@ function saveProjInfo(e){
   }
 
   console.log(chkboxSelectedArray)
-  if (typeof(Storage) !== "undefined") {
-    sessionStorage.setItem('termform', JSON.stringify(chkboxSelectedArray))
-} else {
+  /*if (typeof(Storage) !== "undefined") {
+    localStorage.setItem('termform', JSON.stringify(chkboxSelectedArray))
+  } else {
     console.log('no storage support')
-}
+  }*/
 
   //Save the data entered
   saveObj['DictionaryID'] = ''
   saveObj['shortName'] = shortName
   saveObj["Name"] = document.getElementById("proj-name").value
   saveObj["Description"] = document.getElementById("proj-desc").value
-  saveObj["fields"] = chkboxSelectedArray
+  saveObj['Type'] = $("#ndar-type").val()
+  saveObj['Source'] = $("#ndar-source").val()
+  saveObj['Category'] = $("#ndar-cat").val()
+  saveObj['fields'] = chkboxSelectedArray
+
+  if (typeof(Storage) !== "undefined") {
+    localStorage.setItem('termform', JSON.stringify(saveObj))
+  } else {
+    console.log('no storage support')
+  }
 
   $.ajax({
     type: "POST",
