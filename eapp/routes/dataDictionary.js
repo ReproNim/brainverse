@@ -19,11 +19,13 @@ module.exports = () => {
     term_info['DictionaryID'] = uuid()
     console.log(term_info)
     pid = term_info['DictionaryID'].split('-')
-    pname = term_info['shortName'].split(' ')
-    let cpath = 'uploads/termforms/terms-'+ pname[0]+'-'+ pid[0] +'.json'
+    psname = term_info['shortName'].split(' ')
+    pname = term_info['Name'].split(' ')
+    //let cpath = 'uploads/termforms/terms-'+ pname[0]+'-'+ pid[0] +'.json'
+    let cpath = 'uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json'
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
-      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ pname[0]+'-'+ pid[0] +'.json'})
+      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
     })
   })
 

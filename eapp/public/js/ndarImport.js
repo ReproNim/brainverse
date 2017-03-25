@@ -163,7 +163,11 @@ function saveProjInfo(e){
   saveObj['fields'] = chkboxSelectedArray
 
   if (typeof(Storage) !== "undefined") {
-    localStorage.setItem('termform', JSON.stringify(saveObj))
+    //localStorage.setItem('termform', JSON.stringify(saveObj))
+    let psname = saveObj['shortName'].split(' ')
+    let pname = saveObj['Name'].split(' ')
+    let fname = 'terms-'+ psname[0]+'-'+ pname[0] +'.json'
+    localStorage.setItem(fname,JSON.stringify(saveObj))
   } else {
     console.log('no storage support')
   }
@@ -175,10 +179,11 @@ function saveProjInfo(e){
     data: JSON.stringify(saveObj),
     success: function(data){
       console.log('success')
+      console.log("data received",data)
       $("#div-projectFields").empty()
       $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Terms Information Saved in uploads/termforms!</strong>\
+  <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
 </div>')
       $("#termsInfoSaveMsg").append('<br>')
       $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Form </button><br>')

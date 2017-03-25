@@ -4,6 +4,7 @@ module.exports = () => {
   const fileUpload = require('express-fileupload')
   const bodyParser = require('body-parser')
   const writeJsonFile = require('write-json-file')
+  const loadJsonFile = require('load-json-file')
   const uuid = require('uuid-random')
   const request = require('request')
   const fs = require('fs')
@@ -38,6 +39,23 @@ module.exports = () => {
       res.json({'tid': obj_info['objID'], 'fid':'entity-'+ pid[0] +'.json'})
     })*/
   })
+
+  app.get('/acquisitions/forms/:id', function(req,res){
+    console.log('loading Terms file')
+    loadJsonFile('uploads/termforms/'+req.params.id).then(ob => {
+      console.log("ob:==>",ob)
+      res.json(ob)
+    })
+
+  })
+  app.get('/acquisitions/forms', function(req, res){
+    var files = []
+    fs.readdir('uploads/termforms', function(err,list){
+      if(err) throw err;
+      res.json({'list':list})
+    })
+  })
+
 
   function saveToRDFstore(jsonObj, cfn){
     let tstring = ""
