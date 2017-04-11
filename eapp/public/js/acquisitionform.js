@@ -16,7 +16,9 @@ $.ajax({
     }else{
       for (let i=0;i<tforms.length;i++){
           console.log(tforms[i])
-          $("#tforms").append('<option value="'+ tforms[i]+'">'+ tforms[i] +'</option>')
+          if(tforms[i] != ".DS_Store"){
+            $("#tforms").append('<option value="'+ tforms[i]+'">'+ tforms[i] +'</option>')
+          }
           //count++
       }
     }
@@ -34,9 +36,33 @@ function addAqFields(formName){
   //let termform = JSON.parse(localStorage.getItem('termform'))
   let termform = JSON.parse(localStorage.getItem(formName))
   console.log("selectedFields",termform)
+
+  let url = "http://localhost:3000/acquisitions/forms/" + formName
+
+  // if the file is not in localstorage, read from the disk
+  if(termform == null){
+
+    $.ajax({
+      type: "GET",
+      url: url,
+      accept: "application/json",
+      success: function(data){
+        console.log('acquistions term forms:success', data)
+        termform = data
+        add_term_to_form(termform)
+      }//data
+    })
+  } else{
+    add_term_to_form(termform)
+  }
+
+}//end of addAqFields function
+
+function add_term_to_form(termform){
   selectedFields = termform['fields']
   console.log(selectedFields.length)
   //console.log("x",x.length)
+
 
 
   for (let i=0; i<selectedFields.length; i++){
@@ -108,21 +134,23 @@ function addAqFields(formName){
           }
 
     }//end of outermost for
-}//end of addAqFields function
+
+    $("#ndar-fields").append('<div class="form-group row">\
+    <label for="ndar-'+selectedFields.length+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
+    <div class="col-xs-7">\
+    <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'">\
+    </div>\
+    </div>')
+}
 
 function saveAqInfo(e){
   e.preventDefault()
   saveObj['objID'] = ''
-  for (let i=0; i<selectedFields.length; i++){
+  for (let i=0; i<=selectedFields.length; i++){
     let lb =$('label[for="ndar-' + i + '"]').html()
     saveObj[lb] = $("#ndar-"+ i).val()
   }
 
-  /*if (typeof(Storage) !== "undefined") {
-    localStorage.setItem('termform', JSON.stringify(saveObj))
-  } else {
-    console.log('no storage support')
-  }*/
 
   //Save the data entered
   $.ajax({
