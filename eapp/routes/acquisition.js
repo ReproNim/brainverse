@@ -23,11 +23,9 @@ module.exports = () => {
     })
     let graph = rstore.rdf.createGraph()
     rstore.rdf.setPrefix("nidm", "http://purl.org/nidash/nidm#")
-    rstore.rdf.setPrefix("xsd", "http://www.w3.org/2001/XMLSchema#")
     rstore.rdf.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     return {store:rstore, graph:graph}
   }
-
   let setup = rdfStoreSetup()
   let store = setup.store
   let rgraph = setup.graph
@@ -46,7 +44,7 @@ module.exports = () => {
       console.log("callback fn: tstring: ", tstring)
 
       let cpath = 'uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl'
-      let fname = 'entity-graph-'+obj_info['ExperimentID'] + '.ttl'
+      let fname = 'entity-graph-' + obj_info['ExperimentID'] + '.ttl'
 
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
@@ -81,61 +79,40 @@ module.exports = () => {
 
     fs.stat(cpath+fname, function(err, stat) {
       console.log(cpath+fname)
-      if(err == null) {
-        console.log('File exists');
-        console.log("prefix:", store.rdf.prefixes.get("nidm"))
-        let dgO = addToGraph(jsonObj)
-        store.graph("nidm:tgraph",function(err, graph){
-          console.log("inside graph")
-          let subject={}
-          let objS = {}
-          graph.forEach(function(triple){
-            if(!triple.subject.nominalValue in subject){
-              objS = {}
-            }
-            objS[triple.predicate.toString()] = triple.object.toString()
-            subject[triple.subject.nominalValue] = objS
-          })
-          console.log("Serialized to turtle ---")
-          //-------------------------------------
-          // TODO: Add a method to automatically identify the namespace, add prefix and object properties
-          tstring = "\nnidm:entity_"+ dgO+ " rdf:type nidm:DemographicsAcquisitionObject ;\n "
-          tstring = tstring + getObjStr(jsonObj)
-          //-------------------------------------
-          //console.log("tstring: ", tstring)
-          callback_tstring(tstring)
-        })//graph
-        //})//insert
+      if(err == null){
+        console.log('File exists')
+        tstring = tstring + "\n"
       } else if(err.code == 'ENOENT') {
-        console.log("file does not exist")
+        console.log("File does not exist")
         console.log("prefix:", store.rdf.prefixes.get("nidm"))
-        let dgO = addToGraph(jsonObj)
-        store.graph("nidm:tgraph",function(err, graph){
-          console.log("inside graph")
-          let subject={}
-          let objS = {}
-          graph.forEach(function(triple){
-            if(!triple.subject.nominalValue in subject){
-              objS = {}
-            }
-            objS[triple.predicate.toString()] = triple.object.toString()
-              subject[triple.subject.nominalValue] = objS
-            })
-          console.log("Serialized to turtle ---")
-          //-------------------------------------
-          // TODO: Add a method to automatically identify the namespace, add prefix and object properties
-          tstring = "@prefix nidm: <"+ store.rdf.prefixes.get("nidm")+"> .\n"
-          tstring = tstring + "@prefix rdf: <"+ store.rdf.prefixes.get("rdf")+"> .\n"
-          tstring = tstring + "nidm:entity_"+ dgO + " rdf:type nidm:DemographicsAcquisitionObject ;\n "
-          tstring = tstring + getObjStr(jsonObj)
-          //-------------------------------------
-          console.log("tstring: ", tstring)
-          callback_tstring(tstring)
-          })//graph
-      } else {
+        //-------------------------------------
+        // TODO: Add a method to automatically identify the namespace, add prefix and object properties
+        tstring = "@prefix nidm: <"+ store.rdf.prefixes.get("nidm")+"> .\n"
+        tstring = tstring + "@prefix rdf: <"+ store.rdf.prefixes.get("rdf")+"> .\n"
+      } else{
         console.log('Some other error: ', err.code);
       }
-   }) //fs.stat
+
+      let dgO = addToGraph(jsonObj)
+      store.graph("nidm:tgraph",function(err, graph){
+        console.log("inside graph")
+        let subject={}
+        let objS = {}
+        graph.forEach(function(triple){
+          if(!triple.subject.nominalValue in subject){
+            objS = {}
+          }
+          objS[triple.predicate.toString()] = triple.object.toString()
+          subject[triple.subject.nominalValue] = objS
+        })
+        console.log("Serialized to turtle ---")
+        tstring = tstring + "nidm:entity_"+ dgO + " rdf:type nidm:DemographicsAcquisitionObject ;\n "
+        tstring = tstring + getObjStr(jsonObj)
+        //-------------------------------------
+        console.log("tstring: ", tstring)
+        callback_tstring(tstring)
+      })//graph
+    }) //fs.stat
   }
 
   //Create node and add to RDF graph
