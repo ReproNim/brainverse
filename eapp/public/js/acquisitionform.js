@@ -161,9 +161,13 @@ function saveAqInfo(e){
     success: function(data){
       console.log('success')
       //$("#div-projectFields").empty()
+      $("#termsInfoSaveMsg").empty()
+      $("#terms-list").empty()
+      $("#terms-back").empty()
+
       $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Aquisition Object Saved in uploads/acquisition!</strong>\
+  <strong>Aquisition Object Saved in uploads/acquisition/'+ data['fid']+'!</strong>\
 </div>')
       $("#termsInfoSaveMsg").append('<br>')
       $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Another Form </button><br>')

@@ -109,7 +109,7 @@ module.exports = () => {
         tstring = tstring + "nidm:entity_"+ dgO + " rdf:type nidm:DemographicsAcquisitionObject ;\n "
         tstring = tstring + getObjStr(jsonObj)
         //-------------------------------------
-        console.log("tstring: ", tstring)
+        //console.log("tstring: ", tstring)
         callback_tstring(tstring)
       })//graph
     }) //fs.stat
