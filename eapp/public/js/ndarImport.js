@@ -95,9 +95,6 @@ function getDataForms(e1){
 
 }
 
-
-
-
 function getDataDictionary(e3){
   e3.preventDefault()
   //$("#btn-dd-selected").prop("disabled", true)
@@ -117,17 +114,30 @@ function getDataDictionary(e3){
     accept: "application/json",
     success: function(data){
       console.log('success')
-
       let dE = JSON.parse(data)
       termsKey = dE.dataElements
       console.log(termsKey[0])
+      $("#div-projectFields").append('<div><table class="table  table-striped"">\
+      <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
+      <tbody>')
       for (let i=0;i<termsKey.length;i++){
           termsIndex[termsKey[i].id] = termsKey[i]
-          $("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
+
+          /*$("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
             <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
             >' +termsKey[i].name +'</label></div>')
+          */
+          $("#div-projectFields").append('<tr>\
+            <td class="td-chk">\
+              <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
+              ><td>\
+            <td class="td-term"> '+ termsKey[i].name+'</td>\
+            <td> '+ termsKey[i].description+ '</td>\
+            </tr>')
+
             count++
       }
+      $("#div-projectFields").append('</tbody></table></div>')
     }
   })
 }

@@ -32,7 +32,7 @@ $("#tforms").change(function(){
 })
 
 function addAqFields(formName){
-  //check if for, is in local storage
+  //check if form is in local storage
   //let termform = JSON.parse(localStorage.getItem('termform'))
   let termform = JSON.parse(localStorage.getItem(formName))
   console.log("selectedFields",termform)
@@ -69,8 +69,8 @@ function add_term_to_form(termform){
       let sid = "ndar-"+i
       if(selectedFields[i].valueRange == null){
         $("#ndar-fields").append('<div class="form-group row">\
-        <label for="ndar-'+i+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].description+'">'+selectedFields[i].name+'</label>\
-        <div class="col-xs-7">\
+        <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+        <div class="col-xs-5">\
         <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
         </div>\
         </div>')
@@ -78,8 +78,8 @@ function add_term_to_form(termform){
           let options = selectedFields[i].valueRange.split(';')
           console.log(options)
           $("#ndar-fields").append('<div class="form-group row">\
-            <label for="ndar-'+i+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].description+'">'+selectedFields[i].name+'</label>\
-            <div class="col-xs-7">\
+            <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+            <div class="col-xs-5">\
               <select class="form-control" id="ndar-'+i+'">\
               <option value="nsource">Select</option>\
               </select>\
@@ -103,15 +103,15 @@ function add_term_to_form(termform){
             console.log(":: ",sub_options1)
             if(sub_options1[1].trim()>20){
               $("#ndar-fields").append('<div class="form-group row">\
-              <label for="ndar-'+i+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].description+'">'+selectedFields[i].name+'</label>\
-              <div class="col-xs-7">\
+              <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+              <div class="col-xs-5">\
               <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
               </div>\
               </div>')
             }else{
             $("#ndar-fields").append('<div class="form-group row">\
-              <label for="ndar-'+i+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].description+'">'+selectedFields[i].name+'</label>\
-              <div class="col-xs-7">\
+              <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+              <div class="col-xs-5">\
                 <select class="form-control" id="ndar-'+i+'">\
                 <option value="select">Select</option>\
                 </select>\
@@ -126,8 +126,8 @@ function add_term_to_form(termform){
           else{
             //$("#"+sid).append('<option value="'+ options[j]+'">'+ options[j] +'</option>')
             $("#ndar-fields").append('<div class="form-group row">\
-            <label for="ndar-'+i+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].description+'">'+selectedFields[i].name+'</label>\
-            <div class="col-xs-7">\
+            <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+            <div class="col-xs-5">\
             <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
             </div>\
             </div>')
@@ -136,8 +136,8 @@ function add_term_to_form(termform){
     }//end of outermost for
 
     $("#ndar-fields").append('<div class="form-group row">\
-    <label for="ndar-'+selectedFields.length+'" class="col-xs-2 col-form-label" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
-    <div class="col-xs-7">\
+    <label for="ndar-'+selectedFields.length+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
+    <div class="col-xs-5">\
     <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'">\
     </div>\
     </div>')
@@ -147,11 +147,14 @@ function saveAqInfo(e){
   e.preventDefault()
   saveObj['objID'] = ''
   for (let i=0; i<=selectedFields.length; i++){
-    let lb =$('label[for="ndar-' + i + '"]').html()
+    //let lb =$('label[for="ndar-' + i + '"]').html()
+    let lb=$('label[for="ndar-' + i + '"]').attr('title')
+    console.log('lb1:', lb)
     saveObj[lb] = $("#ndar-"+ i).val()
+    console.log('saveObj[lb]:',saveObj[lb])
   }
 
-
+  console.log(saveObj)
   //Save the data entered
   $.ajax({
     type: "POST",
