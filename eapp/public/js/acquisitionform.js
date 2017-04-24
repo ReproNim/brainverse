@@ -63,23 +63,46 @@ function add_term_to_form(termform){
   console.log(selectedFields.length)
   //console.log("x",x.length)
 
-
-
   for (let i=0; i<selectedFields.length; i++){
-      let sid = "ndar-"+i
+    let sid = "ndar-"+i
+    let options = []
+    let sub_options1 = []
+    let nvalues = []
+    let notes = checkNotes(selectedFields[i].name,selectedFields[i].notes)
+    if(notes != null){
+      nvalues = Object.keys(notes).map(function(key) {
+          return notes[key]
+          })
+    }
+
       if(selectedFields[i].valueRange == null){
-        $("#ndar-fields").append('<div class="form-group row">\
-        <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-        <div class="col-xs-5">\
+        /* Case1: No Value Range */
+        $("#ndar-fields").append('<div class="form-group">\
+        <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+        <div>\
         <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
         </div>\
         </div>')
       }else if (selectedFields[i].valueRange.indexOf(';')> -1){
-          let options = selectedFields[i].valueRange.split(';')
-          console.log(options)
-          $("#ndar-fields").append('<div class="form-group row">\
-            <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-            <div class="col-xs-5">\
+        /*  Case 2:
+        if valueRange specified with ';' separator
+            check notes if values with its meaning specified in the notes
+            if notes is empty then parse valueRange field
+            otherwise parse notes field and obtain values representation, e.g (1 = "xyz"; 2 = "utty")
+         */
+         let sub_options2 = []
+          options = selectedFields[i].valueRange.split(';')
+          //if(notes== {}){
+          //  options = selectedFields[i].valueRange.split(';')
+          //} else
+          //if((notes != null) && (Object.values(notes).length ==  options.length)){
+          //  options = Object.values(notes)
+          //}
+          console.log("c2::options::", options)
+          console.log("c2::options.length::", options.length)
+          $("#ndar-fields").append('<div class="form-group">\
+            <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+            <div>\
               <select class="form-control" id="ndar-'+i+'">\
               <option value="nsource">Select</option>\
               </select>\
@@ -91,43 +114,87 @@ function add_term_to_form(termform){
             console.log("Adding",options[j])
             if(options[j].indexOf("::")> -1){
               let sub_options = options[j].split("::")
-              for(let k=sub_options[0];k<sub_options[1];k++){
-                $("#"+sid).append('<option value="'+ k+'">'+ k +'</option>')
+              for(let k=sub_options[0];k<=sub_options[1];k++){
+                //$("#"+sid).append('<option value="'+ k+'">'+ k +'</option>')
+                sub_options2.push(k)
               }
             }else{
-              $("#"+sid).append('<option value="'+ options[j]+'">'+ options[j] +'</option>')
+              sub_options2.push(options[j])
+              //$("#"+sid).append('<option value="'+ options[j]+'">'+ options[j] +'</option>')
             }
           }
+          //if((notes != null) && (Object.values(notes).length ==  sub_options2.length)){
+          if((notes != null) && (nvalues.length ==  sub_options2.length)){
+            //options = Object.values(notes)
+            options = nvalues
+            for(let m=0;m<options.length;m++){
+              $("#"+sid).append('<option value="'+ options[m]+'">'+ options[m] +'</option>')
+            }
+          }else{
+            for(let m=0;m<sub_options2.length;m++){
+              $("#"+sid).append('<option value="'+ sub_options2[m]+'">'+ sub_options2[m] +'</option>')
+            }
+          }
+
+
         } else if (selectedFields[i].valueRange.indexOf("::")> -1){
-            let sub_options1 = selectedFields[i].valueRange.trim().split("::")
-            console.log(":: ",sub_options1)
+          /*
+          Case3: valueRange of the form - 0::3
+          check notes - parse notes
+
+          */
+          flag = false
+          if(notes == {}){
+            sub_options1 = selectedFields[i].valueRange.trim().split("::")
+
+          } else{
+            //sub_options1 = Object.values(notes)
+            sub_options1 = nvalues
+            console.log("c3::sub_options1:: ", sub_options1)
+            console.log("c3::sub_options1.length:: ", sub_options1.length)
+            //console.log("notes: ", notes)
+            if(sub_options1.length == 1){
+              sub_options1 = selectedFields[i].valueRange.trim().split("::")
+            }
+            //console.log(":: ",sub_options1)
+          }
+
+            console.log("c3-1::sub-options1:: ",sub_options1)
+            console.log("c3-1::sub_options1.length:: ", sub_options1.length)
+
             if(sub_options1[1].trim()>20){
-              $("#ndar-fields").append('<div class="form-group row">\
-              <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-              <div class="col-xs-5">\
+              $("#ndar-fields").append('<div class="form-group">\
+              <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+              <div>\
               <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
               </div>\
               </div>')
             }else{
-            $("#ndar-fields").append('<div class="form-group row">\
-              <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-              <div class="col-xs-5">\
+            $("#ndar-fields").append('<div class="form-group">\
+              <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+              <div>\
                 <select class="form-control" id="ndar-'+i+'">\
                 <option value="select">Select</option>\
                 </select>\
               </div>\
             </div>')
 
-            for(let m=sub_options1[0].trim();m<sub_options1[1].trim();m++){
-              $("#"+sid).append('<option value="'+ m+'">'+ m +'</option>')
+            if(notes == null || notes.hasOwnProperty(selectedFields[i].name)){
+              for(let m=sub_options1[0].trim();m<sub_options1[1].trim();m++){
+                $("#"+sid).append('<option value="'+ m+'">'+ m +'</option>')
+              }
+            }else{
+              for(let m=0;m<sub_options1.length;m++){
+                $("#"+sid).append('<option value="'+ sub_options1[m]+'">'+ sub_options1[m] +'</option>')
+              }
             }
           }
           }
           else{
             //$("#"+sid).append('<option value="'+ options[j]+'">'+ options[j] +'</option>')
-            $("#ndar-fields").append('<div class="form-group row">\
-            <label for="ndar-'+i+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-            <div class="col-xs-5">\
+            $("#ndar-fields").append('<div class="form-group">\
+            <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+            <div>\
             <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
             </div>\
             </div>')
@@ -135,9 +202,9 @@ function add_term_to_form(termform){
 
     }//end of outermost for
 
-    $("#ndar-fields").append('<div class="form-group row">\
-    <label for="ndar-'+selectedFields.length+'" class="col-xs-4 col-form-label" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
-    <div class="col-xs-5">\
+    $("#ndar-fields").append('<div class="form-group">\
+    <label for="ndar-'+selectedFields.length+'" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
+    <div>\
     <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'">\
     </div>\
     </div>')
@@ -189,3 +256,47 @@ function mainpage(){
 $('#btn-aqInfoSave').click(saveAqInfo)
 $('#terms-list').click(projectListPage)
 $('#terms-back').click(mainpage)
+
+function checkNotes(key,notes){
+  let values = {}
+  if(notes != null){
+    let options = notes.split(';')
+    for(let i = 0;i < options.length; i++){
+      let value = options[i].split('=')
+      if(value.length<2){
+        //values[value[0]] = key
+        values[key] = value[0]
+      } else{
+        //values[value[1]] = value[0]
+        values[value[0]] = value[1]
+      }
+    }
+    return values
+  } else {
+    return {}
+  }
+}
+
+
+function addModal(mbody){
+  <!-- Modal -->
+$("#modal").append('<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\
+  <div class="modal-dialog" role="document">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>\
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+          <span aria-hidden="true">&times;</span>\
+        </button>\
+      </div>\
+      <div class="modal-body">\
+        '+ mbody +'\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>\
+        <button type="button" class="btn btn-primary">Save changes</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>')
+}

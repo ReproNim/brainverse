@@ -10,6 +10,8 @@ let shortName = ''
 let termsIndex = {}
 
 $('[data-toggle="tooltip"]').tooltip()
+$.fn.select2.defaults.set( "theme", "bootstrap" );
+
 /*
 * NDAR-TYPES
 */
@@ -21,10 +23,10 @@ $.ajax({
     console.log('ndar-types:success')
     let dE = JSON.parse(data)
     ntypes = dE.list
+    $("#ndar-type").select2()
     for (let i=0;i<ntypes.length;i++){
         console.log(ntypes[i])
         $("#ndar-type").append('<option value="'+ ntypes[i]+'">'+ ntypes[i] +'</option>')
-        //count++
     }
   }
 })
@@ -40,6 +42,7 @@ $.ajax({
     console.log('ndar-sources:success')
     let dE = JSON.parse(data)
     nsources = dE.list
+    $("#ndar-source").select2()
     for (let i=0;i<nsources.length;i++){
         $("#ndar-source").append('<option value="'+ nsources[i]+'">'+ nsources[i] +'</option>')
         //count++
@@ -58,6 +61,7 @@ $.ajax({
     console.log('ndar-cat:success')
     let dE = JSON.parse(data)
     categories = dE.list
+    $("#ndar-cat").select2()
     for (let i=0;i<categories.length;i++){
         $("#ndar-cat").append('<option value="'+ categories[i]+'">'+ categories[i] +'</option>')
     }
@@ -84,9 +88,15 @@ function getDataForms(e1){
       console.log('get forms: success')
       let dE = JSON.parse(data)
       console.log(dE)
+      /*$( "#ndar-forms" ).select2({
+          theme: "bootstrap"
+      });*/
+
       $("#ndar-dd").append('<select class="form-control" id="ndar-forms">\
           <option value="ddform">Select a form</option>\
           </select>')
+
+      $("#ndar-forms").select2()
       for (let i=0;i<dE.length;i++){
           $("#ndar-forms").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
       }
