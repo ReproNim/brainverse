@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>BrainVerse</title>
+
+    <link rel="stylesheet" href="/dist/slickgrid/slick.grid.css" type="text/css"/>
+    <link rel="stylesheet" href="/dist/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css" type="text/css"/>
+    <link rel="stylesheet" href="/dist/slickgrid/examples/examples.css" type="text/css"/>
+    <link rel="stylesheet" href="/dist/slickgrid/controls/slick.columnpicker.css" type="text/css"/>
+    <link rel="stylesheet" href="/example-bootstrap.css" type="text/css"/>
+    <style>
+      .slick-cell-checkboxsel {
+        background: #f0f0f0;
+        border-right-color: silver;
+        border-right-style: solid;
+      }
+    </style>
+    <!-- Bootstrap -->
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/brainverse.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ReproNIm</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <p class="navbar-btn">
+                  <a href="#" class="btn btn-success">Sign In</a>
+              </p>
+            </li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-3" >
+          <div class="well">
+           <ul class="nav nav-list">
+            <li class="nav-header"><a href="index.html">BrainVerse</a></li>
+            <li class="active"><a href="#">Overview </a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Workflows</a></li>
+            <li><a href="#">Executions</a></li>
+          </ul>
+          </div>
+      </div>
+        <div class="col-xs-9">
+          <div class="">
+            <p><h3>Import NDAR Data Dictionary</h3></p>
+            <br>
+            <div>
+              <form id="ndar">
+                <div class="form-group row">
+                  <label for="remote-dir" class="col-xs-2 col-form-label">Acquisition Object Name</label>
+                  <div class="col-xs-7">
+                  <input class="form-control" type="text" placeholder="Acquisition Object Name here" id="proj-name">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="remote-dir" class="col-xs-2 col-form-label">Description</label>
+                  <div class="col-xs-7">
+                    <input class="form-control" type="text" placeholder="Acquisition Object Description here" id="proj-desc">
+                  </div>
+                </div>
+                <br>
+                <div class="form-group row">
+                  <label for="ndar-type" class="col-xs-2 col-form-label">Type</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-type">
+                    <option value="ntype">Select a Type</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-source" class="col-xs-2 col-form-label">Source</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-source">
+                    <option value="nsource">Select a Source</option>
+                    <option value="NDAR">NDAR</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-category" class="col-xs-2 col-form-label">Category</label>
+                  <div class="col-xs-7">
+                    <select class="form-control" id="ndar-cat">
+                    <option value="ncat">Select a Category</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-dd" class="col-xs-2 col-form-label">Data Dictionary</label>
+                  <div class="col-xs-7" id = "ndar-dd">
+                    <button id= "btn-dataForms" type="submit" class="btn btn-primary">Get forms </button>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ndar-dd-selected" class="col-xs-2 col-form-label"> Fields</label>
+                  <div class="col-xs-7" id = "ndar-dd-1">
+                    <button id= "btn-dd-selected" type="submit" class="btn btn-primary"> Choose </button>
+                  </div>
+                </div>
+                 <!--p><h4> Select fields for your form </h4></p-->
+                <div id="div-projectFields" style="width:600px;">
+                <!--style="overflow:scroll;height:400px;width:100%;overflow:auto"-->
+                  <div id="myGrid" style="width:100%;height:500px;"></div>
+                </div>
+                <br>
+                <br>
+                <button id= "btn-pjInfoSave" type="submit" class="btn btn-primary">Save</button>
+              </form>
+            </div>
+            <div id = "termsInfoSaveMsg"></div>
+            <div class="col-xs-4">
+              <div id = "terms-list"></div>
+            </div>
+            <div class="col-xs-4">
+              <div id = "terms-back"></div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <script src='/dist/jquery/jquery.min.js'>
+    </script>
+    <!--script src="/jquery-1.7.min.js"></script-->
+    <script src="/dist/slickgrid/lib/jquery-ui-1.11.3.min.js"></script>
+    <script src="/jquery.event.drag-2.2.js"></script>
+
+
+    <script src="/dist/slickgrid/slick.core.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.checkboxselectcolumn.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.autotooltips.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.cellrangedecorator.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.cellrangeselector.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.cellcopymanager.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.cellselectionmodel.js"></script>
+    <script src="/dist/slickgrid/plugins/slick.rowselectionmodel.js"></script>
+    <script src="/dist/slickgrid/controls/slick.columnpicker.js"></script>
+    <script src="/dist/slickgrid/slick.formatters.js"></script>
+    <script src="/dist/slickgrid/slick.editors.js"></script>
+    <script src="/dist/slickgrid/slick.grid.js"></script>
+    <script>
+      try{
+      $ = jQuery = module.exports
+      }catch(e){}
+    </script>
+    <script src='/dist/bootstrap/bootstrap.min.js', type='text/javascript'>
+    </script>
+    <script src=ndarImport.js>
+    </script>
+    <script>
+    var grid;
+    var data = [];
+    var options = {
+      editable: true,
+      enableCellNavigation: true,
+      asyncEditorLoading: false,
+      autoEdit: false
+    };
+    var columns = [];
+    $(function () {
+      for (var i = 0; i < 100; i++) {
+        var d = (data[i] = {});
+        d[0] = "Row " + i;
+      }
+      var checkboxSelector = new Slick.CheckboxSelectColumn({
+        cssClass: "slick-cell-checkboxsel"
+      });
+      columns.push(checkboxSelector.getColumnDefinition());
+      for (var i = 0; i < 5; i++) {
+        columns.push({
+          id: i,
+          name: String.fromCharCode("A".charCodeAt(0) + i),
+          field: i,
+          width: 100,
+          editor: Slick.Editors.Text
+        });
+      }
+      grid = new Slick.Grid("#myGrid", data, columns, options);
+      grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+      grid.registerPlugin(checkboxSelector);
+      var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+    })
+    </script>
+  </body>
+</html>
