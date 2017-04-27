@@ -24,9 +24,14 @@ module.exports = () => {
   app.use(express.static(path.join(__dirname, 'public/html')))
   app.use(express.static(path.join(__dirname, 'public/js')))
   app.use(express.static(path.join(__dirname, 'public/terms')))
+  app.use(express.static(path.join(__dirname, 'public/lib')))
   app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
   app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
+  app.use('/dist/select2',express.static(path.join(__dirname,'/../node_modules/select2/dist')))
+  app.use('/dist/select2-bootstrap',express.static(path.join(__dirname,'/../node_modules/select2-bootstrap-theme/dist')))
+  app.use('/dist/slickgrid',express.static(path.join(__dirname,'/../node_modules/slickgrid')))
+  app.use('/dist/slickgrid-bootstrap',express.static(path.join(__dirname,'/../node_modules/slickgrid-bootstrap-dev/bootstrap')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
 
   // Setup Globally Included Routes

@@ -24,6 +24,7 @@ module.exports = () => {
     let graph = rstore.rdf.createGraph()
     rstore.rdf.setPrefix("nidm", "http://purl.org/nidash/nidm#")
     rstore.rdf.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    rstore.rdf.setPrefix("nda","https://ndar.nih.gov/api/datadictionary/v2/dataelement/")
     return {store:rstore, graph:graph}
   }
   let setup = rdfStoreSetup()
@@ -89,6 +90,7 @@ module.exports = () => {
         // TODO: Add a method to automatically identify the namespace, add prefix and object properties
         tstring = "@prefix nidm: <"+ store.rdf.prefixes.get("nidm")+"> .\n"
         tstring = tstring + "@prefix rdf: <"+ store.rdf.prefixes.get("rdf")+"> .\n"
+        tstring = tstring + "@prefix nda: <"+ store.rdf.prefixes.get("nda")+"> .\n"
       } else{
         console.log('Some other error: ', err.code);
       }
@@ -124,7 +126,7 @@ module.exports = () => {
     store.rdf.createNamedNode(store.rdf.resolve("nidm:DemographicsAcquisitionObject"))))
     for(var key in jsonObj){
       rgraph.add(store.rdf.createTriple(n,
-        store.rdf.createNamedNode(store.rdf.resolve("nidm:"+key)),
+        store.rdf.createNamedNode(store.rdf.resolve("nda:"+key)),
         store.rdf.createLiteral(jsonObj[key])))
     }
     store.insert(rgraph, "nidm:tgraph", function(err) {
@@ -141,7 +143,7 @@ module.exports = () => {
     let sl = Object.keys(sObj).length
     let count = 0
     for(var key in sObj){
-      s = s + " nidm:"+ key + " " + "\""+sObj[key]+"\""
+      s = s + " nda:"+ key + " " + "\""+sObj[key]+"\""
       if(count<(sl-1)) {
         s = s + " ; \n "
         count ++

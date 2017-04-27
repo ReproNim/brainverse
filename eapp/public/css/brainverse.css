@@ -1,6 +1,22 @@
 body { padding-top: 70px; }
-.form-check {
+
+/*.form-check {
     display: block;
     float: left;
     width: 25%;
+}*/
+
+.th-head-1 {
+  width: 80px;
+}
+.th-head-2 {
+  width: 200px;
+}
+
+.td-chk {
+  width: 80px;
+}
+
+.td-term {
+  width:200px;
 }

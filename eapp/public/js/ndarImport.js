@@ -10,6 +10,8 @@ let shortName = ''
 let termsIndex = {}
 
 $('[data-toggle="tooltip"]').tooltip()
+$.fn.select2.defaults.set( "theme", "bootstrap" );
+
 /*
 * NDAR-TYPES
 */
@@ -21,10 +23,10 @@ $.ajax({
     console.log('ndar-types:success')
     let dE = JSON.parse(data)
     ntypes = dE.list
+    $("#ndar-type").select2()
     for (let i=0;i<ntypes.length;i++){
         console.log(ntypes[i])
         $("#ndar-type").append('<option value="'+ ntypes[i]+'">'+ ntypes[i] +'</option>')
-        //count++
     }
   }
 })
@@ -40,6 +42,7 @@ $.ajax({
     console.log('ndar-sources:success')
     let dE = JSON.parse(data)
     nsources = dE.list
+    $("#ndar-source").select2()
     for (let i=0;i<nsources.length;i++){
         $("#ndar-source").append('<option value="'+ nsources[i]+'">'+ nsources[i] +'</option>')
         //count++
@@ -58,6 +61,7 @@ $.ajax({
     console.log('ndar-cat:success')
     let dE = JSON.parse(data)
     categories = dE.list
+    $("#ndar-cat").select2()
     for (let i=0;i<categories.length;i++){
         $("#ndar-cat").append('<option value="'+ categories[i]+'">'+ categories[i] +'</option>')
     }
@@ -84,9 +88,15 @@ function getDataForms(e1){
       console.log('get forms: success')
       let dE = JSON.parse(data)
       console.log(dE)
+      /*$( "#ndar-forms" ).select2({
+          theme: "bootstrap"
+      });*/
+
       $("#ndar-dd").append('<select class="form-control" id="ndar-forms">\
           <option value="ddform">Select a form</option>\
           </select>')
+
+      $("#ndar-forms").select2()
       for (let i=0;i<dE.length;i++){
           $("#ndar-forms").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
       }
@@ -94,9 +104,6 @@ function getDataForms(e1){
   })
 
 }
-
-
-
 
 function getDataDictionary(e3){
   e3.preventDefault()
@@ -117,17 +124,30 @@ function getDataDictionary(e3){
     accept: "application/json",
     success: function(data){
       console.log('success')
-
       let dE = JSON.parse(data)
       termsKey = dE.dataElements
       console.log(termsKey[0])
+      $("#div-projectFields").append('<div><table class="table  table-striped"">\
+      <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
+      <tbody>')
       for (let i=0;i<termsKey.length;i++){
           termsIndex[termsKey[i].id] = termsKey[i]
-          $("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
+
+          /*$("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
             <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
             >' +termsKey[i].name +'</label></div>')
+          */
+          $("#div-projectFields").append('<tr>\
+            <td class="td-chk">\
+              <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
+              ><td>\
+            <td class="td-term"> '+ termsKey[i].name+'</td>\
+            <td> '+ termsKey[i].description+ '</td>\
+            </tr>')
+
             count++
       }
+      $("#div-projectFields").append('</tbody></table></div>')
     }
   })
 }
