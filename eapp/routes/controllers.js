@@ -89,6 +89,32 @@ module.exports = () => {
     })
   })
 
+  app.get('/query/instruments', function(req,res){
+    const loadJsonFile = require('load-json-file')
+    console.log('loading Terms file')
+    loadJsonFile('eapp/public/terms/instrumentsTerms.json').then(ob => {
+      console.log(ob)
+      res.json(ob)
+    })
+  })
+
+  app.post('/project-plans/new',jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('recived at server side')
+    //console.log(req.body)
+    let pj_plan_info = req.body
+    pj_plan_info['ProjectPlanID'] = uuid()
+    console.log(pj_plan_info)
+    pid = pj_plan_info['ProjectPlanID'].split('-')
+    pname = pj_plan_info['Project Name'].split(' ')
+    let cpath = 'uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'
+    writeJsonFile(cpath, req.body).then(() => {
+      console.log('done')
+      res.json({'status':'success', 'plan id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+    })
+  })
+
+
   app.post('/query',jsonParser,function(req,res){
     res.send('TODO: query is called')
   })

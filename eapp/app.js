@@ -33,7 +33,7 @@ module.exports = () => {
   app.use('/dist/slickgrid',express.static(path.join(__dirname,'/../node_modules/slickgrid')))
   app.use('/dist/slickgrid-bootstrap',express.static(path.join(__dirname,'/../node_modules/slickgrid-bootstrap-dev/bootstrap')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
-
+  
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {
     console.log('reading routes file')
