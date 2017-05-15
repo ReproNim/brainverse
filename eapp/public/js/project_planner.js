@@ -1,10 +1,22 @@
-let count = 1
+let count = 0
 let vnum = 0
 let chkboxSelectedArray = []
 let saveObj = {}
 let projPlanObj = {}
 
+//let instrumentCount = 1
+//let taskCount = 0
+//let conditionCount = 0
+
 let accordionCount = 0
+let sessionCountStateArray = []
+/*let sessionCountStateObject = {}
+sessionCountStateObject['instrumentCount'] = instrumentCount
+sessionCountStateObject['taskCount'] = taskCount
+sessionCountStateObject['conditionCount'] = conditionCount
+*/
+
+
 //Read from a local static JSON file with a limited set of lexicons
 //TODO Read and parse a turtle/owl file with all lexicons
 $.fn.select2.defaults.set( "theme", "bootstrap" );
@@ -16,13 +28,21 @@ $("#proj-visit").change(function(){
   accordionCount = vnum
   for(let i=1; i<=vnum; i++){
     addAccordionPanel(i)
-    getInstruments(i)
-    addChangeFunction(i)
-
+    getInstruments(i,1)
+    addChangeFunction(i,1)
+    addClickFunctions(i)
+    let sessionCountStateObject = {}
+    sessionCountStateObject['instrumentCount'] = 1
+    sessionCountStateObject['taskCount'] = 0
+    sessionCountStateObject['conditionCount'] = 0
+    sessionCountStateArray.push(sessionCountStateObject)
+    //count++
   }
+  console.log("Count Array: ", sessionCountStateArray)
+  console.log("Count object: ", sessionCountStateArray[0]['instrumentCount'])
 })
 
-function getInstruments(vnum){
+function getInstruments(vnum,icount){
   let dvalues = []
   $.ajax({
     type: "GET",
@@ -37,19 +57,19 @@ function getInstruments(vnum){
             })
       }*/
       dvalues = data["Instruments"]
-      $("#inst-"+vnum).select2()
+      $("#inst-"+vnum+"-"+icount).select2()
       for (let i=0;i<dvalues.length;i++){
-        $("#inst-"+vnum).append('<option value="'+ dvalues[i]+'">'+ dvalues[i] +'</option>')
+        $("#inst-"+vnum+"-"+icount).append('<option value="'+ dvalues[i]+'">'+ dvalues[i] +'</option>')
       }
     }
   })
 }
 
-function addChangeFunction(vnum){
-  $("#inst-"+vnum).change(function(){
+function addChangeFunction(vnum,icount){
+  $("#inst-"+vnum+"-"+icount).change(function(){
     console.log("instrument value: ", $("#inst-"+vnum).val())
-    if($("#inst-"+vnum).val() == 'Assessments'){
-      getAqFormNames($("#inst-"+vnum).val(),vnum)
+    if($("#inst-"+vnum+"-"+icount).val() == 'Assessments'){
+      getAqFormNames($("#inst-"+vnum+"-"+icount).val(),vnum,icount)
     }else{
       //$("#term-form").empty()
       $("#iforms-"+vnum).empty()
@@ -57,7 +77,7 @@ function addChangeFunction(vnum){
   })
 }
 
-function getAqFormNames(formName, vnum){
+function getAqFormNames(formName, vnum,icount){
   $.ajax({
     type: "GET",
     url: "http://localhost:3000/acquisitions/forms",
@@ -73,7 +93,7 @@ function getAqFormNames(formName, vnum){
         for (let i=0;i<iforms.length;i++){
             console.log("forms Name: ", iforms[i])
             if(iforms[i] != ".DS_Store"){
-              $("#iforms-"+vnum).append('<option value="'+ iforms[i]+'">'+ iforms[i] +'</option>')
+              $("#iforms-"+vnum+"-"+icount).append('<option value="'+ iforms[i]+'">'+ iforms[i] +'</option>')
             }
         }
       }
@@ -89,7 +109,7 @@ function addAccordionPanel(a_id){
     in_option = " in"
     expand = "true"
   }
-
+  let instrumentCount = 1
   $("#div-projectFields").append('<div class="panel-group" id="accordion">\
                       <div class="panel panel-default">\
                         <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-'+a_id+'" id="heading-'+ a_id+'">\
@@ -111,26 +131,101 @@ function addAccordionPanel(a_id){
                               <input class="form-control" type="text" placeholder="Description here" id="visit-desc-'+ a_id +'">\
                               </div>\
                             </div>\
-                            <div class="form-group row">\
-                              <label for="inst-'+ a_id+'" class="col-xs-2 col-form-label">Instruments</label>\
-                              <div class="col-xs-7">\
-                                <select class="form-control" id="inst-'+ a_id+'">\
-                                <option value="">Select an Instrument</option>\
-                                </select>\
+                            <div id="instruments-'+ a_id+'">\
+                              <div class="form-group row">\
+                                <label for="inst-'+ a_id+'-'+ instrumentCount +'" class="col-xs-2 col-form-label">Instrument Type</label>\
+                                <div class="col-xs-7">\
+                                  <select class="form-control" id="inst-'+ a_id+'-'+ instrumentCount+'">\
+                                  <option value="">Select an Instrument</option>\
+                                  </select>\
+                                </div>\
+                              </div>\
+                              <div class="form-group row" id="inst-form">\
+                                <label for="iforms-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Forms</label>\
+                                <div class="col-xs-7">\
+                                  <select class="form-control" id="iforms-'+a_id+'-'+ instrumentCount+'">\
+                                  <option value="">Select a form</option>\
+                                  </select>\
+                                </div>\
                               </div>\
                             </div>\
-                            <div class="form-group row" id="inst-form">\
-                              <label for="iforms-'+ a_id+'" class="col-xs-2 col-form-label">Forms</label>\
-                              <div class="col-xs-7">\
-                                <select class="form-control" id="iforms-'+a_id+'">\
-                                <option value="">Select a form</option>\
-                                </select>\
-                              </div>\
+                            <div id="tasks-'+ a_id+'">\
+                            </div>\
+                            <div class="row" id="add-btn-group">\
+                              <button id="btn-add-inst-'+ a_id+'" type="submit" class="btn btn-primary">Add an Instrument</button>\
+                              <button id="btn-add-task-'+ a_id+'" type="submit" class="btn btn-primary">Add a Task</button>\
+                              <button id="btn-add-cond-'+ a_id+'" type="submit" class="btn btn-primary" disabled>Add a Condition</button>\
                             </div>\
                           </div>\
                         </div>\
                       </div>\
                     </div>')
+}
+
+function addInstruments(a_id){
+  return function(e1){
+  e1.preventDefault()
+  console.log("a_id: ",a_id)
+  sessionCountStateArray[a_id-1]["instrumentCount"]++
+  instrumentCount = sessionCountStateArray[a_id-1]["instrumentCount"]
+  //count++
+  console.log("Instrument has been clicked, count: ", instrumentCount)
+  $("#instruments-"+ a_id).append('<div class="form-group row">\
+    <label for="inst-'+a_id+'-'+instrumentCount+'" class="col-xs-2 col-form-label">Instrument Type</label>\
+    <div class="col-xs-7">\
+      <select class="form-control" id="inst-'+a_id+'-'+instrumentCount+'">\
+      <option value="">Select an Instrument</option>\
+      </select>\
+    </div>\
+  </div>\
+  <div class="form-group row" id="inst-form">\
+    <label for="iforms-'+a_id+'-'+instrumentCount+'" class="col-xs-2 col-form-label">Forms</label>\
+    <div class="col-xs-7">\
+      <select class="form-control" id="iforms-'+a_id+'-'+instrumentCount+'">\
+      <option value="">Select a form</option>\
+      </select>\
+    </div>\
+  </div>')
+  getInstruments(a_id,instrumentCount)
+  addChangeFunction(a_id,instrumentCount)
+}}
+
+function addTasks(a_id){
+  return function(e2){
+    e2.preventDefault()
+    console.log("a_id: ",a_id)
+    sessionCountStateArray[a_id-1]["taskCount"]++
+    taskCount = sessionCountStateArray[a_id-1]["taskCount"]
+    console.log("Add Task has been clicked, count: ", taskCount)
+    $("#tasks-"+ a_id).append('<div class="form-group row">\
+      <label for="task-'+ a_id+'-'+taskCount +'" class="col-xs-2 col-form-label">Task Description</label>\
+      <div class="col-xs-7">\
+      <input class="form-control" type="text" placeholder="Task Description here" id="task-'+ a_id+'-'+taskCount +'">\
+      </div>\
+    </div>')
+    $("#btn-add-cond-"+ a_id).prop('disabled', false)
+    //if($("#btn-add-cond-"+ a_id).length ==0){
+    //  $("#add-btn-group").append('<button id="btn-add-cond" type="submit" class="btn btn-primary">Add a Condition</button>')
+    //}
+  }
+}
+function addConditions(a_id){
+  return function(e3){
+    e3.preventDefault()
+    console.log("a_id: ",a_id)
+    sessionCountStateArray[a_id-1]["conditionCount"]++
+    taskCount = sessionCountStateArray[a_id-1]["taskCount"]
+    conditionCount = sessionCountStateArray[a_id-1]["conditionCount"]
+    console.log("Add Condition has been clicked, count", conditionCount)
+    $("#tasks-"+ a_id).append('<div class="form-group row">\
+      <label for="condn-'+ a_id+'-'+taskCount+'-'+conditionCount +'" class="col-xs-2 col-form-label">Condition</label>\
+      <div class="col-xs-7">\
+      <input class="form-control" type="text" placeholder="Condition here" id="condn-'+ a_id+'-'+ taskCount+'-'+conditionCount +'">\
+      </div>\
+    </div>')
+    console.log("stateArray:", sessionCountStateArray)
+    //$("#add-btn-group").append('<button id="btn-add-cond" type="submit" class="btn btn-primary">Add a Condition</button>')
+  }
 }
 
 // Save the project information entered and the selected fields
@@ -140,18 +235,52 @@ function saveProjInfo(e){
 
   let sessions = []
   let session = {}
+  let instrument={}
+  let instruments=[]
+  let task = {}
+  let tasks = []
+  let condn = []
 
   projPlanObj["Project Name"] = $("#proj-name").val()
   projPlanObj["Number of Sessions"] = vnum
 
   for(let j=1; j<= vnum; j++){
-    session = {}
     session['Session Number'] = j
     session['Label'] = $("#visit-name-"+j).val()
     session['Description'] = $("#visit-desc-"+j).val()
-    session['Instrument'] = $("#inst-"+j).val()
-    session['Form Name'] = $("#iforms-"+j).val()
+
+    icount = sessionCountStateArray[j-1]["instrumentCount"]
+    for(let i=1; i<=icount;i++){
+      instrument['Instrument Type'] = $("#inst-"+j+"-"+i).val()
+      instrument['Form Name'] = $("#iforms-"+j+"-"+i).val()
+      instruments.push(instrument)
+      instrument = {}
+    }
+    let tcount = sessionCountStateArray[j-1]["taskCount"]
+    let ccount = sessionCountStateArray[j-1]["conditionCount"]
+    console.log("(vcount, tcount, ccount): ", j,tcount,ccount)
+    for(let t=1;t<=tcount;t++){
+      task["Task number"] = t
+      task["Description"] = $("#task-"+ j+"-"+t).val()
+      for(let c=1;c<=ccount;c++){
+        if($("#condn-"+j+"-"+t+"-"+c).length == 0){
+          console.log("element not present")
+        }else{
+          condn.push($("#condn-"+j+"-"+t+"-"+c).val())
+        }
+      }
+      task["Conditions"] = condn
+      tasks.push(task)
+      task={}
+      condn=[]
+    }
+
+    session["Instruments"]=instruments
+    session["Tasks"] = tasks
     sessions[j-1] = session
+    session = {}
+    instruments =[]
+    tasks = []
   }
 
   projPlanObj["Sessions"] = sessions
@@ -186,6 +315,13 @@ function projectListPage(){
 function mainpage(){
   window.location.href = "http://localhost:3000"
 }
+
+function addClickFunctions(a_id){
+  $(document).on('click','#btn-add-inst-'+ a_id,addInstruments(a_id))
+  $(document).on('click','#btn-add-task-'+ a_id,addTasks(a_id))
+  $(document).on('click','#btn-add-cond-'+ a_id,addConditions(a_id))
+}
+
 $('#btn-pjInfoSave').click(saveProjInfo)
 $('#pj-list').click(projectListPage)
 $('#pj-back').click(mainpage)
