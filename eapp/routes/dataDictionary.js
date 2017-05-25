@@ -74,6 +74,4 @@ module.exports = () => {
       res.send(body)
     })
   })
-
-
 }

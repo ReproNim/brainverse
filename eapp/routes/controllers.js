@@ -5,6 +5,8 @@ module.exports = () => {
   const bodyParser = require('body-parser')
   const writeJsonFile = require('write-json-file')
   const uuid = require('uuid-random')
+  const loadJsonFile = require('load-json-file')
+  const fs = require('fs')
 
 
   const jsonParser = bodyParser.json()
@@ -110,7 +112,22 @@ module.exports = () => {
     let cpath = 'uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
-      res.json({'status':'success', 'plan id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+      res.json({'status':'success', 'plan_id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+    })
+  })
+
+  app.get('/project-plans/:name', function(req,res){
+    console.log('loading project-plan file')
+    loadJsonFile('uploads/plansdocs/'+req.params.name).then(ob => {
+      console.log("ob:==>", ob)
+      res.json(ob)
+    })
+  })
+  app.get('/project-plans', function(req, res){
+    var files = []
+    fs.readdir('uploads/plansdocs', function(err,list){
+      if(err) throw err;
+      res.json({'list':list})
     })
   })
 
