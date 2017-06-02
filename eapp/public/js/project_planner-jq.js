@@ -3,6 +3,7 @@ let vnum = 0
 let chkboxSelectedArray = []
 let saveObj = {}
 let projPlanObj = {}
+let personnelArray = []
 
 let accordionCount = 0
 let sessionCountStateArray = []
@@ -11,44 +12,36 @@ let sessionCountStateArray = []
 //TODO Read and parse a turtle/owl file with all lexicons
 $.fn.select2.defaults.set( "theme", "bootstrap" );
 
-/*$("#proj-visit").change(function(){
-  console.log("inside change function")
-  vnum = $("#proj-visit").val()
-  console.log("vnum: ",vnum)
-  accordionCount = vnum
-
-  $('#kanban').jqxKanban(kCO);
-})
-
-$("#addColumn").click(function(e1){
-  e1.preventDefault()
-  $("#kanban").empty()
-  kCO = {}
-  kCO["resources"] = resourcesAdapterFunc
-  kCO["source"] = dataAdapter
-  kCO["columns"]=[
-                { text: "Sesion 1", dataField: "new" },
-                { text: "Session 2", dataField: "work" },
-                { text: "Session 3", dataField: "done" },
-                { text: "Session 4", datafield: "inreview"}
-            ]
-$('#kanban').jqxKanban(kCO);
-
-})*/
-
 function addProject(e){
   e.preventDefault()
   count=0
   console.log('Add project button Clicked')
   $("#btn-addProject").remove()
-  $('#prjInfo').append('<div class="form-group row">\
+  let prjPersonnel = '<div class="form-group row">\
     <label for="proj-name" class="col-xs-2 col-form-label">Name</label>\
     <div class="col-xs-7">\
     <input class="form-control" type="text" placeholder="Project Name here" id="proj-name">\
     </div>\
-  </div>')
+  </div>\
+  <div class="form-group row">\
+    <label for="proj-personnel" class="col-xs-2 col-form-label">Personnel</label>\
+    <div class="col-xs-7">\
+    <input class="form-control" type="text" placeholder="Personnel names separated by commas" id="proj-personnel">\
+    </div>\
+  </div>'
+
+  $('#prjInfo').append(prjPersonnel)
   $('#btn-addSession').prop({'disabled':false})
 }
+
+/*$("#proj-personnel").change(function(){
+  personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
+  console.log("OnChange:PersonnelArray", personnelArray)
+})*/
+$(document).on('change', '#proj-personnel', function(){
+  personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
+  console.log("OnChange:PersonnelArray", personnelArray)
+})
 
 function addSession(e){
   e.preventDefault()
@@ -57,6 +50,7 @@ function addSession(e){
   let i = count
   addAccordionPanel(i)
   getInstruments(i,1)
+  addPersonnel(i,1)
   addChangeFunction(i,1)
   addClickFunctions(i)
   let sessionCountStateObject = {}
@@ -71,6 +65,13 @@ function addSession(e){
   }
 }
 
+function addPersonnel(vnum,icount){
+  $("#pnl-"+vnum+"-"+icount).select2()
+  console.log("personnelArray", personnelArray)
+  for (let i=0;i<personnelArray.length;i++){
+    $("#pnl-"+vnum+"-"+icount).append('<option value="'+ personnelArray[i]+'">'+ personnelArray[i] +'</option>')
+  }
+}
 function getInstruments(vnum,icount){
   let dvalues = []
   $.ajax({
@@ -80,11 +81,6 @@ function getInstruments(vnum,icount){
     success: function(data){
       console.log('instruments:success')
       console.log("instrument: ",data)
-      /*if(data != null){
-        dvalues = Object.keys(data).map(function(key) {
-            return data[key]
-            })
-      }*/
       dvalues = data["Instruments"]
       $("#inst-"+vnum+"-"+icount).select2()
       for (let i=0;i<dvalues.length;i++){
@@ -94,6 +90,10 @@ function getInstruments(vnum,icount){
   })
 }
 
+/**
+* Change function attached to Instrument type field. Based on Instrument type selected, corresponding list of forms are listed
+* TODO Organize instrument type forms. If needed add new endpoints
+**/
 function addChangeFunction(vnum,icount){
   $("#inst-"+vnum+"-"+icount).change(function(){
     console.log("instrument value: ", $("#inst-"+vnum).val())
@@ -106,6 +106,10 @@ function addChangeFunction(vnum,icount){
   })
 }
 
+/**
+* Get all the forms corresponding to an instrument type selection
+*
+**/
 function getAqFormNames(formName, vnum,icount){
   $.ajax({
     type: "GET",
@@ -178,6 +182,20 @@ function addAccordionPanel(a_id){
                                   </select>\
                                 </div>\
                               </div>\
+                              <div class="form-group row">\
+                                <label for="est-'+ a_id+'-'+ instrumentCount +'" class="col-xs-2 col-form-label">Estimated Time</label>\
+                                <div class="col-xs-7">\
+                                <input class="form-control" type="text" placeholder="Estimated time for this task" id="est-'+ a_id+'-'+ instrumentCount +'">\
+                                </div>\
+                              </div>\
+                              <div class="form-group row" id="inst-form">\
+                                <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
+                                <div class="col-xs-7">\
+                                  <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
+                                  <option value="">Select a Personnel</option>\
+                                  </select>\
+                                </div>\
+                              </div>\
                             </div>\
                             <div id="tasks-'+ a_id+'">\
                             </div>\
@@ -218,8 +236,24 @@ function addInstruments(a_id){
       <option value="">Select a form</option>\
       </select>\
     </div>\
+  </div>\
+  <div class="form-group row">\
+    <label for="est-'+ a_id+'-'+ instrumentCount +'" class="col-xs-2 col-form-label">Estimated Time</label>\
+    <div class="col-xs-7">\
+    <input class="form-control" type="text" placeholder="Estimated time for this task" id="est-'+ a_id+'-'+ instrumentCount +'">\
+    </div>\
+  </div>\
+  <div class="form-group row" id="inst-form">\
+    <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
+    <div class="col-xs-7">\
+      <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
+      <option value="">Select a Personnel</option>\
+      </select>\
+    </div>\
   </div>')
+
   getInstruments(a_id,instrumentCount)
+  addPersonnel(a_id,instrumentCount)
   addChangeFunction(a_id,instrumentCount)
 }}
 
@@ -277,6 +311,7 @@ function saveProjInfo(e){
   vnum=count
   projPlanObj["Project Name"] = $("#proj-name").val()
   projPlanObj["Number of Sessions"] = vnum
+  projPlanObj["Personnel"] = $.map($("#proj-personnel").val().split(","), $.trim);
 
   for(let j=1; j<= vnum; j++){
     session['Session Number'] = j
@@ -287,6 +322,8 @@ function saveProjInfo(e){
     for(let i=1; i<=icount;i++){
       instrument['Instrument Type'] = $("#inst-"+j+"-"+i).val()
       instrument['Form Name'] = $("#iforms-"+j+"-"+i).val()
+      instrument['Estimated Time'] = $("#est-"+j+"-"+i).val()
+      instrument['Assigned To'] = $("#pnl-"+j+"-"+i).val()
       instruments.push(instrument)
       instrument = {}
     }
