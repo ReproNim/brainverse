@@ -24,3 +24,4 @@ npm start
 - [Electron and its API](http://electron.atom.io)
 - [Bootstrap](http://getbootstrap.com)
 - [jQuery](https://jQuery.com)
+- RDF
