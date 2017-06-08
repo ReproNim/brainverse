@@ -15,95 +15,111 @@ $.fn.select2.defaults.set( "theme", "bootstrap" );
 /*
 * NDAR-TYPES
 */
-$.ajax({
-  type: "GET",
-  url: "http://localhost:3000/ndar-types",
-  accept: "application/json",
-  success: function(data){
-    console.log('ndar-types:success')
-    let dE = JSON.parse(data)
-    ntypes = dE.list
-    $("#ndar-type").select2()
-    for (let i=0;i<ntypes.length;i++){
-        console.log(ntypes[i])
-        $("#ndar-type").append('<option value="'+ ntypes[i]+'">'+ ntypes[i] +'</option>')
-    }
-  }
-})
+//$.ajax({
+//  type: "GET",
+//  url: "http://localhost:3000/ndar-types",
+//  accept: "application/json",
+//  success: function(data){
+//    console.log('ndar-types:success')
+//    let dE = JSON.parse(data)
+//    ntypes = dE.list
+//    $("#ndar-type").select2()
+//    for (let i=0;i<ntypes.length;i++){
+//        console.log(ntypes[i])
+//        $("#ndar-type").append('<option value="'+ ntypes[i]+'">'+ ntypes[i] +'</option>')
+//    }
+//  }
+//})
+//
+///*
+//* NDAR-SOURCES
+//*/
+//$.ajax({
+//  type: "GET",
+//  url: "http://localhost:3000/ndar-sources",
+//  accept: "application/json",
+//  success: function(data){
+//    console.log('ndar-sources:success')
+//    let dE = JSON.parse(data)
+//    nsources = dE.list
+//    $("#ndar-source").select2()
+//    for (let i=0;i<nsources.length;i++){
+//        $("#ndar-source").append('<option value="'+ nsources[i]+'">'+ nsources[i] +'</option>')
+//        //count++
+//    }
+//  }
+//})
+//
+///*
+//* NDAR-CATEGORIES
+//*/
+//$.ajax({
+//  type: "GET",
+//  url: "http://localhost:3000/ndar-categories",
+//  accept: "application/json",
+//  success: function(data){
+//    console.log('ndar-cat:success')
+//    let dE = JSON.parse(data)
+//    categories = dE.list
+//    $("#ndar-cat").select2()
+//    for (let i=0;i<categories.length;i++){
+//        $("#ndar-cat").append('<option value="'+ categories[i]+'">'+ categories[i] +'</option>')
+//    }
+//  }
+//})
+//
+///*
+//* Data Dictionaries
+//*/
+//function getDataForms(e1){
+//  e1.preventDefault()
+//  $("#btn-dataForms").remove()
+//  nparamObj['type'] = $("#ndar-type").val()
+//  nparamObj['source'] = $("#ndar-source").val()
+//  nparamObj['category'] = $("#ndar-cat").val()
+//  console.log(nparamObj)
+//
+//  $.ajax({
+//    type: "POST",
+//    url: "http://localhost:3000/ndar-terms/forms",
+//    contentType: "application/json",
+//    data: JSON.stringify(nparamObj),
+//    success: function(data){
+//      console.log('get forms: success')
+//      let dE = JSON.parse(data)
+//      console.log(dE)
+//      /*$( "#ndar-forms" ).select2({
+//          theme: "bootstrap"
+//      });*/
+//
+//      $("#ndar-dd").append('<select class="form-control" id="ndar-forms">\
+//          <option value="ddform">Select a form</option>\
+//          </select>')
+//
+//      $("#ndar-forms").select2()
+//      for (let i=0;i<dE.length;i++){
+//          $("#ndar-forms").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+//      }
+//    }
+//  })
+//
+//}
 
-/*
-* NDAR-SOURCES
-*/
-$.ajax({
-  type: "GET",
-  url: "http://localhost:3000/ndar-sources",
-  accept: "application/json",
-  success: function(data){
-    console.log('ndar-sources:success')
-    let dE = JSON.parse(data)
-    nsources = dE.list
-    $("#ndar-source").select2()
-    for (let i=0;i<nsources.length;i++){
-        $("#ndar-source").append('<option value="'+ nsources[i]+'">'+ nsources[i] +'</option>')
-        //count++
-    }
-  }
-})
-
-/*
-* NDAR-CATEGORIES
-*/
-$.ajax({
-  type: "GET",
-  url: "http://localhost:3000/ndar-categories",
-  accept: "application/json",
-  success: function(data){
-    console.log('ndar-cat:success')
-    let dE = JSON.parse(data)
-    categories = dE.list
-    $("#ndar-cat").select2()
-    for (let i=0;i<categories.length;i++){
-        $("#ndar-cat").append('<option value="'+ categories[i]+'">'+ categories[i] +'</option>')
-    }
-  }
-})
-
-/*
-* Data Dictionaries
-*/
-function getDataForms(e1){
-  e1.preventDefault()
-  $("#btn-dataForms").remove()
-  nparamObj['type'] = $("#ndar-type").val()
-  nparamObj['source'] = $("#ndar-source").val()
-  nparamObj['category'] = $("#ndar-cat").val()
-  console.log(nparamObj)
-
+  /*New consolidated data dicitonary get request*/
   $.ajax({
-    type: "POST",
-    url: "http://localhost:3000/ndar-terms/forms",
-    contentType: "application/json",
-    data: JSON.stringify(nparamObj),
-    success: function(data){
-      console.log('get forms: success')
-      let dE = JSON.parse(data)
-      console.log(dE)
-      /*$( "#ndar-forms" ).select2({
-          theme: "bootstrap"
-      });*/
-
-      $("#ndar-dd").append('<select class="form-control" id="ndar-forms">\
-          <option value="ddform">Select a form</option>\
-          </select>')
-
-      $("#ndar-forms").select2()
-      for (let i=0;i<dE.length;i++){
-          $("#ndar-forms").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
-      }
+  type: "GET",
+  url: "http://localhost:3000/ndar-terms/forms",
+  accept: "application/json",
+  success: function(data){
+    console.log('get forms:success')
+    let dE = JSON.parse(data)
+    console.log(dE)
+    $("#ndar-dd").select2()
+    for (let i=0;i<dE.length;i++){
+          $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
     }
-  })
-
-}
+  }
+})
 
 function getDataDictionary(e3){
   e3.preventDefault()
@@ -113,10 +129,13 @@ function getDataDictionary(e3){
   //chkboxSelectedArray = []
   $("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
 
-  console.log(encodeURI($('#ndar-forms').val()))
-  shortName = encodeURI($('#ndar-forms').val())
+  //console.log(encodeURI($('#ndar-forms').val()))
+  //shortName = encodeURI($('#ndar-forms').val())
+  console.log(encodeURI($('#ndar-dd').val()))
+  shortName = encodeURI($('#ndar-dd').val())
 
-  let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-forms").val())
+  //let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-forms").val())
+  let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-dd").val())
   console.log("nUrl",nUrl)
   $.ajax({
     type: "GET",
@@ -179,9 +198,9 @@ function saveProjInfo(e){
   saveObj['shortName'] = shortName
   saveObj["Name"] = document.getElementById("proj-name").value
   saveObj["Description"] = document.getElementById("proj-desc").value
-  saveObj['Type'] = $("#ndar-type").val()
-  saveObj['Source'] = $("#ndar-source").val()
-  saveObj['Category'] = $("#ndar-cat").val()
+  //saveObj['Type'] = $("#ndar-type").val()
+  //saveObj['Source'] = $("#ndar-source").val()
+  //saveObj['Category'] = $("#ndar-cat").val()
   saveObj['fields'] = chkboxSelectedArray
 
   if (typeof(Storage) !== "undefined") {
@@ -223,7 +242,7 @@ function mainpage(){
   window.location.href = "http://localhost:3000"
 }
 
-$("#btn-dataForms").click(getDataForms)
+//$("#btn-dataForms").click(getDataForms)
 $("#btn-dd-selected").click(getDataDictionary)
 $('#btn-pjInfoSave').click(saveProjInfo)
 $('#terms-list').click(projectListPage)
