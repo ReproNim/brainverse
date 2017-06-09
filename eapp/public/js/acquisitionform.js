@@ -104,7 +104,11 @@ function add_term_to_form(termform){
           //}
       console.log("c2::options::", options)
       console.log("c2::options.length::", options.length)
-      $("#ndar-fields").append('<div class="form-group">\
+      
+      let doubleoption = options.length==2 && selectedFields[i].valueRange.indexOf("::")== -1
+      
+      if(!doubleoption){
+        $("#ndar-fields").append('<div class="form-group">\
         <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
         <div>\
           <select class="form-control" id="ndar-'+i+'">\
@@ -112,7 +116,8 @@ function add_term_to_form(termform){
             </select>\
           </div>\
         </div>')
-
+      }
+      
       for (let j=0; j< options.length; j++){
         console.log("Adding:",options[j])
         if(options[j].indexOf("::")> -1){
@@ -129,10 +134,36 @@ function add_term_to_form(termform){
       if((notes != null) && (nvalues.length ==  sub_options2.length)){
         //options = Object.values(notes)
         options = nvalues
+        if(doubleoption){
+          $("#ndar-fields").append('<div class="form-group">\
+          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+          <div>\
+            <form>\
+              <label class="radio-inline">\
+                <input type="radio" name="option'+i+'" id="ndar-'+i+'a" value="'+ options[0]+'">'+ options[0] +'</label>\
+              <label class="radio-inline">\
+                <input type="radio" name="option'+i+'" id="ndar-'+i+'b" value="'+ options[1]+'">'+ options[1] +'</label>\
+            </form>\
+            </div>\
+          </div>')
+        }
         for(let m=0;m<options.length;m++){
           $("#"+sid).append('<option value="'+ options[m]+'">'+ options[m] +'</option>')
         }
       }else{
+        if(doubleoption){
+          $("#ndar-fields").append('<div class="form-group">\
+          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
+          <div>\
+            <form>\
+              <label class="radio-inline">\
+                <input type="radio" name="option'+i+'" id="ndar-'+i+'a" value="'+ sub_options2[0]+'">'+ sub_options2[0] +'</label>\
+              <label class="radio-inline">\
+                <input type="radio" name="option'+i+'" id="ndar-'+i+'b" value="'+ sub_options2[1]+'">'+ sub_options2[1] +'</label>\
+            </form>\
+            </div>\
+          </div>')
+        }
         for(let m=0;m<sub_options2.length;m++){
           $("#"+sid).append('<option value="'+ sub_options2[m]+'">'+ sub_options2[m] +'</option>')
         }
@@ -215,7 +246,7 @@ function saveAqInfo(e){
     //let lb =$('label[for="ndar-' + i + '"]').html()
     let lb=$('label[for="ndar-' + i + '"]').attr('title')
     console.log('lb1:', lb)
-    saveObj[lb] = $("#ndar-"+ i).val()
+    saveObj[lb] = $("#ndar-"+ i).val() || $("input[type='radio'][name='option"+i+"']:checked").val()
     console.log('saveObj[lb]:',saveObj[lb])
   }
 
