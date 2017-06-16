@@ -11,9 +11,7 @@ module.exports = () => {
 
   const jsonParser = bodyParser.json()
   const rdfHelper = require('./../util/graph.js')
-  //const helper = require('./acquisition.js')
 
-  //console.log("RDF Graph:", app.locals.store, app.locals.rgraph)
   global.store = app.locals.store
   global.rgraph = app.locals.rgraph
 
