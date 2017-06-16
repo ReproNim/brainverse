@@ -9,6 +9,7 @@ module.exports = () => {
   const flash = require('express-flash')
   const path = require('path')
   const fs = require('fs')
+  const rdfstore = require('rdfstore')
 
   app = express()
 
@@ -35,6 +36,29 @@ module.exports = () => {
   app.use('/dist/slickgrid-bootstrap',express.static(path.join(__dirname,'/../node_modules/slickgrid-bootstrap-dev/bootstrap')))
   app.use('/dist/jqwidgets-framework',express.static(path.join(__dirname,'/../node_modules/jqwidgets-framework')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
+
+  /**
+  * RDF store creation and setup
+  */
+  /*function rdfStoreSetup (){
+    let rstore = rdfstore.create(function(err, store) {
+      if(err){
+        console.log("not able to create store")
+      }
+      return store
+    })
+    let graph = rstore.rdf.createGraph()
+    rstore.rdf.setPrefix("nidm", "http://purl.org/nidash/nidm#")
+    rstore.rdf.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    rstore.rdf.setPrefix("nda","https://ndar.nih.gov/api/datadictionary/v2/dataelement/")
+    rstore.rdf.setPrefix("prov","http://www.w3.org/ns/prov#")
+    return {store:rstore, graph:graph}
+  }*/
+  const rdfHelper = require('./util/graph.js')
+  app.locals.setup = rdfHelper.rdfStoreSetup()
+  app.locals.store = app.locals.setup.store
+  app.locals.rgraph = app.locals.setup.graph
+  //console.log("app.locals:", app.locals.store, app.locals.rgraph)
 
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {

@@ -10,6 +10,12 @@ module.exports = () => {
 
 
   const jsonParser = bodyParser.json()
+  const rdfHelper = require('./../util/graph.js')
+  //const helper = require('./acquisition.js')
+
+  //console.log("RDF Graph:", app.locals.store, app.locals.rgraph)
+  global.store = app.locals.store
+  global.rgraph = app.locals.rgraph
 
   app.use(fileUpload())
 
@@ -110,9 +116,26 @@ module.exports = () => {
     pid = pj_plan_info['ProjectPlanID'].split('-')
     pname = pj_plan_info['Project Name'].split(' ')
     let cpath = 'uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'
+
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
-      res.json({'status':'success', 'plan_id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+      //res.json({'status':'success', 'plan_id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+    })
+    let obj_info = pj_plan_info
+    //obj_info['objID'] = uuid()
+    rdfHelper.saveToRDFstore(obj_info,function(tstring){
+      console.log("callback fn: tstring: ", tstring)
+
+      let cpath = 'uploads/acquisition/plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'
+      let fname = 'plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'
+
+      fs.appendFile(cpath, tstring, function(err) {
+        if(err) {
+          return console.log(err);
+        }
+        console.log("The file was saved!");
+        res.json({'pid': obj_info['ProjectPlanID'], 'fid': fname})
+      })
     })
   })
 
