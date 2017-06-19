@@ -44,7 +44,8 @@ module.exports = () => {
     saveToRDFstore(obj_info,function(tstring){
       console.log("callback fn: tstring: ", tstring)
 
-      let cpath = 'uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl'
+      //let cpath = 'uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl'
+      let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl')
       let fname = 'entity-graph-' + obj_info['ExperimentID'] + '.ttl'
 
       fs.appendFile(cpath, tstring, function(err) {
@@ -58,8 +59,9 @@ module.exports = () => {
   })
 
   app.get('/acquisitions/forms/:name', function(req,res){
+    var cpath = path.join(__dirname, '/../../uploads/termforms/')
     console.log('loading terms file')
-    loadJsonFile('uploads/termforms/'+req.params.name).then(ob => {
+    loadJsonFile(cpath + req.params.name).then(ob => {
       console.log("ob:==>", ob)
       res.json(ob)
     })
@@ -67,7 +69,8 @@ module.exports = () => {
 
   app.get('/acquisitions/forms', function(req, res){
     var files = []
-    fs.readdir('uploads/termforms', function(err,list){
+    var cpath = path.join(__dirname, '/../../uploads/termforms')
+    fs.readdir(cpath, function(err,list){
       if(err) throw err;
       res.json({'list':list})
     })
