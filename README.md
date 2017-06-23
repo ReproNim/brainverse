@@ -18,6 +18,10 @@ npm install
 # Run the app
 npm start
 ```
+## To Use as Web app
+- Type 'localhost:3000/'
+- To access any html page in eapp/public/html, type 'localhost:3000/<the html file name>'
+- The REST API for the app is in eapp/routes directory
 
 ## For OSX User
 - Download the App (zipped file) from the Dropbox link https://www.dropbox.com/s/jxazu34fddqvp9s/BrainVerse-Mac-WithSourceCode.zip?dl=0
