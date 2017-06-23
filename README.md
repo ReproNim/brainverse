@@ -35,4 +35,7 @@ npm start
 - [Electron and its API](http://electron.atom.io)
 - [Bootstrap](http://getbootstrap.com)
 - [jQuery](https://jQuery.com)
-- RDF
+- [Resource Description Framework](https://www.w3.org/TR/2014/NOTE-rdf11-primer-20140225/)
+- [Turtle](https://www.w3.org/TR/turtle/)
+- [PROV-DM](https://www.w3.org/TR/prov-dm/)
+- [NeuroImaging Data Model(NIDM)](http://nidm.nidash.org/)
