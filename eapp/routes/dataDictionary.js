@@ -13,7 +13,7 @@ module.exports = () => {
 
   app.post('/dictionaries/new', jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
-    console.log('recived at server side')
+    console.log('received at server side')
     //console.log(req.body)
     let term_info = req.body
     term_info['DictionaryID'] = uuid()
@@ -22,7 +22,8 @@ module.exports = () => {
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
     //let cpath = 'uploads/termforms/terms-'+ pname[0]+'-'+ pid[0] +'.json'
-    let cpath = 'uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json'
+    //let cpath = 'uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json'
+    let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
@@ -36,7 +37,7 @@ module.exports = () => {
       res.send(body)
     })
   })
-  
+
   app.get('/ndar-types', function(req, res){
     let url = ndarUrl + "/types"
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
@@ -44,7 +45,7 @@ module.exports = () => {
       res.send(body)
     })
   })
-  
+
   app.get('/ndar-sources', function(req, res){
     let url = ndarUrl + "/sources"
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
@@ -52,7 +53,7 @@ module.exports = () => {
       res.send(body)
     })
   })
-  
+
   app.post('/ndar-terms/forms', jsonParser, function(req,res){
     //let url = ndarUrl + "?type=Clinical%20Assessments&source=NDAR&category=Demographics"
     let url = ndarUrl + "?type=" + encodeURI(req.body['type'])+ "&source="+ encodeURI(req.body['source']) + "&category=" + encodeURI(req.body['category'])
@@ -61,7 +62,7 @@ module.exports = () => {
       res.send(body)
     })
   })
-  
+
   app.get('/ndar-terms/forms', function(req, res){
     let url = ndarUrl
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
