@@ -5,13 +5,22 @@
     border-top-right-radius: 3px;
     position:relative;
     margin-top:0px;
+    overflow:hidden;
     top: 0px;
 }
 .jqx-kanban-item {
     padding-top: 0px;
+    padding-bottom:0px;
+    height: 100px;
 }
 .jqx-kanban-item-text {
+    /*padding-top: 0px;*/
     padding-top: 6px;
+    padding-bottom: 6px;
+}
+.jqx-kanban-item-content {
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 .jqx-kanban-item-avatar {
     top: 9px;
@@ -20,4 +29,9 @@
     position: absolute;
     right: 3px;
     top:12px;
+}
+.item-footer {
+  width: 100%;
+  height: 30px;
+  /*padding-top: 30px;*/
 }
