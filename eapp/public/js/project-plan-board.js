@@ -76,11 +76,11 @@ var getIconClassName = function () {
   return "jqx-icon-plus-alt";
 }
 
-var getItemModal = function(data, resource){
-  /*console.log("data: ", data)
-  console.log("content:", data.content)
-  console.log("resource", resource)*/
-  modalHeader = '<div class="modal-header">\
+/**
+Create Modal Block
+**/
+var addItemModal = function(data, resource){
+  let modalHeader = '<div class="modal-header">\
     <button type="button" class="close" data-dismiss="modal">&times;</button>\
     <h4 class="modal-title">Edit Item</h4>\
   </div>'
@@ -88,11 +88,11 @@ var getItemModal = function(data, resource){
   <div class="form-group row">\
     <label for="item-modal" class="col-xs-4 col-form-label">Estimated Time</label>\
     <div class="col-xs-7">\
-    <input class="form-control" type="text" placeholder="'+ data.content.est+'" id="modal-est">\
+    <input class="form-control" type="text" placeholder="'+ data.content.est+'" id="modal-est-'+data.id+'">\
     </div>\
   </div>\
   </form>'
-  let modalEx = '<div class="modal fade in" id="itemModal" role="dialog">\
+  let modalEx = '<div class="modal fade in" id="itemModal-'+data.id+'" role="dialog">\
     <div class="modal-dialog modal-sm">\
       <div class="modal-content">'
         + modalHeader + '\
@@ -100,7 +100,7 @@ var getItemModal = function(data, resource){
         + modalBody +'\
         </div>\
         <div class="modal-footer">\
-          <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-update-modal">Update</button>\
+          <button type="button" class="btn btn-default" id="btn-update-modal-'+ data.id +'">Update</button>\
           <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close">Close</button>\
         </div>\
       </div>\
@@ -218,16 +218,20 @@ function createSourceData(data){
   kCO["itemRenderer"] = function(item, data, resource){
     $(item).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px;'>" + resource.name + "</span>");
     $(item).find(".jqx-kanban-item-text").css('background', item.color)
-    $(item).find(".jqx-kanban-item-content").html("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal'>Edit</button>")
-    $(item).find(".jqx-kanban-item-content").append(getItemModal(data,resource))
-    item.on('shown.bs.modal',"#itemModal",function(dat) {
-      console.log("data: ", data)
-      let estTime = $(this).find('#modal-est')
+    $(item).find(".jqx-kanban-item-content").html("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal-"+data.id+"'>Edit</button>")
+    $(item).find(".jqx-kanban-item-content").append(addItemModal(data,resource))
+    console.log("item: ", item )
+    $(document).on('shown.bs.modal','#itemModal-'+data.id,function(event) {
+      console.log("Item modal clicked:")
+      console.log("event:", event)
+      //console.log("data: ", data)
+      let estTime = $(this).find('#modal-est-'+data.id)
       estTime.focus()
-      //$(this).on('click','#btn-update-modal',function(){
-        item.on('click','#btn-update-modal',function(){
+    //})
+      $(document).on('click','#btn-update-modal-'+data.id,function(){
+        //item.on('click','#btn-update-modal',function(){
         console.log("update button clicked")
-        let estTime = $('#modal-est')
+        let estTime = $('#modal-est-'+ data.id)
         estimateTime = estTime.val()
         let tObj = {"est": estimateTime}
         console.log("estimate = ",estimateTime)
@@ -270,6 +274,18 @@ $(document).on('itemAttrClicked', '#kanban1', function (event) {
     if(args.attribute == "template") {
       $('#kanban1').jqxKanban('removeItem', args.item.id);
     }
+    console.log('args.item.id: ', args.item.id)
+    //$('#itemModal-'+args.item.id).modal('show')
+    /*$(document).on('shown.bs.modal','#itemModal-'+args.item.id,function(event) {
+      console.log("Item modal clicked:")
+      console.log("event:", event)
+      //console.log("data: ", data)
+      let estTime = $(this).find('#modal-est-'+args.item.id)
+      estTime.focus()*/
+
+    /*let estTime = item.find('#modal-est-S1I2')
+    estTime.focus()*/
+  //})
 })
 
 var itemIndex = 0;
