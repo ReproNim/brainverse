@@ -1,19 +1,25 @@
 let saveObj = {}
 let selectedFields =[]
-let source = {}
+var source = {}
 let resourcesSource = {}
+//----
+let plansArray = []
+let columnArray = []
+//---
+
 /**
 Field  for Data Fields for Item of Kanban Board
 **/
-var fields = [
-                   { name: "id", type: "string" },
-                   { name: "status", map: "state", type: "string" },
-                   { name: "text", map: "label", type: "array" },
-                   { name:"content", map: "content", type:"object"},
-                   { name: "tags", type: "string" },
-                   { name: "color", map: "hex", type: "string" },
-                   { name: "resourceId", type: "number" }
-          ]
+var fields =  [
+                { name: "id", type: "string" },
+                { name: "status", map: "state", type: "string" },
+                //{ name: "text", map: "label", type: "array" },
+                { name: "text", map: "label", type: "string" },
+                { name:"content", map: "content", type:"object"},
+                { name: "tags", type: "string" },
+                { name: "color", map: "hex", type: "string" },
+                { name: "resourceId", type: "number" }
+              ]
 /**
 Get all project plans
 **/
@@ -23,31 +29,37 @@ $.ajax({
   accept: "application/json",
   success: function(data){
     console.log('acquistions forms:success', data)
-    let tforms = data.list
-    if(tforms.length == 0){
+    let pforms = data.list
+    if(pforms.length == 0){
       console.log("no forms")
-      $("#term-form").empty()
+      $("#plan-form").empty()
     }else{
-      for (let i=0;i<tforms.length;i++){
-          //console.log(tforms[i])
-          if(tforms[i] != ".DS_Store"){
-            $("#tforms").append('<option value="'+ tforms[i]+'">'+ tforms[i] +'</option>')
-          }
+      for (let i=0;i<pforms.length;i++){
+        if(pforms[i] != ".DS_Store"){
+          $("#pforms").append('<option value="'+ pforms[i]+'">'+ pforms[i] +'</option>')
+        }
       }
     }
   }
 })
 
-$("#tforms").change(function(){
-  console.log("Plan Selected: ", $("#tforms").val())
+/**
+On selection of a project plan, display the project plan in the kanban board space
+**/
+$("#pforms").change(function(){
+  console.log("Plan Selected: ", $("#pforms").val())
   $("#kanban1").empty()
   $("#kanban1").remove()
   $("#kanban-space").empty()
   $("#kanban-space").append('<div id ="kanban1"></div>')
-  getPlanJson($("#tforms").val())
+  getPlanJson($("#pforms").val())
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
 })
 
+/**
+* Get the contents of the plan selected
+* convert plan's JSON data to kanban board data
+**/
 function getPlanJson(formName){
   //check if form is in local storage
   let planJson = JSON.parse(localStorage.getItem(formName))
@@ -62,9 +74,9 @@ function getPlanJson(formName){
       url: url,
       accept: "application/json",
       success: function(data){
-        console.log('acquisitions term forms:success', data)
+        //console.log('acquisitions term forms:success', data)
         planJson = data
-        createSourceData(data)
+        createSourceData(planJson)
       }//data
     })
   } else{
@@ -72,6 +84,9 @@ function getPlanJson(formName){
   }
 }//end of getPlanJson function
 
+/**
+TODO : Look into different icon class
+**/
 var getIconClassName = function () {
   return "jqx-icon-plus-alt";
 }
@@ -92,7 +107,7 @@ var addItemModal = function(data, resource){
     </div>\
   </div>\
   </form>'
-  let modalEx = '<div class="modal fade in" id="itemModal-'+data.id+'" role="dialog">\
+  let modalEx = '<div class="modal fade in" id="itemModal-'+ data.id +'" role="dialog">\
     <div class="modal-dialog modal-sm">\
       <div class="modal-content">'
         + modalHeader + '\
@@ -100,18 +115,23 @@ var addItemModal = function(data, resource){
         + modalBody +'\
         </div>\
         <div class="modal-footer">\
-          <button type="button" class="btn btn-default" id="btn-update-modal-'+ data.id +'">Update</button>\
-          <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close">Close</button>\
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-save-modal-'+ data.id +'">Save</button>\
+          <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close-'+ data.id +'">Cancel</button>\
         </div>\
       </div>\
     </div>\
   </div>\
 </div>'
+//console.log("Displaying modal HTML string:--- \n", modalEx)
 return modalEx
 }
 
+/**
+* Convert plan JSON data to Kaban board data
+* Display on the Kanban board
+**/
 function createSourceData(data){
-  let plansArray = []
+  /*let plansArray = []*/
   let planObj = {}
 
  /* Create Resources Array for resourcesDataAdapter */
@@ -122,7 +142,8 @@ function createSourceData(data){
   let numOfSessions = data["Sessions"].length
   let numOfResources = personnelArray.length
   console.log("personneArray:", personnelArray)
-  for(let j=0; j<=numOfResources; j++){
+
+  for(let j = 0; j <= numOfResources; j++){
     if(j==0){
       resObj["id"] = 0
       resObj["name"] = "No name"
@@ -146,15 +167,16 @@ function createSourceData(data){
   for(let i = 0; i < numOfSessions; i++){
     let numOfInstruments = data["Sessions"][i]["Instruments"].length
     for(let j= 0; j < numOfInstruments; j++){
-      let lar = []
+      //let lar = []
       label = data["Sessions"][i]["Instruments"][j]["Instrument Type"]+": "+ data["Sessions"][i]["Instruments"][j]["Form Name"]
-      est = " Estimated Time: "+ data["Sessions"][i]["Instruments"][j]["Estimated Time"]
-      lar.push(label)
-      lar.push(est)
+      //est = " Estimated Time: "+ data["Sessions"][i]["Instruments"][j]["Estimated Time"]
+      //lar.push(label)
+      //lar.push(est)
       let tobj = {"est": data["Sessions"][i]["Instruments"][j]["Estimated Time"]}
       planObj["id"] = "S"+(i+1) + "I" + (j+1)
       planObj["state"] = "session"+ (i+1)
-      planObj["label"] = lar
+      //planObj["label"] = lar
+      planObj["label"] = label
       planObj["content"] = tobj
       planObj["tags"] = "test"
       planObj["hex"] = "#5dc3f0"
@@ -175,7 +197,7 @@ function createSourceData(data){
     dataFields: fields
   }
 
-  let dataAdapter = new $.jqx.dataAdapter(source)
+  //let dataAdapter = new $.jqx.dataAdapter(source)
   let resourcesSource = {
     localData:resArray,
     dataType: "array",
@@ -187,23 +209,39 @@ function createSourceData(data){
     ]
   }
 
-  /*
+  /**
   * create columns array
-  */
-  let columnArray = []
+  **/
+  //let columnArray = []
   let cObj={}
   for(let i = 0; i < numOfSessions; i++){
-    cObj["text"] = "Session "+ (i+1) +": "+data["Sessions"][i]["Label"]
+    cObj["text"] = "Session " + (i+1) + ": " + data["Sessions"][i]["Label"]
     cObj["dataField"] = "session"+ (i+1)
     cObj["iconClassName"] = getIconClassName()
     columnArray.push(cObj)
     cObj={}
   }
+  /**
+  * Caching source and resource data in localStorage
+  * This is required due to limitation of jqWidgets kanban API:
+    * not able to track information on the changes/updates made inside kanban board UI
+    * when using with Bootstrap Modal to allow edit content of an item and update button in the modal is clicked, it calls jqWidgets Kanban updateItem method, updates the content, closes the modal but does not return control to parent page
+      * tried using data-dismiss modal attribute for update button to close modal properly, did not workout
+      * one has to programatically remove modal class from the body
+    * When updateItem method is called inside itemRenderer for second time, the event propagates leading to the contents of the item updated to null.
+      * tried using preventDefault and stopPropagation for the update event but it did not solve the problem.
+      * tried updating the source data directly without updateItem method, but it didn't update the contents, it has to be done through jqWidgets API
+      * posted question to the jqWidget forum asking about the required feature: http://www.jqwidgets.com/community/topic/jqxkanban-bug-with-updateitem-while-an-itemrenderer-function-is-set/#post-94592
+  * TODO implement clean solution when jqWidget kanban API implements/fix these issues.
+  **/
+  localStorage.setItem("source",JSON.stringify(source))
+  localStorage.setItem("resourceSource",JSON.stringify(resourcesSource))
+  localStorage.setItem("columns",JSON.stringify(columnArray))
+  localStorage.setItem("newItem",JSON.stringify({}))
 
   /**
-  Kanban board settings
+  * Kanban board settings
   **/
-
   let kCO = {}
   kCO["template"] = "<div class='jqx-kanban-item' id=''>"
     + "<div class='jqx-kanban-item-color-status'></div>"
@@ -213,46 +251,53 @@ function createSourceData(data){
     + "<div class='jqx-kanban-item-content'></div>"
     + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
     + "</div>"
-  kCO["resources"] = new $.jqx.dataAdapter(resourcesSource)
-  kCO["source"] = dataAdapter
+  //kCO["resources"] = new $.jqx.dataAdapter(resourcesSource)
+  //kCO["source"] = new $.jqx.dataAdapter(source)
+  kCO["resources"] = new $.jqx.dataAdapter(JSON.parse(localStorage.getItem("resourceSource")))
+  kCO["source"] = new $.jqx.dataAdapter(JSON.parse(localStorage.getItem("source")))
+
   kCO["itemRenderer"] = function(item, data, resource){
     $(item).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px;'>" + resource.name + "</span>");
     $(item).find(".jqx-kanban-item-text").css('background', item.color)
-    $(item).find(".jqx-kanban-item-content").html("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal-"+data.id+"'>Edit</button>")
+    $(item).find(".jqx-kanban-item-content").html("<div><p>Estimated Time:"+ data.content.est +"</p></div>")
+    $(item).find(".jqx-kanban-item-content").append("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal-"+data.id+"' id='edit-"+data.id+"'>Edit</button>")
     $(item).find(".jqx-kanban-item-content").append(addItemModal(data,resource))
-    console.log("item: ", item )
+    $(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Update</button>')
+
+    var newContent = {}
     $(document).on('shown.bs.modal','#itemModal-'+data.id,function(event) {
-      console.log("Item modal clicked:")
-      console.log("event:", event)
-      //console.log("data: ", data)
-      let estTime = $(this).find('#modal-est-'+data.id)
+      console.log("Item modal selected: #itemModal-",data.id)
+      //console.log("Button that triggered Modal: ", $(event.relatedTarget))
+      var modal = $(this)
+      let estTime = modal.find('#modal-est-'+data.id)
       estTime.focus()
-    //})
-      $(document).on('click','#btn-update-modal-'+data.id,function(){
-        //item.on('click','#btn-update-modal',function(){
-        console.log("update button clicked")
-        let estTime = $('#modal-est-'+ data.id)
-        estimateTime = estTime.val()
+      $('#btn-save-modal-'+ data.id).click(function(e){
+        console.log("update button clicked for: ", data.id)
+        let estTime1 = $('#modal-est-'+ data.id)
+        //console.log("estTime1 html element: ", estTime1)
+        estimateTime = estTime1.val()
         let tObj = {"est": estimateTime}
         console.log("estimate = ",estimateTime)
-        let newItem = "Estimated Time:" + estimateTime
-
-        let newContent = {"id": data.id,
+        newContent = {"id": data.id,
           "status": data.status,
-          "text":newItem,
+          "text":data.text,
           "content":tObj,
           "tags":data.tag,
           "color":data.hex,
           "resourceId": data.resourceId
         }
-        console.log("newContent: ", newContent, "id: ", data.id)
-        $('#kanban1').jqxKanban('updateItem',data.id,newContent)
-        $('body').removeClass('modal-open')
-        $('.modal-backdrop').remove()
+        localStorage.setItem("newItem",JSON.stringify(newContent))
+        source = JSON.parse(localStorage.getItem("source"))
+        let ld = source.localData
+        for(let i=0;i<ld.length;i++){
+          if(ld[i].id == newContent.id){
+            source.localData[i].content = newContent.content
+          }
+        }
+        console.log("source: content", source)
+        localStorage.setItem("source",JSON.stringify(source))
       })
     })
-
-
   }
   kCO["columns"]= columnArray
   kCO["columnRenderer"]= function (element, collapsedElement, column) {
@@ -264,28 +309,31 @@ function createSourceData(data){
                 }
   kCO["width"] = '100%'
   kCO["height"] = '100%'
+  //console.log("KCO: \n",kCO)
   $('#kanban1').jqxKanban(kCO)
 
-}
+} //create source data method end
+
+$(document).on('click','#btn-update',function(e){
+  //console.log("inside update call")
+  let ni = JSON.parse(localStorage.getItem("newItem"))
+  $('#kanban1').jqxKanban('updateItem',ni.id, ni)
+})
+
+/**
+* Trying storage event, not working
+**/
+/*$(document).bind('storage', function (e) {
+    console.log("binding storage:", e.originalEvent.newItem, e.originalEvent.newValue)
+ });*/
 
 $(document).on('itemAttrClicked', '#kanban1', function (event) {
   var args = event.args;
-    console.log("Click to remove")
-    if(args.attribute == "template") {
-      $('#kanban1').jqxKanban('removeItem', args.item.id);
-    }
-    console.log('args.item.id: ', args.item.id)
-    //$('#itemModal-'+args.item.id).modal('show')
-    /*$(document).on('shown.bs.modal','#itemModal-'+args.item.id,function(event) {
-      console.log("Item modal clicked:")
-      console.log("event:", event)
-      //console.log("data: ", data)
-      let estTime = $(this).find('#modal-est-'+args.item.id)
-      estTime.focus()*/
-
-    /*let estTime = item.find('#modal-est-S1I2')
-    estTime.focus()*/
-  //})
+  //let source = $('#kanban1').jqxKanban('source')
+  //console.log('source is : ', source)
+  if(args.attribute == "template") {
+  $('#kanban1').jqxKanban('removeItem', args.item.id)
+  }
 })
 
 var itemIndex = 0;
@@ -320,13 +368,13 @@ function getListOrder(id) {
      var listLength = list.length
      var i = 0
      var res = []
-     console.log("ChildNodes: ",list)
+     //console.log("ChildNodes: ",list)
      for(var i=0; i<listLength; i++){
-          var chain = list.item(i).id
-          var tableau = chain.split("_")
-          var index = tableau[1]
+          var order = list.item(i).id
+          var table = chain.split("_")
+          var index = table[1]
           res.push(index)
      }
-     var chain = res.toString()
-     return chain;
+     var order = res.toString()
+     return order;
 }
