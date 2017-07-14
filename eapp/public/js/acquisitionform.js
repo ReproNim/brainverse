@@ -1,5 +1,7 @@
 let saveObj = {}
 let selectedFields =[]
+var moment = require('moment')
+moment().format()
 $('[data-toggle="tooltip"]').tooltip()
 
 $.ajax({
@@ -60,6 +62,7 @@ function addAqFields(formName){
 /**
 Add fields to the acquistion form UI using a specified JSON file
 */
+var fieldsCorrect = true
 function add_term_to_form(termform){
   selectedFields = termform['fields']
   console.log("Number of Fields in the form: ",selectedFields.length)
@@ -81,7 +84,7 @@ function add_term_to_form(termform){
 
     if(selectedFields[i].valueRange == null){
       /* Case1: No Value Range */
-      $("#ndar-fields").append('<div class="form-group">\
+      $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
         <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
         <div>\
         <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
@@ -104,9 +107,9 @@ function add_term_to_form(termform){
           //}
       console.log("c2::options::", options)
       console.log("c2::options.length::", options.length)
-      
-      let doubleoption = options.length==2 && selectedFields[i].valueRange.indexOf("::")== -1
-      
+
+      var doubleoption = options.length==2 && selectedFields[i].valueRange.indexOf("::")== -1
+
       if(!doubleoption){
         $("#ndar-fields").append('<div class="form-group">\
         <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
@@ -117,7 +120,7 @@ function add_term_to_form(termform){
           </div>\
         </div>')
       }
-      
+
       for (let j=0; j< options.length; j++){
         console.log("Adding:",options[j])
         if(options[j].indexOf("::")> -1){
@@ -192,7 +195,7 @@ function add_term_to_form(termform){
       console.log("c3-1::sub_options1.length:: ", sub_options1.length)
 
       if(sub_options1[1].trim()>20){
-        $("#ndar-fields").append('<div class="form-group">\
+        $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
           <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
             <div>\
               <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
@@ -220,13 +223,63 @@ function add_term_to_form(termform){
         }
       }
     }else{
-
-      $("#ndar-fields").append('<div class="form-group">\
+      $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
       <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
         <div>\
           <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
         </div>\
       </div>')
+    }
+
+    if(document.getElementById('ndar-'+i+'') != null){
+      document.getElementById('ndar-'+i+'').onblur = function(){fieldValidation()}
+    }
+
+    /*
+    Validates input type is correct
+    So far only for numbers, strings, and dates
+    */
+    function fieldValidation() {
+      let integer = selectedFields[i].type == "Integer"
+      let string = selectedFields[i].type == "String"
+      let date = selectedFields[i].type == "Date"
+      if (integer){
+        var range = 'No value range.'
+        var type = 'integer'
+        if (selectedFields[i].valueRange.indexOf("::")> -1) {
+          range = 'Value range is ' + selectedFields[i].valueRange + '.'
+        }
+      }
+      else if (string){
+        var range = 'No value range.'
+        var type = 'string'
+      }
+      else {
+        var range = 'No value range.'
+        var type = 'date'
+      }
+      let errorMessage = '<div class="alert alert-danger alert-dismissible" role="alert">\
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+          <strong>Error!</strong> Input should be '+type+' type. '+range+'\
+        </div>'
+      if(integer && isNaN(document.getElementById('ndar-'+i+'').value)){
+        type = 'integer'
+        $('#ndar-'+i+'x').after(errorMessage)
+        fieldsCorrect = false
+      }
+      else if(string && !isNaN(document.getElementById('ndar-'+i+'').value)){
+        type = 'string'
+        $('#ndar-'+i+'x').after(errorMessage)
+        fieldsCorrect = false
+      }
+      else if(date && !moment(document.getElementById('ndar-'+i+'').value, "MM/DD/YYYY", true).isValid()){
+        type = 'date'
+        $('#ndar-'+i+'x').after(errorMessage)
+        fieldsCorrect = false
+      }
+      else{
+        fieldsCorrect = true
+      }
     }
 
   }//end of outermost for
@@ -237,44 +290,56 @@ function add_term_to_form(termform){
     <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'">\
   </div>\
   </div>')
+
+//end of addTerms function
 }
 
 function saveAqInfo(e){
   e.preventDefault()
-  saveObj['objID'] = ''
-  for (let i=0; i<=selectedFields.length; i++){
-    //let lb =$('label[for="ndar-' + i + '"]').html()
-    let lb=$('label[for="ndar-' + i + '"]').attr('title')
-    console.log('lb1:', lb)
-    saveObj[lb] = $("#ndar-"+ i).val() || $("input[type='radio'][name='option"+i+"']:checked").val()
-    console.log('saveObj[lb]:',saveObj[lb])
+  if(fieldsCorrect == false){
+    $("#termsInfoSaveMsg").empty()
+    $("#termsInfoSaveMsg").append('<div class="alert alert-danger alert-dismissible" role="alert">\
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+        <strong>Error!</strong> You must correct input types.\
+      </div>')
   }
-
-  console.log(saveObj)
-  //Save the data entered
-  $.ajax({
-    type: "POST",
-    url: "http://localhost:3000/acquisitions/new",
-    contentType: "application/json",
-    data: JSON.stringify(saveObj),
-    success: function(data){
-      console.log('success')
-      //$("#div-projectFields").empty()
-      $("#termsInfoSaveMsg").empty()
-      $("#terms-list").empty()
-      $("#terms-back").empty()
-
-      $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
-      <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Aquisition Object Saved in uploads/acquisition/'+ data['fid']+'!</strong>\
-</div>')
-      $("#termsInfoSaveMsg").append('<br>')
-      $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Another Form </button><br>')
-      $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+  else{
+    saveObj['objID'] = ''
+    for (let i=0; i<=selectedFields.length; i++){
+      //let lb =$('label[for="ndar-' + i + '"]').html()
+      let lb=$('label[for="ndar-' + i + '"]').attr('title')
+      console.log('lb1:', lb)
+      saveObj[lb] = $("#ndar-"+ i).val() || $("input[type='radio'][name='option"+i+"']:checked").val()
+      console.log('saveObj[lb]:',saveObj[lb])
     }
-  })
-  console.log('done')
+
+    console.log(saveObj)
+    //Save the data entered
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:3000/acquisitions/new",
+      contentType: "application/json",
+      data: JSON.stringify(saveObj),
+      success: function(data){
+        console.log('success')
+        //$("#div-projectFields").empty()
+        $("#termsInfoSaveMsg").empty()
+        $("#terms-list").empty()
+        $("#terms-back").empty()
+
+        $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+          <a href="#" class="close" data-dismiss="alert">&times;</a>\
+          <strong>Aquisition Object Saved in uploads/acquisition/'+ data['fid']+'!</strong>\
+        </div>')
+        $("#termsInfoSaveMsg").append('<br>')
+        $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Another Form </button><br>')
+        $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+      }
+    })
+    console.log('done')
+  }
 }
+
 function projectListPage(){
   window.location.href = "http://localhost:3000/acquistionForm.html"
 }
@@ -282,6 +347,7 @@ function projectListPage(){
 function mainpage(){
   window.location.href = "http://localhost:3000"
 }
+
 $('#btn-aqInfoSave').click(saveAqInfo)
 $('#terms-list').click(projectListPage)
 $('#terms-back').click(mainpage)
