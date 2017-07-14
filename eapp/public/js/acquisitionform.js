@@ -243,19 +243,37 @@ function add_term_to_form(termform){
       let integer = selectedFields[i].type == "Integer"
       let string = selectedFields[i].type == "String"
       let date = selectedFields[i].type == "Date"
+      if (integer){
+        var range = 'No value range.'
+        var type = 'integer'
+        if (selectedFields[i].valueRange.indexOf("::")> -1) {
+          range = 'Value range is ' + selectedFields[i].valueRange + '.'
+        }
+      }
+      else if (string){
+        var range = 'No value range.'
+        var type = 'string'
+      }
+      else {
+        var range = 'No value range.'
+        var type = 'date'
+      }
       let errorMessage = '<div class="alert alert-danger alert-dismissible" role="alert">\
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
-          <strong>Error!</strong> Input is incorrect data type.\
+          <strong>Error!</strong> Input should be '+type+' type. '+range+'\
         </div>'
       if(integer && isNaN(document.getElementById('ndar-'+i+'').value)){
+        type = 'integer'
         $('#ndar-'+i+'x').after(errorMessage)
         fieldsCorrect = false
       }
       else if(string && !isNaN(document.getElementById('ndar-'+i+'').value)){
+        type = 'string'
         $('#ndar-'+i+'x').after(errorMessage)
         fieldsCorrect = false
       }
       else if(date && !moment(document.getElementById('ndar-'+i+'').value, "MM/DD/YYYY", true).isValid()){
+        type = 'date'
         $('#ndar-'+i+'x').after(errorMessage)
         fieldsCorrect = false
       }
