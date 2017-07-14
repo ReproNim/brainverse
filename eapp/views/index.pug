@@ -62,24 +62,26 @@ html(lang='en')
                 ul
                   li: a(href='/ndarImport.html') Search and Import NDA Data Dictionary »
                   li: a(href='/ndarImport.html') Select Terms and Generate Forms »
-                  li: a(href='#') Curate Harmonize and Submit Terms
+                  li: a(href='#') Curate, Harmonize and Submit Terms to NDA
                   li: a(href='/acquistionForm.html') Collect Data »
             
             .col-md-4.col-sm-6.col-xs-12
-              +panel("Plan an Experiment","default") 
+              +panel("Plan an Experiment or Study","default") 
                 ul
-                  li: a(href='#') Plan Sessions, instruments/tasks, assign task
-                  li: a(href='/project-planner-jq.html') Start Planning »    
+                  li: a(href='#') Plan your sessions, create or use your instruments/tasks to be used, assign task to personnels
+                  li: a(href='/project-planner-jq.html') Create Plan »    
             
             .col-md-4.col-sm-6.col-xs-12
-              +panel("View and Update Experiment", "default") 
+              +panel("View and Update Experiment Plans", "default") 
                 ul
-                  li: a(href='#') View and Update Plans
+                  li: a(href='#') View and update experiment plans
                   li: a(href='/project-plan-board.html') View Kanban Board »    
-                
-          p
-            a.btn.btn-primary.btn-lg(href='/addProject.html', role='button')  Add a Project
-                    
+          .row
+            .col-md-4.col-sm-6.col-xs-12
+              +panel("Project Management", "default") 
+                ul
+                  li: a(href='/addProject.html') Create a Project  »
+                              
     // jQuery (necessary for Bootstrap's JavaScript plugins)
     script(src='/dist/jquery/jquery.min.js', type='text/javascript')
     script.
