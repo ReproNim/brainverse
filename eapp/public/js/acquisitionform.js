@@ -69,7 +69,7 @@ function add_term_to_form(termform){
   //console.log("x",x.length)
 
   for (let i=0; i<selectedFields.length; i++){
-    var sid = "ndar-"+i
+    let sid = "ndar-"+i
     let options = []
     let sub_options1 = []
     let nvalues = []
@@ -277,8 +277,8 @@ function add_term_to_form(termform){
 }
 
 function saveAqInfo(e){
+  e.preventDefault()
   if(fieldsCorrect == false){
-    e.preventDefault()
     $("#termsInfoSaveMsg").empty()
     $("#termsInfoSaveMsg").append('<div class="alert alert-danger alert-dismissible" role="alert">\
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
@@ -286,7 +286,6 @@ function saveAqInfo(e){
       </div>')
   }
   else{
-    e.preventDefault()
     saveObj['objID'] = ''
     for (let i=0; i<=selectedFields.length; i++){
       //let lb =$('label[for="ndar-' + i + '"]').html()
