@@ -1,6 +1,6 @@
 let saveObj = {}
 let selectedFields =[]
-var moment = require('moment')
+//var moment = require('moment')
 moment().format()
 $('[data-toggle="tooltip"]').tooltip()
 
