@@ -1,0 +1,39 @@
+body { padding-top: 70px; }
+
+/*.form-check {
+    display: block;
+    float: left;
+    width: 25%;
+}*/
+
+.th-head-1 {
+  width: 80px;
+}
+.th-head-2 {
+  width: 200px;
+}
+
+.td-chk {
+  width: 80px;
+}
+
+.td-term {
+  width:200px;
+}
+
+.panel-heading {
+    cursor: pointer;
+}
+
+/* CSS Method for adding Font Awesome Chevron Icons */
+ .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family:'FontAwesome';
+    content:"\f077";
+    float: right;
+    color: inherit;
+}
+.panel-heading.collapsed .accordion-toggle:after {
+    /* symbol for "collapsed" panels */
+    content:"\f078";
+}

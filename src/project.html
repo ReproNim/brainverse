@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>BrainVerse</title>
+
+    <!-- Bootstrap -->
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/brainverse.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ReproNIm</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+           <ul class="nav navbar-nav navbar-right">
+            <li>
+              <p class="navbar-btn">
+                    <a href="#" class="btn btn-success">Sign In</a>
+                </p>
+              </li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-3" >
+          <div class="well">
+           <ul class="nav nav-list">
+            <li class="nav-header">BrainVerse</li>
+            <li class="active"><a href="#">Overview </a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Workflows</a></li>
+            <li><a href="#">Executions</a></li>
+          </ul>
+          </div>
+      </div>
+        <div class="col-xs-9">
+          <div>
+           <h2>Project Name Here</h2>
+           <p style="font-size:90%">Project description</p>
+         </div>
+         <div class="container-fluid">
+           <form id="pre-project">
+             <div id="funding">
+              <h4>Funding Sources</h4>
+               <input type="button" onclick="addField('funding', 'funding_source[]')"
+               id="addFund" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="funding_source" placeholder="Funding information">
+             </div>
+             <div id="collabs">
+               <h4>Collaborators</h4>
+               <input type="button" onclick="addField('collabs', 'collaborators[]')"
+               id="addCollab" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="collaborators" placeholder="Collaborator information">
+             </div>
+             <div id="pubs">
+               <h4>Publications</h4>
+               <input type="button" onclick="addField('pubs', 'publications[]')"
+               id="addPub" value="+" style="float: right;" class="btn btn-outline-info">
+               <input type="text" name="publications" placeholder="Publication information">
+             </div>
+           </form>
+          </div>
+          <br>
+          <div class="col">
+            <div class="row-sm-2">
+              <button type="button" class="btn btn-success">Save</button>
+            </div>
+            <br>
+            <div class="row-sm-2">
+              <a class="btn btn-primary btn-lg" href="#" role="button">Create an Experiment</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="fields.js"></script>
+    <script>
+      window.$ = window.jQuery = require('jquery')
+      require('bootstrap')
+    </script>
+   </body>
+</html>
