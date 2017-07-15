@@ -87,7 +87,7 @@ function add_term_to_form(termform){
       $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
         <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
         <div>\
-        <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
+        <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'" required>\
         </div>\
         </div>')
     }else if (selectedFields[i].valueRange.indexOf(';')> -1){
@@ -287,7 +287,7 @@ function add_term_to_form(termform){
   $("#ndar-fields").append('<div class="form-group">\
   <label for="ndar-'+selectedFields.length+'" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
   <div>\
-    <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'">\
+    <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'" required />\
   </div>\
   </div>')
 
