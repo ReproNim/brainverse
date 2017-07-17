@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>BrainVerse</title>
+
+    <!-- Bootstrap -->
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/dist/jqwidgets-framework/jqwidgets/styles/jqx.base.css" type="text/css" />
+    <link href="/project-plan.css" rel="stylesheet">
+    <link href="/brainverse.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">ReproNIm</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <p class="navbar-btn">
+                  <a href="#" class="btn btn-success">Sign In</a>
+              </p>
+            </li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="">
+            <p><h3>Project Plan board</h3></p>
+            <br>
+            <form id="kanban-form-display">
+              <div class="form-group row" id="plan-form">
+                <label for="pforms" class="col-xs-5 col-form-label">Plans</label>
+                <div class="col-xs-5">
+                  <select class="form-control" id="pforms">
+                  <option value="plan0">Select a plan</option>
+                  </select>
+                </div>
+              </div>
+            <div id = "kanban-space">
+              <div id ="kanban1">
+              </div>
+            </div>
+            <!--button id="getItem">getItems</button>
+            <button id= "btn-aqInfoSave" type="submit" class="btn btn-primary">Save</button-->
+            </form>
+            <div id = "termsInfoSaveMsg"></div>
+            <div class="col-xs-4">
+              <div id = "terms-list"></div>
+            </div>
+            <div class="col-xs-4">
+              <div id = "terms-back"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src='/dist/jquery/jquery.min.js'>
+    </script>
+    <script>
+      try{
+      $ = jQuery = module.exports
+      }catch(e){}
+    </script>
+    <script src='/dist/bootstrap/bootstrap.min.js', type='text/javascript'>
+    </script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxsortable.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxkanban.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdata.js"></script>
+    <script src=project-plan-board.js>
+    </script>
+  </body>
+</html>

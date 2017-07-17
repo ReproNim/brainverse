@@ -59,4 +59,10 @@ mixin checkbox(text,name,id,val)
 mixin showAlert(alerts)
   for alert in alerts
     div #{alert}
- 
+    
+//- Panel mixin
+mixin panel(heading, style)
+  div(class=["panel", "panel-" + style])
+    .panel-heading= heading
+    .panel-body
+          block 

@@ -11,26 +11,8 @@ module.exports = () => {
 
   const jsonParser = bodyParser.json()
 
-  /**
-  * RDF store creation and setup
-  */
-  function rdfStoreSetup (){
-    let rstore = rdfstore.create(function(err, store) {
-      if(err){
-        console.log("not able to create store")
-      }
-      return store
-    })
-    let graph = rstore.rdf.createGraph()
-    rstore.rdf.setPrefix("nidm", "http://purl.org/nidash/nidm#")
-    rstore.rdf.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-    rstore.rdf.setPrefix("nda","https://ndar.nih.gov/api/datadictionary/v2/dataelement/")
-    return {store:rstore, graph:graph}
-  }
-  let setup = rdfStoreSetup()
-  let store = setup.store
-  let rgraph = setup.graph
-
+  let store = app.locals.store
+  let rgraph = app.locals.rgraph
   /**
   New acquisition data
   **/
