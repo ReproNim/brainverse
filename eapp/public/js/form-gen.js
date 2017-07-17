@@ -31,6 +31,8 @@ function alpacaForm(el) {
     });
     console.log(this)
 
+
+    //Github test
   //METHOD FOR INPUT FORMS
   var inputForm = function(name, placehold) {
     console.log(this)
