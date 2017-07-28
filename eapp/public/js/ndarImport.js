@@ -72,6 +72,18 @@ function getDataDictionary(e3){
 
             count++
       }
+      //SELECT ALL
+      $('#div-projectFields').append('<br><button id="btn-toggleAll" type="button" class="btn btn-primary">Select All</button>')
+      $('#btn-toggleAll').click(function() {
+        $('#div-projectFields input[type="checkbox"]').prop('checked', true);
+      });
+
+      //DESELECT ALL
+      $('#div-projectFields').append('<button id="btn-toggleNone" type="button" class="btn btn-primary" style="margin-left:10px">Clear</button>')
+      $('#btn-toggleNone').click(function() {
+        $('#div-projectFields input[type="checkbox"]').prop('checked', false);
+      });
+      
       $("#div-projectFields").append('</tbody></table></div>')
     }
   })
