@@ -29,6 +29,7 @@ module.exports = () => {
   app.use(express.static(path.join(__dirname, 'public/images')))
   app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
   app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))
+  app.use('/dist/moment',express.static(path.join(__dirname,'/../node_modules/moment/')))
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
   app.use('/dist/select2',express.static(path.join(__dirname,'/../node_modules/select2/dist')))
   app.use('/dist/select2-bootstrap',express.static(path.join(__dirname,'/../node_modules/select2-bootstrap-theme/dist')))
