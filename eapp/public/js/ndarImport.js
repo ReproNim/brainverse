@@ -12,13 +12,14 @@ let termsIndex = {}
 $('[data-toggle="tooltip"]').tooltip()
 $.fn.select2.defaults.set( "theme", "bootstrap" );
 
+var serverUrl = "http://127.0.0.1:3000"
 /*
 * Data Dictionaries
 */
 
   $.ajax({
     type: "GET",
-    url: "http://localhost:3000/ndar-terms/forms",
+    url: serverUrl + "/ndar-terms/forms",
     accept: "application/json",
     success: function(data){
       console.log('get forms:success')
@@ -37,11 +38,11 @@ function getDataDictionary(e3){
   count = 1
   //chkboxSelectedArray = []
   $("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
-  
+
   console.log(encodeURI($('#ndar-dd').val()))
   shortName = encodeURI($('#ndar-dd').val())
-  
-  let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-dd").val())
+
+  let nUrl = serverUrl + "/ndar-terms/"+ encodeURI($("#ndar-dd").val())
   console.log("nUrl",nUrl)
   $.ajax({
     type: "GET",
@@ -118,7 +119,7 @@ function saveProjInfo(e){
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/dictionaries/new",
+    url: serverURL + "/dictionaries/new",
     contentType: "application/json",
     data: JSON.stringify(saveObj),
     success: function(data){
@@ -138,11 +139,11 @@ function saveProjInfo(e){
 }
 
 function projectListPage(){
-  window.location.href = "http://localhost:3000/acquistionForm.html"
+  window.location.href = serverUrl + "/acquistionForm.html"
 }
 
 function mainpage(){
-  window.location.href = "http://localhost:3000"
+  window.location.href = serverUrl
 }
 
 $("#btn-dd-selected").click(getDataDictionary)

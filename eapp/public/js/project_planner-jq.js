@@ -8,6 +8,8 @@ let personnelArray = []
 let accordionCount = 0
 let sessionCountStateArray = []
 
+let serverURL = "http://127.0.0.1:3000"
+
 //Read from a local static JSON file with a limited set of lexicons
 //TODO Read and parse a turtle/owl file with all lexicons
 $.fn.select2.defaults.set( "theme", "bootstrap" );
@@ -76,7 +78,7 @@ function getInstruments(vnum,icount){
   let dvalues = []
   $.ajax({
     type: "GET",
-    url: "http://localhost:3000/query/instruments",
+    url: serverURL+"/query/instruments",
     accept: "application/json",
     success: function(data){
       console.log('instruments:success')
@@ -359,7 +361,7 @@ function saveProjInfo(e){
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/project-plans/new",
+    url: serverURL+"/project-plans/new",
     contentType: "application/json",
     data: JSON.stringify(projPlanObj),
     success: function(data){
@@ -386,11 +388,11 @@ function saveProjInfo(e){
 }
 
 function projectListPage(){
-  window.location.href = "http://localhost:3000/projectList.html"
+  window.location.href = serverURL+"/projectList.html"
 }
 
 function mainpage(){
-  window.location.href = "http://localhost:3000"
+  window.location.href = serverURL
 }
 
 function addClickFunctions(a_id){
