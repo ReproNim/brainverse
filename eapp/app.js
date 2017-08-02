@@ -15,6 +15,7 @@ module.exports = () => {
   const GitHubStrategy = require('passport-github2').Strategy
   const partials = require('express-partials')
   const config = require('./config/app-config.js')
+  const rdfHelper = require('./util/graph.js')
 
   global.uid = {}
 
@@ -78,7 +79,7 @@ module.exports = () => {
     console.log("user from request:",req.user)
     res.render('index',{user:req.user})
   })
-  app.get('/main',function(req, res){
+  app.get('/main', ensureAuthenticated, function(req, res){
     //console.log("user from request:",req.user)
     res.render('main',{user:req.user})
   })
@@ -136,17 +137,7 @@ module.exports = () => {
   app.use(express.static(path.join(__dirname, 'public/lib')))
   app.use(express.static(path.join(__dirname, 'public/images')))
 
-  /*app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
-  app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))
-  app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
-  app.use('/dist/select2',express.static(path.join(__dirname,'/../node_modules/select2/dist')))
-  app.use('/dist/select2-bootstrap',express.static(path.join(__dirname,'/../node_modules/select2-bootstrap-theme/dist')))
-  app.use('/dist/slickgrid',express.static(path.join(__dirname,'/../node_modules/slickgrid')))
-  app.use('/dist/slickgrid-bootstrap',express.static(path.join(__dirname,'/../node_modules/slickgrid-bootstrap-dev/bootstrap')))
-  app.use('/dist/jqwidgets-framework',express.static(path.join(__dirname,'/../node_modules/jqwidgets-framework')))
-  app.use('/views/js',express.static(path.join(__dirname,'views/js')))*/
 
-  const rdfHelper = require('./util/graph.js')
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
   app.locals.rgraph = app.locals.setup.graph
@@ -187,6 +178,6 @@ module.exports = () => {
 
   function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
-    res.redirect('/login')
+    res.redirect('/')
   }
 }
