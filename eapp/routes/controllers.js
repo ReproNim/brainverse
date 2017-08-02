@@ -21,6 +21,10 @@ module.exports = () => {
     res.render('index')
   })*/
 
+  app.get('/account', ensureAuthenticated, function(req,res){
+    res.send({'user':req.user})
+  })
+
   app.post('/projects/new', ensureAuthenticated, jsonParser, function(req, res){
     if (!req.body) return res.sendStatus(400)
     console.log('recived at server side')

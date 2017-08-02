@@ -83,10 +83,10 @@ module.exports = () => {
     //console.log("user from request:",req.user)
     res.render('main',{user:req.user})
   })
-  app.get('/account', ensureAuthenticated, function(req, res){
+  /*app.get('/account', ensureAuthenticated, function(req, res){
     console.log("Authenticate account: ", req.user)
     res.render('account', { user: req.user });
-  })
+  })*/
   app.get('/login', function(req, res){
     console.log("Trying to login: ", req.user)
     res.render('login', { user: req.user });
@@ -122,11 +122,12 @@ module.exports = () => {
   app.use('/dist/slickgrid',express.static(path.join(__dirname,'/../node_modules/slickgrid')))
   app.use('/dist/slickgrid-bootstrap',express.static(path.join(__dirname,'/../node_modules/slickgrid-bootstrap-dev/bootstrap')))
   app.use('/dist/jqwidgets-framework',express.static(path.join(__dirname,'/../node_modules/jqwidgets-framework')))
+  app.use('/dist/handlebars',express.static(path.join(__dirname,'/../node_modules/handlebars/dist')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
   app.use(express.static(path.join(__dirname, 'public/css')))
 
   app.use(function (req, res, next) {
-    if (!req.isAuthenticated()) { return res.redirect('/login') }
+    if (!req.isAuthenticated()) { return res.redirect('/') }
     next();
   });
 
