@@ -16,7 +16,7 @@ module.exports = () => {
   /**
   New acquisition data
   **/
-  app.post('/acquisitions/new', jsonParser, function(req,res){
+  app.post('/acquisitions/new', ensureAuthenticated, jsonParser, function(req,res){
     if (!req.body)
       return res.sendStatus(400)
     console.log('recieved at server side')
@@ -40,7 +40,7 @@ module.exports = () => {
     })
   })
 
-  app.get('/acquisitions/forms/:name', function(req,res){
+  app.get('/acquisitions/forms/:name', ensureAuthenticated, function(req,res){
     var cpath = path.join(__dirname, '/../../uploads/termforms/')
     console.log('loading terms file')
     loadJsonFile(cpath + req.params.name).then(ob => {
@@ -49,7 +49,7 @@ module.exports = () => {
     })
   })
 
-  app.get('/acquisitions/forms', function(req, res){
+  app.get('/acquisitions/forms', ensureAuthenticated, function(req, res){
     var files = []
     var cpath = path.join(__dirname, '/../../uploads/termforms')
     fs.readdir(cpath, function(err,list){
@@ -57,6 +57,11 @@ module.exports = () => {
       res.json({'list':list})
     })
   })
+
+  function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) { return next() }
+    res.redirect('/')
+  }
 
   function saveToRDFstore(jsonObj, callback_tstring){
     let tstring = ""

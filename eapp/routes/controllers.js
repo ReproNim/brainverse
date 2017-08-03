@@ -17,11 +17,15 @@ module.exports = () => {
 
   app.use(fileUpload())
 
-  app.get('/', function(req, res){
+  /*app.get('/', function(req, res){
     res.render('index')
+  })*/
+
+  app.get('/account', ensureAuthenticated, function(req,res){
+    res.send({'user':req.user})
   })
 
-  app.post('/projects/new', jsonParser, function(req, res){
+  app.post('/projects/new', ensureAuthenticated, jsonParser, function(req, res){
     if (!req.body) return res.sendStatus(400)
     console.log('recived at server side')
     //console.log(req.body)
@@ -37,24 +41,24 @@ module.exports = () => {
     })
   })
 
-  app.get('/projects/:id',function(req,res){
+  app.get('/projects/:id', ensureAuthenticated, function(req,res){
     res.send('TODO: project info for id:'+ req.params.id)
   })
 
-  app.post('/projects/:id', jsonParser,function(req,res){
+  app.post('/projects/:id', ensureAuthenticated, jsonParser,function(req,res){
     res.send('TODO: project info updated!')
   })
 
-  app.get('/projects/list', function(req,res){
+  app.get('/projects/list', ensureAuthenticated, function(req,res){
     res.send('TODO: projects list')
   })
 
-  app.get('/upload', function(req,res){
+  app.get('/upload', ensureAuthenticated, function(req,res){
     console.log('server side')
     res.render('sampleUpload')
   })
 
-  app.post('/upload',function(req,res){
+  app.post('/upload',ensureAuthenticated, function(req,res){
     console.log(req.files);
     if (!req.files)
       return res.status(400).send('No files were uploaded.');
@@ -70,23 +74,23 @@ module.exports = () => {
       })
   })
 
-  app.get('/experiments/new', function(req,res){
+  app.get('/experiments/new', ensureAuthenticated, function(req,res){
     res.send('TODO: create new experiment form')
   })
 
-  app.post('/experiments/new', jsonParser,function(req,res){
+  app.post('/experiments/new', ensureAuthenticated, jsonParser,function(req,res){
     res.send('TODO:received experiments info!')
   })
 
-  app.get('/experiments/:id',function(req,res){
+  app.get('/experiments/:id',ensureAuthenticated, function(req,res){
     res.send('TODO:experiment info for id'+ req.params.id)
   })
 
-  app.post('/experiments/:id', jsonParser,function(req,res){
+  app.post('/experiments/:id', ensureAuthenticated, jsonParser,function(req,res){
     res.send('TODO:experiment info updated!')
   })
 
-  app.get('/query/terms', function(req,res){
+  app.get('/query/terms', ensureAuthenticated,function(req,res){
     const loadJsonFile = require('load-json-file')
     console.log('loading Terms file')
     loadJsonFile('eapp/public/terms/addProjectTerms.json').then(ob => {
@@ -95,7 +99,7 @@ module.exports = () => {
     })
   })
 
-  app.get('/query/instruments', function(req,res){
+  app.get('/query/instruments', ensureAuthenticated, function(req,res){
     const loadJsonFile = require('load-json-file')
     console.log('loading Terms file')
     loadJsonFile('eapp/public/terms/instrumentsTerms.json').then(ob => {
@@ -104,7 +108,7 @@ module.exports = () => {
     })
   })
 
-  app.post('/project-plans/new',jsonParser, function(req,res){
+  app.post('/project-plans/new',ensureAuthenticated, jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('recived at server side')
     //console.log(req.body)
@@ -137,7 +141,7 @@ module.exports = () => {
     })
   })
 
-  app.put('/project-plans/:id',jsonParser, function(req,res){
+  app.put('/project-plans/:id', ensureAuthenticated, jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('recived at server side')
     //console.log(req.body)
@@ -173,14 +177,14 @@ module.exports = () => {
   })
 
 
-  app.get('/project-plans/:name', function(req,res){
+  app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file')
     loadJsonFile('uploads/plansdocs/'+req.params.name).then(ob => {
       console.log("ob:==>", ob)
       res.json(ob)
     })
   })
-  app.get('/project-plans', function(req, res){
+  app.get('/project-plans', ensureAuthenticated, function(req, res){
     var files = []
     fs.readdir('uploads/plansdocs', function(err,list){
       if(err) throw err;
@@ -196,5 +200,8 @@ module.exports = () => {
   app.get('/queries', function(req,res){
     res.send('TODO:Queries list')
   })
-
+  function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) { return next() }
+    res.redirect('/')
+  }
 }

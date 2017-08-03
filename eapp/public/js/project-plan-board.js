@@ -5,6 +5,10 @@ var source = {}
 let resourcesSource = {}
 let resources = {}
 let inv_resources = {}
+
+
+let serverURL = "http://127.0.0.1:3000"
+
 //----
 let plansArray = []
 let columnArray = []
@@ -28,7 +32,7 @@ Get all project plans
 **/
 $.ajax({
   type: "GET",
-  url: "http://localhost:3000/project-plans",
+  url: serverURL +"/project-plans",
   accept: "application/json",
   success: function(data){
     console.log('acquistions forms:success', data)
@@ -73,7 +77,7 @@ function getPlanJson(formName){
   planName = formName
   //console.log("Form Selected:",planJson)
 
-  let url = "http://localhost:3000/project-plans/" + formName
+  let url = serverURL+"/project-plans/" + formName
 
   // if the file is not in localstorage, read from the disk
   if(planJson == null){
