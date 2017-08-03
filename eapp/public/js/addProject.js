@@ -2,11 +2,13 @@ let count = 1
 let chkboxSelectedArray = []
 let saveObj = {}
 
+let serverURL = "http://127.0.0.1:3000"
+
 //Read from a local static JSON file with a limited set of lexicons
 //TODO Read and parse a turtle/owl file with all lexicons
 $.ajax({
   type: "GET",
-  url: "http://localhost:3000/query/terms",
+  url: serverURL + "/query/terms",
   success: function(data){
     console.log('success')
     console.log(data)
@@ -53,7 +55,7 @@ function saveProjInfo(e){
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/projects/new",
+    url: serverURL+"/projects/new",
     contentType: "application/json",
     data: JSON.stringify(saveObj),
     success: function(data){

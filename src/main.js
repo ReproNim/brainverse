@@ -5,6 +5,21 @@ const BrowserWindow = electron.BrowserWindow
 const {dialog} = require('electron')
 const path = require('path')
 const url = require('url')
+const oauthGithub = require('electron-oauth-github')
+const configInfo = require('./config/app-config.js')
+
+let github = new oauthGithub({
+  id : configInfo.clientId,
+  secret : configInfo.clientSecret,
+  scopes : ['user:email', 'notifications'],
+});
+
+github.startRequest(function(access_token, err) {
+  if (err) {
+    console.error(err);
+  }
+  dialog.showErrorBox('Status', 'access_token: ' + access_token);
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
