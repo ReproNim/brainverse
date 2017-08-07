@@ -242,7 +242,8 @@ function getPrefixKeyForm(sobj){
   let pfname = key.split("/")
   let iri = key.split("#")
   let kname = pfname[pfname.length-1].split("#")
-  let key_name = kname[1]
+  //let key_name = kname[1]
+  let key_name = kname[1].replace(/\s+/g, '')
   let iri_complete = iri[0] + "#"
   let prefix_name = getPrefix(iri_complete)
   let node_name = prefix_name+":"+ key_name + " "
@@ -251,7 +252,7 @@ function getPrefixKeyForm(sobj){
   pfname = value.split("/")
   if(pfname.length>1){
     kname = pfname[pfname.length-1].split("#")
-    key_name = kname[1]
+    key_name = kname[1].replace(/\s+/g, '')
     prefix_name = kname[0]
     node_name = node_name + prefix_name+":"+ key_name + " "
   }else{
