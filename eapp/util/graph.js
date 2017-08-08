@@ -53,7 +53,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
       tstring = tstring + "\n"
     } else if(err.code == 'ENOENT') {
       console.log("File does not exist")
-      console.log("prefix:", store.rdf.prefixes.get("nidm"))
+      //console.log("prefix:", store.rdf.prefixes.get("nidm"))
 
       // TODO: Add a method to automatically identify the namespace, add prefix and object properties
       tstring = "@prefix nidm: <"+ store.rdf.prefixes.get("nidm")+"> .\n"
@@ -70,7 +70,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
         let subject={}
         let objS = {}
         graph.forEach(function(triple){
-          console.log("triple:", triple)
+          //console.log("triple:", triple)
           if(!(triple.subject.nominalValue in subject)){
             subject[triple.subject.nominalValue] = []
           }
@@ -81,7 +81,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
         console.log("----Serializing graph to turtle --->>>")
         let s = serializeToTurtle(subject)
         tstring = tstring + s
-        console.log(tstring)
+        //console.log(tstring)
         callback_tstring(tstring)
       })//graph
    })
@@ -108,14 +108,18 @@ function addToGraph(jsonObj, callback){
     }else if(key == "Personnel"){
       let parr = jsonObj["Personnel"]
       for(let p = 0; p < parr.length; p++){
-        let pnode = store.rdf.createNamedNode(store.rdf.resolve("nidm:" + parr[p]))
-        pnodes[parr[p]] = pnode
+        let pnode = store.rdf.createNamedNode(store.rdf.resolve("nidm:" + parr[p].user))
+        pnodes[parr[p].user] = pnode
         rgraph.add(store.rdf.createTriple(pnode,
         store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
         store.rdf.createNamedNode(store.rdf.resolve("prov:Agent"))))
         rgraph.add(store.rdf.createTriple(pnode,
         store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
         store.rdf.createNamedNode(store.rdf.resolve("prov:Person"))))
+
+        rgraph.add(store.rdf.createTriple(pnode,
+        store.rdf.createNamedNode(store.rdf.resolve("nidm:uid")),
+        store.rdf.createLiteral(parr[p].uid)))
       }
     } else{
       rgraph.add(store.rdf.createTriple(n,
@@ -241,18 +245,25 @@ function getPrefixKeyForm(sobj){
   let key = Object.keys(sobj)[0]
   let pfname = key.split("/")
   let iri = key.split("#")
+
   let kname = pfname[pfname.length-1].split("#")
-  //let key_name = kname[1]
+  //console.log("kname 1: ", kname)
   let key_name = kname[1].replace(/\s+/g, '')
+
   let iri_complete = iri[0] + "#"
   let prefix_name = getPrefix(iri_complete)
-  let node_name = prefix_name+":"+ key_name + " "
+  let node_name = prefix_name + ":" + key_name + " "
 
   let value = sobj[key]
   pfname = value.split("/")
   if(pfname.length>1){
     kname = pfname[pfname.length-1].split("#")
-    key_name = kname[1].replace(/\s+/g, '')
+    //console.log("kname 2: ", kname)
+    if(kname.length>1){
+      key_name = kname[1].replace(/\s+/g, '')
+    }else{
+      key_name = kname[1]
+    }
     prefix_name = kname[0]
     node_name = node_name + prefix_name+":"+ key_name + " "
   }else{
