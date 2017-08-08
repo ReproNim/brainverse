@@ -24,26 +24,17 @@ function addProject(e){
     <div class="col-xs-7">\
     <input class="form-control" type="text" placeholder="Project Name here" id="proj-name">\
     </div>\
-  </div>\
-  <div class="form-group row">\
-    <label for="proj-personnel" class="col-xs-2 col-form-label">Personnel</label>\
-    <div class="col-xs-7">\
-    <input class="form-control" type="text" placeholder="Personnel names separated by commas" id="proj-personnel">\
-    </div>\
   </div>'
 
   $('#prjInfo').append(prjPersonnel)
   $('#btn-addSession').prop({'disabled':false})
 }
 
-/*$("#proj-personnel").change(function(){
+
+/*$(document).on('change', '#proj-personnel', function(){
   personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
   console.log("OnChange:PersonnelArray", personnelArray)
 })*/
-$(document).on('change', '#proj-personnel', function(){
-  personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
-  console.log("OnChange:PersonnelArray", personnelArray)
-})
 
 function addSession(e){
   e.preventDefault()
@@ -68,12 +59,60 @@ function addSession(e){
 }
 
 function addPersonnel(vnum,icount){
-  $("#pnl-"+vnum+"-"+icount).select2()
-  console.log("personnelArray", personnelArray)
+  $("#pnl-"+vnum+"-"+icount).select2({
+  ajax: {
+    url: "https://api.github.com/search/users",
+    dataType: 'json',
+    delay: 250,
+    data: function (params) {
+      return {
+        q: params.term, // search term
+        page: params.page
+      };
+    },
+    processResults: function (data, params) {
+      // parse the results into the format expected by Select2
+      // since we are using custom formatting functions we do not need to
+      // alter the remote JSON data, except to indicate that infinite
+      // scrolling can be used
+      params.page = params.page || 1;
+
+      return {
+        results: data.items,
+        pagination: {
+          more: (params.page * 30) < data.total_count
+        }
+      };
+    },
+    cache: true
+  },
+  escapeMarkup: function (markup) {return markup}, // let our custom formatter work
+  minimumInputLength: 3,
+  templateResult: formatRepo,
+  templateSelection: formatRepoSelection,
+  //theme: 'adwitt'
+})
+/*console.log("personnelArray", personnelArray)
   for (let i=0;i<personnelArray.length;i++){
     $("#pnl-"+vnum+"-"+icount).append('<option value="'+ personnelArray[i]+'">'+ personnelArray[i] +'</option>')
-  }
+  }*/
+}//end of addPersonnel
+
+function formatRepo (user) {
+  if (user.loading) return user.login;
+    var markup = "<div class='select2-result-repository clearfix'>" +
+    "<div class='select2-result-repository__avatar'><img src='" + user.avatar_url + "' /></div>" +
+    "<div class='select2-result-repository__meta'>" +
+    "<div class='select2-result-repository__title'>" + user.login + "</div>"+
+    "<div class='select2-result-repository__url'>" + user.url + "</div>"+
+    "</div></div>"
+    return markup;
 }
+
+  function formatRepoSelection (user) {
+    //console.log("user:", user)
+    return user.login;
+  }
 function getInstruments(vnum,icount){
   let dvalues = []
   $.ajax({
@@ -115,7 +154,7 @@ function addChangeFunction(vnum,icount){
 function getAqFormNames(formName, vnum,icount){
   $.ajax({
     type: "GET",
-    url: "http://localhost:3000/acquisitions/forms",
+    url: serverURL+"/acquisitions/forms",
     accept: "application/json",
     success: function(data){
       console.log('acquistions forms:success', data)
@@ -194,7 +233,7 @@ function addAccordionPanel(a_id){
                                 <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
                                 <div class="col-xs-7">\
                                   <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
-                                  <option value="">Select a Personnel</option>\
+                                    <option value="3620194" selected="selected">Select a Personnel</option>\
                                   </select>\
                                 </div>\
                               </div>\
@@ -249,7 +288,7 @@ function addInstruments(a_id){
     <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
     <div class="col-xs-7">\
       <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
-      <option value="">Select a Personnel</option>\
+      <option value="3620194" selected="selected">Select a Personnel</option>\
       </select>\
     </div>\
   </div>')
@@ -313,7 +352,7 @@ function saveProjInfo(e){
   vnum=count
   projPlanObj["Project Name"] = $("#proj-name").val()
   projPlanObj["Number of Sessions"] = vnum
-  projPlanObj["Personnel"] = $.map($("#proj-personnel").val().split(","), $.trim);
+  //projPlanObj["Personnel"] = $.map($("#proj-personnel").val().split(","), $.trim);
 
   for(let j=1; j<= vnum; j++){
     session['Session Number'] = j
@@ -325,13 +364,15 @@ function saveProjInfo(e){
       instrument['Instrument Type'] = $("#inst-"+j+"-"+i).val()
       instrument['Form Name'] = $("#iforms-"+j+"-"+i).val()
       instrument['Estimated Time'] = $("#est-"+j+"-"+i).val()
-      instrument['Assigned To'] = $("#pnl-"+j+"-"+i).val()
+      //instrument['Assigned To'] = $("#pnl-"+j+"-"+i).val()
+      instrument['Assigned To'] = $("#pnl-"+j+"-"+i).select2('data')[0].login
+      console.log("Assignee: =", $("#pnl-"+j+"-"+i).select2('data')[0].login)
       instruments.push(instrument)
       instrument = {}
     }
     let tcount = sessionCountStateArray[j-1]["taskCount"]
     let ccount = sessionCountStateArray[j-1]["conditionCount"]
-    console.log("(vcount, tcount, ccount): ", j,tcount,ccount)
+    //console.log("(vcount, tcount, ccount): ", j,tcount,ccount)
     for(let t=1;t<=tcount;t++){
       task["Task number"] = t
       task["Description"] = $("#task-"+ j+"-"+t).val()
@@ -357,7 +398,7 @@ function saveProjInfo(e){
   }
 
   projPlanObj["Sessions"] = sessions
-  console.log(projPlanObj)
+  //console.log(projPlanObj)
 
   $.ajax({
     type: "POST",
@@ -377,7 +418,7 @@ function saveProjInfo(e){
       $("#submitBtn").empty()
       $("#pjInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
     <a href="#" class="close" data-dismiss="alert">&times;</a>\
-    <strong>Project Plans Information Saved in /uploads/plansdocs/'+ data['plan_id']+' !</strong>\
+    <strong>Project Plans Information Saved in /uploads/plansdocs/'+ data['fid']+' !</strong>\
     </div>')
     $("#pjInfoSaveMsg").append('<br>')
     $("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
