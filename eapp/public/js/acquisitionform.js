@@ -165,7 +165,7 @@ function add_term_to_form(termForm){
       * check notes - parse notes
       */
       flag = false
-      if(notes == {}){
+      if(notes == null){
         sub_options1 = selectedFields[i].valueRange.trim().split("::")
       }
       else{
@@ -323,6 +323,6 @@ function checkNotes(key,notes){
     }
     return values
   } else {
-    return {}
+    return null
   }
 }

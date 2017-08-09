@@ -114,6 +114,7 @@ function add_term_to_form(selectedField){
 
     // check the 'notes' field for any value specified
     let notes = checkNotes(selectedField.name,selectedField.notes)
+    console.log(notes)
     if(notes != null){
       nvalues = Object.keys(notes).map(function(key) {
           return notes[key]
@@ -191,7 +192,7 @@ function add_term_to_form(selectedField){
       * check notes - parse notes
       */
       flag = false
-      if(notes == {}){
+      if(notes === null){
         sub_options1 = selectedField.valueRange.trim().split("::")
       }
       else{
@@ -258,6 +259,7 @@ function add_term_to_form(selectedField){
 function checkNotes(key,notes){
   let values = {}
   if(notes != null){
+    console.log('yes notes')
     let options = notes.split(';')
     for(let i = 0;i < options.length; i++){
       let value = options[i].split('=')
@@ -271,7 +273,8 @@ function checkNotes(key,notes){
     }
     return values
   } else {
-    return {}
+    console.log('no notes')
+    return null
   }
 }
 
