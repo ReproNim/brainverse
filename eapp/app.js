@@ -115,6 +115,7 @@ module.exports = () => {
     res.redirect('/')
   })
   app.use('/dist/css',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/css')))
+  app.use('/dist/fonts',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/fonts')))
   app.use('/dist/jquery',express.static(path.join(__dirname,'/../node_modules/jquery/dist/')))
   app.use('/dist/moment',express.static(path.join(__dirname,'/../node_modules/moment/')))
   app.use('/dist/bootstrap',express.static(path.join(__dirname,'/../node_modules/bootstrap/dist/js')))
@@ -125,7 +126,9 @@ module.exports = () => {
   app.use('/dist/jqwidgets-framework',express.static(path.join(__dirname,'/../node_modules/jqwidgets-framework')))
   app.use('/dist/handlebars',express.static(path.join(__dirname,'/../node_modules/handlebars/dist')))
   app.use('/views/js',express.static(path.join(__dirname,'views/js')))
-  app.use(express.static(path.join(__dirname, 'public/css')))
+  app.use('/dist/alpacalib',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/lib')))
+  app.use('/dist/alpaca',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/alpaca')))
+  app.use('/dist/uuid',express.static(path.join(__dirname,'/../node_modules/uuid-random')))
 
   app.use(function (req, res, next) {
     if (!req.isAuthenticated()) { return res.redirect('/') }

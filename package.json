@@ -19,6 +19,7 @@
     "spectron": "^3.5.0"
   },
   "dependencies": {
+    "alpaca": "^1.5.23",
     "body-parser": "^1.16.1",
     "bootstrap": "^3.3.7",
     "connect-flash": "^0.1.1",
