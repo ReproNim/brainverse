@@ -24,26 +24,17 @@ function addProject(e){
     <div class="col-xs-7">\
     <input class="form-control" type="text" placeholder="Project Name here" id="proj-name">\
     </div>\
-  </div>\
-  <div class="form-group row">\
-    <label for="proj-personnel" class="col-xs-2 col-form-label">Personnel</label>\
-    <div class="col-xs-7">\
-    <input class="form-control" type="text" placeholder="Personnel names separated by commas" id="proj-personnel">\
-    </div>\
   </div>'
 
   $('#prjInfo').append(prjPersonnel)
   $('#btn-addSession').prop({'disabled':false})
 }
 
-/*$("#proj-personnel").change(function(){
+
+/*$(document).on('change', '#proj-personnel', function(){
   personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
   console.log("OnChange:PersonnelArray", personnelArray)
 })*/
-$(document).on('change', '#proj-personnel', function(){
-  personnelArray = $.map($("#proj-personnel").val().split(","), $.trim);
-  console.log("OnChange:PersonnelArray", personnelArray)
-})
 
 function addSession(e){
   e.preventDefault()
@@ -57,8 +48,8 @@ function addSession(e){
   addClickFunctions(i)
   let sessionCountStateObject = {}
   sessionCountStateObject['instrumentCount'] = 1
-  sessionCountStateObject['taskCount'] = 0
-  sessionCountStateObject['conditionCount'] = 0
+  //sessionCountStateObject['taskCount'] = 0
+  //sessionCountStateObject['conditionCount'] = 0
   sessionCountStateArray.push(sessionCountStateObject)
   console.log("Count Array: ", sessionCountStateArray)
   console.log("Count object: ", sessionCountStateArray[0]['instrumentCount'])
@@ -68,12 +59,52 @@ function addSession(e){
 }
 
 function addPersonnel(vnum,icount){
-  $("#pnl-"+vnum+"-"+icount).select2()
-  console.log("personnelArray", personnelArray)
-  for (let i=0;i<personnelArray.length;i++){
-    $("#pnl-"+vnum+"-"+icount).append('<option value="'+ personnelArray[i]+'">'+ personnelArray[i] +'</option>')
-  }
+  $("#pnl-"+vnum+"-"+icount).select2({
+  ajax: {
+    url: "https://api.github.com/search/users",
+    dataType: 'json',
+    delay: 250,
+    data: function (params) {
+      return {
+        q: params.term, // search term
+        page: params.page
+      };
+    },
+    processResults: function (data, params) {
+      params.page = params.page || 1;
+
+      return {
+        results: data.items,
+        pagination: {
+          more: (params.page * 30) < data.total_count
+        }
+      };
+    },
+    cache: true
+  },
+  escapeMarkup: function (markup) {return markup}, // let our custom formatter work
+  minimumInputLength: 3,
+  templateResult: formatRepo,
+  templateSelection: formatRepoSelection,
+  })
+}//end of addPersonnel
+
+function formatRepo (user) {
+  if (user.loading) return user.login;
+    var markup = "<div class='select2-result-repository clearfix'>" +
+    "<div class='select2-result-repository__avatar'><img src='" + user.avatar_url + "' /></div>" +
+    "<div class='select2-result-repository__meta'>" +
+    "<div class='select2-result-repository__title'>" + user.login + "</div>"+
+    "<div class='select2-result-repository__url'>" + user.url + "</div>"+
+    "</div></div>"
+    return markup;
 }
+
+function formatRepoSelection (user) {
+  //console.log("user:", user)
+  return user.login;
+}
+
 function getInstruments(vnum,icount){
   let dvalues = []
   $.ajax({
@@ -102,7 +133,6 @@ function addChangeFunction(vnum,icount){
     if($("#inst-"+vnum+"-"+icount).val() == 'Assessments'){
       getAqFormNames($("#inst-"+vnum+"-"+icount).val(),vnum,icount)
     }else{
-      //$("#term-form").empty()
       $("#iforms-"+vnum).empty()
     }
   })
@@ -115,7 +145,7 @@ function addChangeFunction(vnum,icount){
 function getAqFormNames(formName, vnum,icount){
   $.ajax({
     type: "GET",
-    url: "http://localhost:3000/acquisitions/forms",
+    url: serverURL+"/acquisitions/forms",
     accept: "application/json",
     success: function(data){
       console.log('acquistions forms:success', data)
@@ -123,7 +153,6 @@ function getAqFormNames(formName, vnum,icount){
       let iforms = data.list
       if(iforms.length == 0){
         console.log("no forms")
-        //$("#term-form").empty()
       }else{
         for (let i=0;i<iforms.length;i++){
             console.log("forms Name: ", iforms[i])
@@ -194,7 +223,7 @@ function addAccordionPanel(a_id){
                                 <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
                                 <div class="col-xs-7">\
                                   <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
-                                  <option value="">Select a Personnel</option>\
+                                    <option value="3620194" selected="selected">Select a Personnel</option>\
                                   </select>\
                                 </div>\
                               </div>\
@@ -206,8 +235,6 @@ function addAccordionPanel(a_id){
                             <div>\
                               <button id="btn-add-inst-'+ a_id+'" type="submit" class="btn btn-default"> + Add Instrument</button>\
                               <button id="btn-create-inst-'+ a_id+'" type="submit" class="btn btn-default"> + Create Instrument</button>\
-                              <!--button id="btn-add-task-'+ a_id+'" type="submit" class="btn btn-primary">Add a Task</button>\
-                              <button id="btn-add-cond-'+ a_id+'" type="submit" class="btn btn-primary" disabled>Add a Condition</button-->\
                             </div>\
                           </div>\
                         </div>\
@@ -249,7 +276,7 @@ function addInstruments(a_id){
     <label for="pnl-'+ a_id+'-'+ instrumentCount+'" class="col-xs-2 col-form-label">Assigned To</label>\
     <div class="col-xs-7">\
       <select class="form-control" id="pnl-'+a_id+'-'+ instrumentCount+'">\
-      <option value="">Select a Personnel</option>\
+      <option value="3620194" selected="selected">Select a Personnel</option>\
       </select>\
     </div>\
   </div>')
@@ -259,43 +286,6 @@ function addInstruments(a_id){
   addChangeFunction(a_id,instrumentCount)
 }}
 
-function addTasks(a_id){
-  return function(e2){
-    e2.preventDefault()
-    console.log("a_id: ",a_id)
-    sessionCountStateArray[a_id-1]["taskCount"]++
-    taskCount = sessionCountStateArray[a_id-1]["taskCount"]
-    console.log("Add Task has been clicked, count: ", taskCount)
-    $("#tasks-"+ a_id).append('<div class="form-group row">\
-      <label for="task-'+ a_id+'-'+taskCount +'" class="col-xs-2 col-form-label">Task Description</label>\
-      <div class="col-xs-7">\
-      <input class="form-control" type="text" placeholder="Task Description here" id="task-'+ a_id+'-'+taskCount +'">\
-      </div>\
-    </div>')
-    $("#btn-add-cond-"+ a_id).prop('disabled', false)
-    //if($("#btn-add-cond-"+ a_id).length ==0){
-    //  $("#add-btn-group").append('<button id="btn-add-cond" type="submit" class="btn btn-primary">Add a Condition</button>')
-    //}
-  }
-}
-function addConditions(a_id){
-  return function(e3){
-    e3.preventDefault()
-    console.log("a_id: ",a_id)
-    sessionCountStateArray[a_id-1]["conditionCount"]++
-    taskCount = sessionCountStateArray[a_id-1]["taskCount"]
-    conditionCount = sessionCountStateArray[a_id-1]["conditionCount"]
-    console.log("Add Condition has been clicked, count", conditionCount)
-    $("#tasks-"+ a_id).append('<div class="form-group row">\
-      <label for="condn-'+ a_id+'-'+taskCount+'-'+conditionCount +'" class="col-xs-2 col-form-label">Condition</label>\
-      <div class="col-xs-7">\
-      <input class="form-control" type="text" placeholder="Condition here" id="condn-'+ a_id+'-'+ taskCount+'-'+conditionCount +'">\
-      </div>\
-    </div>')
-    console.log("stateArray:", sessionCountStateArray)
-    //$("#add-btn-group").append('<button id="btn-add-cond" type="submit" class="btn btn-primary">Add a Condition</button>')
-  }
-}
 
 // Save the project information entered and the selected fields
 // The information is saved in a local file named 'proj-info.json'
@@ -312,8 +302,8 @@ function saveProjInfo(e){
 
   vnum=count
   projPlanObj["Project Name"] = $("#proj-name").val()
-  projPlanObj["Number of Sessions"] = vnum
-  projPlanObj["Personnel"] = $.map($("#proj-personnel").val().split(","), $.trim);
+  projPlanObj["Number Of Sessions"] = vnum
+  //projPlanObj["Personnel"] = $.map($("#proj-personnel").val().split(","), $.trim);
 
   for(let j=1; j<= vnum; j++){
     session['Session Number'] = j
@@ -322,42 +312,31 @@ function saveProjInfo(e){
 
     icount = sessionCountStateArray[j-1]["instrumentCount"]
     for(let i=1; i<=icount;i++){
+      let userLogin = $("#pnl-"+j+"-"+i).select2('data')[0]
+      let personnelItem = {}
+      personnelItem['user'] = userLogin.login
+      personnelItem['uid'] = userLogin.id
+      personnelItem['url'] = userLogin.url
+      personnelItem['avatar_url'] = userLogin.avatar_url
+      personnelArray.push(personnelItem)
+
+      let username = userLogin.login
       instrument['Instrument Type'] = $("#inst-"+j+"-"+i).val()
       instrument['Form Name'] = $("#iforms-"+j+"-"+i).val()
       instrument['Estimated Time'] = $("#est-"+j+"-"+i).val()
-      instrument['Assigned To'] = $("#pnl-"+j+"-"+i).val()
+      instrument['Assigned To'] = username
       instruments.push(instrument)
       instrument = {}
     }
-    let tcount = sessionCountStateArray[j-1]["taskCount"]
-    let ccount = sessionCountStateArray[j-1]["conditionCount"]
-    console.log("(vcount, tcount, ccount): ", j,tcount,ccount)
-    for(let t=1;t<=tcount;t++){
-      task["Task number"] = t
-      task["Description"] = $("#task-"+ j+"-"+t).val()
-      for(let c=1;c<=ccount;c++){
-        if($("#condn-"+j+"-"+t+"-"+c).length == 0){
-          console.log("element not present")
-        }else{
-          condn.push($("#condn-"+j+"-"+t+"-"+c).val())
-        }
-      }
-      task["Conditions"] = condn
-      tasks.push(task)
-      task={}
-      condn=[]
-    }
-
-    session["Instruments"]=instruments
-    session["Tasks"] = tasks
+    //console.log(personnelArray)
+    session["Instruments"] = instruments
     sessions[j-1] = session
     session = {}
     instruments =[]
-    tasks = []
+    //tasks = []
   }
-
+  projPlanObj["Personnel"] = personnelArray
   projPlanObj["Sessions"] = sessions
-  console.log(projPlanObj)
 
   $.ajax({
     type: "POST",
@@ -365,6 +344,7 @@ function saveProjInfo(e){
     contentType: "application/json",
     data: JSON.stringify(projPlanObj),
     success: function(data){
+      projPlanObj = {}
       console.log('success: response:', data)
       $("#pjInfoSaveMsg").empty()
       $("#pj-list").empty()
@@ -377,7 +357,7 @@ function saveProjInfo(e){
       $("#submitBtn").empty()
       $("#pjInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
     <a href="#" class="close" data-dismiss="alert">&times;</a>\
-    <strong>Project Plans Information Saved in /uploads/plansdocs/'+ data['plan_id']+' !</strong>\
+    <strong>Project Plans Information Saved in /uploads/plansdocs/'+ data['fid']+' !</strong>\
     </div>')
     $("#pjInfoSaveMsg").append('<br>')
     $("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
@@ -397,13 +377,10 @@ function mainpage(){
 
 function addClickFunctions(a_id){
   $(document).on('click','#btn-add-inst-'+ a_id,addInstruments(a_id))
-  //$(document).on('click','#btn-add-task-'+ a_id,addTasks(a_id))
-  //$(document).on('click','#btn-add-cond-'+ a_id,addConditions(a_id))
 }
 
 $('#btn-addProject').click(addProject)
 $('#btn-addSession').click(addSession)
-//$('#btn-pjInfoSave').click(saveProjInfo)
 $(document).on('click','#btn-pjInfoSave',saveProjInfo)
 $('#pj-list').click(projectListPage)
 $('#pj-back').click(mainpage)

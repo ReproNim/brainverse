@@ -141,6 +141,42 @@ module.exports = () => {
     })
   })
 
+  app.put('/project-plans/:id', ensureAuthenticated, jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('recived at server side')
+    //console.log(req.body)
+    let pj_plan_info = req.body
+    //pj_plan_info['ProjectPlanID'] = uuid()
+    console.log(pj_plan_info)
+    pid = pj_plan_info['ProjectPlanID'].split('-')
+    pname = pj_plan_info['Project Name'].split(' ')
+    let cpath = 'uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'
+    //let cpath = path.join(__dirname, '/../../uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json')
+    console.log("cpath for file update: ", cpath)
+    writeJsonFile(cpath, req.body).then(() => {
+    //fs.writeFile(cpath, JSON.stringify(pj_plan_info,null,2), (err) => {
+      console.log('json document written done')
+      //res.json({'status':'success', 'plan_id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+    })
+    let obj_info = pj_plan_info
+    obj_info['objID'] = uuid()
+    rdfHelper.saveToRDFstore(obj_info,function(tstring){
+      console.log("callback fn: tstring: ", tstring)
+
+      let cpath = 'uploads/acquisition/plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'
+      let fname = 'plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'
+
+      fs.appendFile(cpath, tstring, function(err) {
+        if(err) {
+          return console.log(err);
+        }
+        console.log("The file was saved!");
+        res.json({'pid': obj_info['ProjectPlanID'], 'fid': fname})
+      })
+    })
+  })
+
+
   app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file')
     loadJsonFile('uploads/plansdocs/'+req.params.name).then(ob => {
