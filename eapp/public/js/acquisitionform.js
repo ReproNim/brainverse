@@ -1,7 +1,5 @@
 let saveObj = {}
 let selectedFields =[]
-var moment = require('moment')
-moment().format()
 $('[data-toggle="tooltip"]').tooltip()
 
 $.ajax({
@@ -36,7 +34,7 @@ function addAqFields(formName){
   //check if form is in local storage
   let termform = JSON.parse(localStorage.getItem(formName))
   console.log("Form Selected:",termform)
-
+  console.log(formName)
   let url = "http://localhost:3000/acquisitions/forms/" + formName
 
   // if the file is not in localstorage, read from the disk
@@ -59,20 +57,25 @@ function addAqFields(formName){
 
 }//end of addAqFields function
 
+var form = new AlpacaForm('#ndar-fields')
 /**
 Add fields to the acquistion form UI using a specified JSON file
 */
 var fieldsCorrect = true
-function add_term_to_form(termform){
-  selectedFields = termform['fields']
+function add_term_to_form(termForm){
+  selectedFields = termForm['fields']
   console.log("Number of Fields in the form: ",selectedFields.length)
   //console.log("x",x.length)
 
+  //Create ungenerated JSON form
+
   for (let i=0; i<selectedFields.length; i++){
-    let sid = "ndar-"+i
     let options = []
     let sub_options1 = []
     let nvalues = []
+    let fieldName = selectedFields[i].name
+    let fieldDescription = selectedFields[i].description
+    let fieldValueRange = selectedFields[i].valueRange
 
     // check the 'notes' field for any value specified
     let notes = checkNotes(selectedFields[i].name,selectedFields[i].notes)
@@ -84,13 +87,17 @@ function add_term_to_form(termform){
 
     if(selectedFields[i].valueRange == null){
       /* Case1: No Value Range */
-      $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
-        <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-        <div>\
-        <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'" required>\
-        </div>\
-        </div>')
-    }else if (selectedFields[i].valueRange.indexOf(';')> -1){
+      if (selectedFields[i].type == "Integer") {
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", undefined, fieldValueRange)
+      }
+      else if (selectedFields[i].type == "Date") {
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", true, fieldValueRange)
+      }
+      else {
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", undefined, fieldValueRange)
+      }
+    }
+    else if (selectedFields[i].valueRange.indexOf(';')> -1){
       /*  Case 2:
       if valueRange specified with ';' separator
       check notes if values with its meaning specified in the notes
@@ -98,6 +105,7 @@ function add_term_to_form(termform){
       otherwise parse notes field and obtain values representation, e.g (1 = "xyz"; 2 = "utty")
       */
       let sub_options2 = []
+      let optionList = []
       options = selectedFields[i].valueRange.split(';')
           //if(notes== {}){
           //  options = selectedFields[i].valueRange.split(';')
@@ -109,17 +117,6 @@ function add_term_to_form(termform){
       console.log("c2::options.length::", options.length)
 
       var doubleoption = options.length==2 && selectedFields[i].valueRange.indexOf("::")== -1
-
-      if(!doubleoption){
-        $("#ndar-fields").append('<div class="form-group">\
-        <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-        <div>\
-          <select class="form-control" id="ndar-'+i+'">\
-            <option value="nsource">Select</option>\
-            </select>\
-          </div>\
-        </div>')
-      }
 
       for (let j=0; j< options.length; j++){
         console.log("Adding:",options[j])
@@ -138,40 +135,28 @@ function add_term_to_form(termform){
         //options = Object.values(notes)
         options = nvalues
         if(doubleoption){
-          $("#ndar-fields").append('<div class="form-group">\
-          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-          <div>\
-            <form>\
-              <label class="radio-inline">\
-                <input type="radio" name="option'+i+'" id="ndar-'+i+'a" value="'+ options[0]+'">'+ options[0] +'</label>\
-              <label class="radio-inline">\
-                <input type="radio" name="option'+i+'" id="ndar-'+i+'b" value="'+ options[1]+'">'+ options[1] +'</label>\
-            </form>\
-            </div>\
-          </div>')
+          form.radioForm(fieldName, fieldDescription, 'ndar'+i, options[0], options[1])
         }
-        for(let m=0;m<options.length;m++){
-          $("#"+sid).append('<option value="'+ options[m]+'">'+ options[m] +'</option>')
-        }
-      }else{
-        if(doubleoption){
-          $("#ndar-fields").append('<div class="form-group">\
-          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-          <div>\
-            <form>\
-              <label class="radio-inline">\
-                <input type="radio" name="option'+i+'" id="ndar-'+i+'a" value="'+ sub_options2[0]+'">'+ sub_options2[0] +'</label>\
-              <label class="radio-inline">\
-                <input type="radio" name="option'+i+'" id="ndar-'+i+'b" value="'+ sub_options2[1]+'">'+ sub_options2[1] +'</label>\
-            </form>\
-            </div>\
-          </div>')
-        }
-        for(let m=0;m<sub_options2.length;m++){
-          $("#"+sid).append('<option value="'+ sub_options2[m]+'">'+ sub_options2[m] +'</option>')
+        else{
+          for(let m=0;m<options.length;m++){
+            optionList.push(options[m])
+          }
+          form.selectForm(fieldName, fieldDescription, optionList, 'ndar'+i, true)
         }
       }
-    } else if (selectedFields[i].valueRange.indexOf("::")> -1){
+      else{
+        if(doubleoption){
+          form.radioForm(fieldName, fieldDescription, 'ndar'+i, sub_options2[0], sub_options2[1])
+        }
+        else{
+          for(let m=0;m<sub_options2.length;m++){
+            optionList.push(sub_options2[m])
+          }
+          form.selectForm(fieldName, fieldDescription, optionList, 'ndar'+i, true)
+        }
+      }
+    }
+    else if (selectedFields[i].valueRange.indexOf("::")> -1){
       /*
       * Case3: valueRange of the form - 0::3
       * check notes - parse notes
@@ -179,7 +164,8 @@ function add_term_to_form(termform){
       flag = false
       if(notes == {}){
         sub_options1 = selectedFields[i].valueRange.trim().split("::")
-      } else{
+      }
+      else{
         //sub_options1 = Object.values(notes)
         sub_options1 = nvalues
         console.log("c3::sub_options1:: ", sub_options1)
@@ -195,122 +181,88 @@ function add_term_to_form(termform){
       console.log("c3-1::sub_options1.length:: ", sub_options1.length)
 
       if(sub_options1[1].trim()>20){
-        $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
-          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-            <div>\
-              <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
-            </div>\
-          </div>')
+        if (selectedFields[i].type == "Integer") {
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", undefined, fieldValueRange)
+        }
+        else if (selectedFields[i].type == "Date") {
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", true, fieldValueRange)
+        }
+        else {
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", undefined, fieldValueRange)
+        }
+      }
 
-      }else{
-        $("#ndar-fields").append('<div class="form-group">\
-          <label for="ndar-'+i+'" data-toggle="tooltip" title="'+ selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-          <div>\
-            <select class="form-control" id="ndar-'+i+'">\
-              <option value="select">Select</option>\
-            </select>\
-          </div>\
-          </div>')
+      else{
+        let optionList = []
 
         if(notes == null || notes.hasOwnProperty(selectedFields[i].name)){
           for(let m=sub_options1[0].trim();m<sub_options1[1].trim();m++){
-            $("#"+sid).append('<option value="'+ m+'">'+ m +'</option>')
+            optionList.push(m)
           }
-        }else{
+        }
+
+        else{
           for(let m=0;m<sub_options1.length;m++){
-            $("#"+sid).append('<option value="'+ sub_options1[m]+'">'+ sub_options1[m] +'</option>')
+            optionList.push(sub_options1[m])
           }
         }
+        form.selectForm(fieldName, fieldDescription, optionList, 'ndar'+i, true)
       }
-    }else{
-      $("#ndar-fields").append('<div class="form-group" id="ndar-'+i+'x">\
-      <label for="ndar-'+i+'" data-toggle="tooltip" title="'+selectedFields[i].name+'">'+selectedFields[i].description+'</label>\
-        <div>\
-          <input class="form-control" type="text" placeholder="'+selectedFields[i].valueRange+'" id="ndar-'+i+'">\
-        </div>\
-      </div>')
     }
-
-    if(document.getElementById('ndar-'+i+'') != null){
-      document.getElementById('ndar-'+i+'').onblur = function(){fieldValidation()}
-    }
-
-    /*
-    Validates input type is correct
-    So far only for numbers, strings, and dates
-    */
-    function fieldValidation() {
-      let integer = selectedFields[i].type == "Integer"
-      let string = selectedFields[i].type == "String"
-      let date = selectedFields[i].type == "Date"
-      if (integer){
-        var range = 'No value range.'
-        var type = 'integer'
-        if (selectedFields[i].valueRange.indexOf("::")> -1) {
-          range = 'Value range is ' + selectedFields[i].valueRange + '.'
-        }
+    else{
+      if (selectedFields[i].type == "Integer") {
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", undefined, fieldValueRange)
       }
-      else if (string){
-        var range = 'No value range.'
-        var type = 'string'
+      else if (selectedFields[i].type == "Date") {
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", true, fieldValueRange)
       }
       else {
-        var range = 'No value range.'
-        var type = 'date'
-      }
-      let errorMessage = '<div class="alert alert-danger alert-dismissible" role="alert">\
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
-          <strong>Error!</strong> Input should be '+type+' type. '+range+'\
-        </div>'
-      if(integer && isNaN(document.getElementById('ndar-'+i+'').value)){
-        type = 'integer'
-        $('#ndar-'+i+'x').after(errorMessage)
-        fieldsCorrect = false
-      }
-      else if(string && !isNaN(document.getElementById('ndar-'+i+'').value)){
-        type = 'string'
-        $('#ndar-'+i+'x').after(errorMessage)
-        fieldsCorrect = false
-      }
-      else if(date && !moment(document.getElementById('ndar-'+i+'').value, "MM/DD/YYYY", true).isValid()){
-        type = 'date'
-        $('#ndar-'+i+'x').after(errorMessage)
-        fieldsCorrect = false
-      }
-      else{
-        fieldsCorrect = true
+        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", undefined, fieldValueRange)
       }
     }
 
   }//end of outermost for
 
-  $("#ndar-fields").append('<div class="form-group">\
-  <label for="ndar-'+selectedFields.length+'" data-toggle="tooltip" title="ExperimentID">ExperimentID</label>\
-  <div>\
-    <input class="form-control" type="text" placeholder="ExperimentID" id="ndar-'+selectedFields.length+'" required />\
-  </div>\
-  </div>')
+  form.inputForm('ExperimentID', 'ExperimentID', 'ndar'+selectedFields.length, "string", false, 'ExperimentID')
 
-//end of addTerms function
-}
+  //Generate Alpaca Form
+  form.alpacaGen();
+
+}//end of addTerms function
 
 function saveAqInfo(e){
   e.preventDefault()
+  //Validation WORK IN PROGRESS
+  // for (let i=0; i<=selectedFields.length; i++){
+  //   if($("#ndar"+ i).val()==undefined && $("#ndar"+ i).attr('type')!='radio'){
+  //     console.log(i)
+  //     console.log($("#ndar"+ i).attr('name'))
+  //     console.log('flag')
+  //     fieldsCorrect = false
+  //   }
+  // }
+  // console.log(fieldsCorrect)
   if(fieldsCorrect == false){
     $("#termsInfoSaveMsg").empty()
     $("#termsInfoSaveMsg").append('<div class="alert alert-danger alert-dismissible" role="alert">\
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
-        <strong>Error!</strong> You must correct input types.\
+        <strong>Error!</strong> You must either complete form or correct input types.\
       </div>')
   }
   else{
     saveObj['objID'] = ''
     for (let i=0; i<=selectedFields.length; i++){
-      //let lb =$('label[for="ndar-' + i + '"]').html()
-      let lb=$('label[for="ndar-' + i + '"]').attr('title')
-      console.log('lb1:', lb)
-      saveObj[lb] = $("#ndar-"+ i).val() || $("input[type='radio'][name='option"+i+"']:checked").val()
-      console.log('saveObj[lb]:',saveObj[lb])
+      //If statement for when selectedFields[i] does not exist
+      if (i == selectedFields.length) {
+        let lb=$("#ndar"+ i).attr('name')
+        saveObj[lb] = $("#ndar"+ i).val()
+      }
+      else{
+        let lb=$("#ndar"+ i).attr('name') || $("input[type='radio'][name= " + selectedFields[i].name + "]").attr('name')
+        console.log('lb1:', lb)
+        saveObj[lb] = $("#ndar"+ i).val() || $("input[type='radio'][name= " + selectedFields[i].name + "]:checked").val()
+        console.log('saveObj[lb]:',saveObj[lb])
+      }
     }
 
     console.log(saveObj)

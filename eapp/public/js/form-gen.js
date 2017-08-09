@@ -1,77 +1,136 @@
-var formName = '';
+//For more info on parameters and documentation, visit:
+//http://www.alpacajs.org/documentation.html
 
-function alpacaForm(el) {
-  //BASE ALPACA CONSTRUCTOR
-  this.baseForm =
-    $(el).alpaca({
+class AlpacaForm {
+  /*An instance is a newly generated Alpaca Form
+
+  ATTRIBUTES:
+    element: HTML element to contain form [selector]
+    properties: list of fields in form [alpaca/JSON object]
+    fields: additional field options [alpaca/JSON object]
+    baseform: boilerplate alpaca Form */
+
+  constructor(element) {
+    /*Constructor: creates a new alpaca Form
+
+      Has containing HTML element, field properties, and field options
+
+      Precondition: element is a valid HTML element, properties and fields are
+      in valid alpaca format. */
+    this.element = element;
+    this.properties = {};
+    this.fields = {};
+    this.baseForm = {
       "schema": {
-        "title": formName,
         "type": "object",
-        "properties": {
-        }
+        "properties": this.properties
+
       },
       "options": {
-        "fields": {
-        },
-        "form":{
-          "buttons":{
-           "submit":{
-             "title": "Submit",
-             "click": function(){
-               /* COMMENT: console.log(this) here points to proto.constructor.
-               However, when any of the functions below are called, the "this" in the
-               functions do not point to the proto.constructor*/
-                console.log(this)
-             }
-           }
-          }
-        }
+        "fields": this.fields
       }
-
-    });
-    console.log(this)
-
-
-    //Github test
-  //METHOD FOR INPUT FORMS
-  var inputForm = function(name, placehold) {
-    console.log(this)
-    let itemId = name;
-    let itemSchema = {
-      "type": "string"
     };
-    let itemOptions = {
-      "label": itemId,
-      "placeholder": placehold
-    };
-    this.topControl.addItem(itemId, itemSchema, itemOptions);
   }
 
-  //METHOD FOR RADIO FORMS
-  var radioForm = function(name, op1, op2) {
-    let itemId = name;
-    let itemSchema = {
-      "enum": [op1, op2]
-    };
-    let itemOptions = {
+  inputForm(title, label, id, type='string', date=false, placehold='null', disable=false) {
+    /*Input Form Method
+
+      Creates a text input field
+
+      Parameters:
+        type: 'string' or 'number' for now */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "type": type,
+      "required": true
+    }
+    if (date == true) {
+      this.fields[title.toLowerCase()] = {
+        "type": "date",
+        "picker": {
+            "format": "MM/DD/YYYY"
+        },
+        "label": label,
+        "id": id,
+        "placeholder": placehold,
+        "disabled": disable
+      }
+    }
+    else {
+      this.fields[title.toLowerCase()] = {
+        "label": label,
+        "id": id,
+        "placeholder": placehold,
+        "disabled": disable
+      }
+    }
+  }
+
+  radioForm(title, label, id, op1, op2, disable=false) {
+    /*Radio Form Method
+
+      Creates a radio input field */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
       "type": "radio",
-      "label": itemId,
-      "removeDefaultNone": true
-    };
-    this.topControl.addItem(itemId, itemSchema, itemOptions);
+      "enum": [op1, op2],
+      "required": true
+    }
+    this.fields[title.toLowerCase()] = {
+      "label": label,
+      "id": id,
+      "removeDefaultNone": true,
+      "sort": false,
+      "disabled": disable
+    }
   }
 
-  //METHOD FOR SELECT FORMS
-  var selectForm = function(name) {
-    let itemId = name;
-    let itemSchema = {
-      "enum": [/*many options*/]
-    };
-    let itemOptions = {
-      "label": itemId,
-    };
-    this.topControl.addItem(itemId, itemSchema, itemOptions);
+  selectForm(title, label, list, id, require, disable=false) {
+    /*Select Form Method
+
+      Creates a selection form field */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "enum": list,
+      "required": require
+    }
+    this.fields[title.toLowerCase()] = {
+      "label": label,
+      "id": id,
+      "noneLabel": "-- Select --",
+      "removeDefaultNone": false,
+      "sort": false,
+      "disabled": disable
+    }
+  }
+
+  arrayForm(title, label, items, id) {
+    /*Array Form Method
+
+      Creates an accordion style form field */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "type": "array",
+      "items": items
+    }
+    this.fields[title.toLowerCase()] = {
+      "label": label,
+      "id": id,
+      "collapsible": true,
+      "toolbarSticky": false,
+      "hideToolbarWithChildren": false
+    }
+  }
+
+
+  alpacaGen() {
+    //Generates the alpaca form
+    $(this.element).alpaca(this.baseForm);
+  }
+
+
+  alpacaDestroy() {
+    //Destroys the alpaca form
+    $(this.element).alpaca("destroy");
   }
 }
-
-/*HELPER METHODS*/
