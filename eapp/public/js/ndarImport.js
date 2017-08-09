@@ -13,13 +13,14 @@ let termsIndex = {}
 $('[data-toggle="tooltip"]').tooltip()
 $.fn.select2.defaults.set( "theme", "bootstrap" );
 var form = new AlpacaForm('#form')
+var serverUrl = "http://127.0.0.1:3000"
 /*
 * Data Dictionaries
 */
 
   $.ajax({
     type: "GET",
-    url: "http://localhost:3000/ndar-terms/forms",
+    url: serverUrl + "/ndar-terms/forms",
     accept: "application/json",
     success: function(data){
       console.log('get forms:success')
@@ -42,7 +43,7 @@ function getDataDictionary(e3){
   console.log(encodeURI($('#ndar-dd').val()))
   shortName = encodeURI($('#ndar-dd').val())
 
-  let nUrl = "http://localhost:3000/ndar-terms/"+ encodeURI($("#ndar-dd").val())
+  let nUrl = serverUrl + "/ndar-terms/"+ encodeURI($("#ndar-dd").val())
   console.log("nUrl",nUrl)
   $.ajax({
     type: "GET",
@@ -315,7 +316,7 @@ function saveProjInfo(e){
 
   $.ajax({
     type: "POST",
-    url: "http://localhost:3000/dictionaries/new",
+    url: serverUrl + "/dictionaries/new",
     contentType: "application/json",
     data: JSON.stringify(saveObj2),
     success: function(data){
@@ -335,21 +336,26 @@ function saveProjInfo(e){
 }
 
 function projectListPage(){
-  window.location.href = "http://localhost:3000/acquistionForm.html"
+  window.location.href = serverUrl + "/acquistionForm.html"
 }
 
 function mainpage(){
-  window.location.href = "http://localhost:3000"
+  window.location.href = serverUrl
 }
 
 $("#btn-dd-selected").click(getDataDictionary)
 $('#btn-pjInfoSave').click(saveProjInfo)
 $('#terms-list').click(projectListPage)
 $('#terms-back').click(mainpage)
-$('#btn-preview').click(function() {
-  $('#import').removeClass("col-xs-9").addClass("col-xs-5");
-  $('div.col-xs-7').removeClass("col-xs-7").addClass("col-xs-5");
-  $('#import').after('<div class="col-xs-4">\
-      <div id="form" style="overflow:scroll;overflow:auto"></div>\
-  </div>');
-  previewForm()})
+$('#btn-preview').click(
+  function() {
+    $('#import').removeClass("col-xs-12").addClass("col-xs-7");
+    if(document.getElementById('preview') != null) {
+      $('#preview').remove()
+    }
+    $('#import').after('<div class="col-xs-5" id="preview">\
+    <p><h3>Preview Form</h3></p><br>\
+        <div id="form" style="overflow:scroll;overflow:auto"></div>\
+    </div>');
+    previewForm()
+  })

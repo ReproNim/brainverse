@@ -1,3 +1,15 @@
 .DS_Store
 node_modules
 uploads
+lib/
+eapp/config/app-config.js
+eapp/public/html/ex/
+eapp/public/css/extra/
+eapp/public/js/extra/
+eapp/views/extra/
+src/extra/
+examples/
+owl/
+main_org.js
+proj-info.json
+tests/addProject-test.js

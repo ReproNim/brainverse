@@ -1,10 +1,13 @@
 let saveObj = {}
 let selectedFields =[]
+//var moment = require('moment')
+moment().format()
 $('[data-toggle="tooltip"]').tooltip()
 
+let serverURL = "http://127.0.0.1:3000"
 $.ajax({
   type: "GET",
-  url: "http://localhost:3000/acquisitions/forms",
+  url: serverURL + "/acquisitions/forms",
   accept: "application/json",
   success: function(data){
     console.log('acquistions forms:success', data)
@@ -34,8 +37,8 @@ function addAqFields(formName){
   //check if form is in local storage
   let termform = JSON.parse(localStorage.getItem(formName))
   console.log("Form Selected:",termform)
-  console.log(formName)
-  let url = "http://localhost:3000/acquisitions/forms/" + formName
+
+  let url = serverURL +"/acquisitions/forms/" + formName
 
   // if the file is not in localstorage, read from the disk
   if(termform == null){
@@ -269,7 +272,7 @@ function saveAqInfo(e){
     //Save the data entered
     $.ajax({
       type: "POST",
-      url: "http://localhost:3000/acquisitions/new",
+      url: serverURL +"/acquisitions/new",
       contentType: "application/json",
       data: JSON.stringify(saveObj),
       success: function(data){
@@ -293,11 +296,11 @@ function saveAqInfo(e){
 }
 
 function projectListPage(){
-  window.location.href = "http://localhost:3000/acquistionForm.html"
+  window.location.href = serverURL +"/acquistionForm.html"
 }
 
 function mainpage(){
-  window.location.href = "http://localhost:3000"
+  window.location.href = serverURL
 }
 
 $('#btn-aqInfoSave').click(saveAqInfo)

@@ -1,7 +1,14 @@
+let planName = ""
 let saveObj = {}
 let selectedFields =[]
 var source = {}
 let resourcesSource = {}
+let resources = {}
+let inv_resources = {}
+
+
+let serverURL = "http://127.0.0.1:3000"
+
 //----
 let plansArray = []
 let columnArray = []
@@ -25,7 +32,7 @@ Get all project plans
 **/
 $.ajax({
   type: "GET",
-  url: "http://localhost:3000/project-plans",
+  url: serverURL +"/project-plans",
   accept: "application/json",
   success: function(data){
     console.log('acquistions forms:success', data)
@@ -53,7 +60,10 @@ $("#pforms").change(function(){
   $("#kanban-space").empty()
   $("#kanban-space").append('<div id ="kanban1"></div>')
   getPlanJson($("#pforms").val())
+  //$("#kanban-space").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
+  $("#kanban-form-display").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
+  $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
 })
 
 /**
@@ -62,10 +72,12 @@ $("#pforms").change(function(){
 **/
 function getPlanJson(formName){
   //check if form is in local storage
-  let planJson = JSON.parse(localStorage.getItem(formName))
-  console.log("Form Selected:",planJson)
+  //let planJson = JSON.parse(localStorage.getItem(formName))
+  let planJson = null
+  planName = formName
+  //console.log("Form Selected:",planJson)
 
-  let url = "http://localhost:3000/project-plans/" + formName
+  let url = serverURL+"/project-plans/" + formName
 
   // if the file is not in localstorage, read from the disk
   if(planJson == null){
@@ -76,7 +88,9 @@ function getPlanJson(formName){
       success: function(data){
         //console.log('acquisitions term forms:success', data)
         planJson = data
+        setStorage(planJson,planName)
         createSourceData(planJson)
+
       }//data
     })
   } else{
@@ -84,6 +98,11 @@ function getPlanJson(formName){
   }
 }//end of getPlanJson function
 
+function setStorage(planJson,planName){
+  console.log("Plan Name inside setStorage: ", planName)
+  console.log("planJson: ", planJson)
+  localStorage.setItem(planName, JSON.stringify(planJson))
+}
 /**
 TODO : Look into different icon class
 **/
@@ -136,7 +155,6 @@ function createSourceData(data){
 
  /* Create Resources Array for resourcesDataAdapter */
   let resObj = {}
-  let resources = {}
   let resArray = []
   let personnelArray = data["Personnel"]
   let numOfSessions = data["Sessions"].length
@@ -150,11 +168,13 @@ function createSourceData(data){
       //resObj["image"] = "/sp.jpg"
       resObj["common"] = true
       resources["No name"] = 0 //this resource id needs to change
+      inv_resources["0"] = "No name"
     }else{
       resObj["id"] = j
       resObj["name"] = personnelArray[j-1]
       resObj["image"] = "/sp.jpg"
       resources[personnelArray[j-1]] = j
+      inv_resources[j] = personnelArray[j-1]
     }
     resArray.push(resObj)
     resObj = {}
@@ -236,6 +256,7 @@ function createSourceData(data){
   **/
   localStorage.setItem("source",JSON.stringify(source))
   localStorage.setItem("resourceSource",JSON.stringify(resourcesSource))
+  //localStorage.setItem("resources",JSON.stringify())
   localStorage.setItem("columns",JSON.stringify(columnArray))
   localStorage.setItem("newItem",JSON.stringify({}))
 
@@ -272,7 +293,7 @@ function createSourceData(data){
       let estTime = modal.find('#modal-est-'+data.id)
       estTime.focus()
       $('#btn-save-modal-'+ data.id).click(function(e){
-        console.log("update button clicked for: ", data.id)
+        console.log("save button clicked for: ", data.id)
         let estTime1 = $('#modal-est-'+ data.id)
         //console.log("estTime1 html element: ", estTime1)
         estimateTime = estTime1.val()
@@ -296,6 +317,8 @@ function createSourceData(data){
         }
         console.log("source: content", source)
         localStorage.setItem("source",JSON.stringify(source))
+
+
       })
     })
   }
@@ -318,6 +341,16 @@ $(document).on('click','#btn-update',function(e){
   //console.log("inside update call")
   let ni = JSON.parse(localStorage.getItem("newItem"))
   $('#kanban1').jqxKanban('updateItem',ni.id, ni)
+
+  console.log("planName click Method: ", planName)
+  let planJson = JSON.parse(localStorage.getItem(planName))
+  //let numOfSessions = planJson["Sessions"].length
+
+  let id = ni.id
+  console.log("id[1]: ", id[1], " id[3]:", id[3])
+  planJson["Sessions"][id[1]-1]["Instruments"][id[3]-1]["Estimated Time"] = estimateTime
+  localStorage.setItem(planName, JSON.stringify(planJson))
+  console.log("planJson: ", planJson)
 })
 
 /**
@@ -362,6 +395,46 @@ $(document).on('columnAttrClicked', '#kanban1', function (event) {
     }
   }
 });
+
+$(document).on('click', '#btn-kanbanSave', function(e){
+  e.preventDefault()
+  let planJson = JSON.parse(localStorage.getItem(planName))
+  let pid = planJson["ProjectPlanID"]
+  $.ajax({
+    type: "PUT",
+    url: "http://localhost:3000/project-plans/"+pid,
+    contentType: "application/json",
+    data: JSON.stringify(planJson),
+    success: function(data){
+      console.log('success: response:', data)
+      $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+    <a href="#" class="close" data-dismiss="alert">&times;</a>\
+    <strong>Project Plan Information updated in /uploads/plansdocs/'+ data['fid']+' !</strong>\
+    </div>')
+    $("#termsInfoSaveMsg").append('<br>')
+    //$("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
+    //$("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+    }
+  })
+})
+//function projectListPage(){
+//  window.location.href = "http://localhost:3000/projectList.html"
+//}
+
+function mainpage(){
+  window.location.href = "http://localhost:3000"
+}
+
+
+$(document).on('click', '#terms-back',mainpage)
+
+function convert2Plan(src, rsrc){
+  let ld = src.localData
+  for(let i=0;i<ld.length;i++){
+
+  }
+}
+
 
 function getListOrder(id) {
      var list = document.getElementById(id).childNodes
