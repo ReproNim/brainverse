@@ -64,6 +64,7 @@ class AlpacaForm {
         "disabled": disable
       }
     }
+    console.log('i do something')
   }
 
   radioForm(title, label, id, op1, op2, disable=false) {
