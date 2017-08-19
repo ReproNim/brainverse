@@ -4,8 +4,7 @@ block content
     .col-md-4.col-sm-6.col-xs-12
       +panel("NIMH Data Archive Data Dictionary", "default") 
         ul
-          li: a(href='/ndarImport.html') Search and Import NDA Data Dictionary »
-          li: a(href='/ndarImport.html') Select Terms and Generate Forms »
+          li: a(href='/ndarImport.html') Search, Select Terms and Generate Forms »
           li
             p
               | Curate, Harmonize and Submit Terms to NDA
@@ -13,18 +12,12 @@ block content
                 
     .col-md-4.col-sm-6.col-xs-12
       +panel("Plan an Experiment or a Study","default") 
-        p
-          | Plan your sessions, create or use your instruments/tasks, assign task to personnels
-        a(href='/project-planner-jq.html') Create Plan »    
+        ul
+          li: a(href='/project-planner-jq.html') Create Plan » 
+          li: a(href='/project-plan-board.html') View/Update Plan »   
           
     .col-md-4.col-sm-6.col-xs-12
-      +panel("View and Update Experiment Plans", "default")
-        p
-          | View and update experiment plans
-        a(href='/project-plan-board.html') View Kanban Board »    
-  .row
-    .col-md-4.col-sm-6.col-xs-12
-      +panel("Project Management", "default") 
+      +panel("Project Management", "default")
         a(href='/addProject.html') Create a Project  »
-                              
+
     

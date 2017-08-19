@@ -36,6 +36,15 @@ var serverUrl = "http://127.0.0.1:3000"
 function getDataDictionary(e3){
   e3.preventDefault()
   $("#div-projectFields").empty()
+  $("#termsInfoSaveMsg").empty()
+  $("#termsInfoSaveMsg").append('<br>')
+  $("#terms-list").empty()
+  if(document.getElementById('preview') != null) {
+    $('#preview').remove()
+    $('#import').removeClass("col-xs-7").addClass("col-xs-12")
+    form.alpacaDestroy()
+  }
+
   count = 1
   //chkboxSelectedArray = []
   $("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
@@ -84,8 +93,13 @@ function getDataDictionary(e3){
       $('#div-projectFields').append('<button id="btn-toggleNone" type="button" class="btn btn-primary" style="margin-left:10px">Clear</button>')
       $('#btn-toggleNone').click(function() {
         $('#div-projectFields input[type="checkbox"]').prop('checked', false);
+        if(document.getElementById('preview') != null) {
+          $('#preview').remove()
+          $('#import').removeClass("col-xs-7").addClass("col-xs-12")
+          form.alpacaDestroy()
+        }
       });
-
+      $('#div-projectFields').append('<button id="btn-preview" type="button" class="btn btn-primary" style="margin-left:10px">Preview Form</button>')
       $("#div-projectFields").append('</tbody></table></div>')
     }
   })
@@ -283,6 +297,7 @@ function checkNotes(key,notes){
 // The information is saved in a local file named 'proj-info.json'
 function saveProjInfo(e){
   e.preventDefault()
+
   for (let i=1; i<count; i++){
     if(document.getElementById("projfield-" + i).checked){
       console.log(document.getElementById("projfield-"+ i).checked)
@@ -326,33 +341,36 @@ function saveProjInfo(e){
       console.log('success')
       console.log("data received",data)
       $("#div-projectFields").empty()
+      $("#termsInfoSaveMsg").empty()
       $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
   <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
 </div>')
       $("#termsInfoSaveMsg").append('<br>')
       $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Form </button><br>')
-      $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+      //$("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
     }
   })
   console.log('done')
+  //Close Form Preview on save button
+  $('#preview').remove()
+  $('#import').removeClass("col-xs-7").addClass("col-xs-12")
 }
 
 function projectListPage(){
   window.location.href = serverUrl + "/acquistionForm.html"
 }
 
-function mainpage(){
+/*function mainpage(){
   window.location.href = serverUrl
-}
+}*/
 
 $("#btn-dd-selected").click(getDataDictionary)
 $('#btn-pjInfoSave').click(saveProjInfo)
 $('#terms-list').click(projectListPage)
-$('#terms-back').click(mainpage)
-$('#btn-preview').click(
-  function() {
-    $('#import').removeClass("col-xs-12").addClass("col-xs-7");
+//$('#terms-back').click(mainpage)
+$(document).on('click', '#btn-preview', function() {
+    $('#import').removeClass("col-xs-12").addClass("col-xs-7")
     if(document.getElementById('preview') != null) {
       $('#preview').remove()
     }
@@ -362,3 +380,17 @@ $('#btn-preview').click(
     </div>');
     previewForm()
   })
+
+
+/*  $('#btn-preview').click(function() {
+      $('#import').removeClass("col-xs-12").addClass("col-xs-7");
+      if(document.getElementById('preview') != null) {
+        $('#preview').remove()
+      }
+      $('#import').after('<div class="col-xs-5" id="preview">\
+      <p><h3>Preview Form</h3></p><br>\
+          <div id="form" style="overflow:scroll;overflow:auto"></div>\
+      </div>');
+      previewForm()
+    })
+*/
