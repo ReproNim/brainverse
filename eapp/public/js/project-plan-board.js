@@ -60,10 +60,8 @@ $("#pforms").change(function(){
   $("#kanban-space").empty()
   $("#kanban-space").append('<div id ="kanban1"></div>')
   getPlanJson($("#pforms").val())
-  //$("#kanban-space").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
   $("#kanban-form-display").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
-  $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
 })
 
 /**
@@ -75,11 +73,14 @@ function getPlanJson(formName){
   //let planJson = JSON.parse(localStorage.getItem(formName))
   let planJson = null
   planName = formName
-  //console.log("Form Selected:",planJson)
 
   let url = serverURL+"/project-plans/" + formName
 
-  // if the file is not in localstorage, read from the disk
+  planJson = JSON.parse(localStorage.getItem(planName))
+
+  /*
+  * if the file is not in localstorage, read from the disk
+  */
   if(planJson == null){
     $.ajax({
       type: "GET",
@@ -159,7 +160,7 @@ function createSourceData(data){
   let personnelArray = data["Personnel"]
   let numOfSessions = data["Sessions"].length
   let numOfResources = personnelArray.length
-  console.log("personneArray:", personnelArray)
+  console.log("personneArray:", personnelArray.length)
 
   for(let j = 0; j <= numOfResources; j++){
     if(j==0){
@@ -171,10 +172,10 @@ function createSourceData(data){
       inv_resources["0"] = "No name"
     }else{
       resObj["id"] = j
-      resObj["name"] = personnelArray[j-1]
-      resObj["image"] = "/sp.jpg"
-      resources[personnelArray[j-1]] = j
-      inv_resources[j] = personnelArray[j-1]
+      resObj["name"] = personnelArray[j-1]["user"]
+      resObj["image"] = personnelArray[j-1]["avatar_url"]
+      resources[personnelArray[j-1]["user"]] = j
+      inv_resources[j] = personnelArray[j-1]["user"]
     }
     resArray.push(resObj)
     resObj = {}
@@ -187,15 +188,10 @@ function createSourceData(data){
   for(let i = 0; i < numOfSessions; i++){
     let numOfInstruments = data["Sessions"][i]["Instruments"].length
     for(let j= 0; j < numOfInstruments; j++){
-      //let lar = []
       label = data["Sessions"][i]["Instruments"][j]["Instrument Type"]+": "+ data["Sessions"][i]["Instruments"][j]["Form Name"]
-      //est = " Estimated Time: "+ data["Sessions"][i]["Instruments"][j]["Estimated Time"]
-      //lar.push(label)
-      //lar.push(est)
       let tobj = {"est": data["Sessions"][i]["Instruments"][j]["Estimated Time"]}
       planObj["id"] = "S"+(i+1) + "I" + (j+1)
       planObj["state"] = "session"+ (i+1)
-      //planObj["label"] = lar
       planObj["label"] = label
       planObj["content"] = tobj
       planObj["tags"] = "test"
@@ -206,7 +202,7 @@ function createSourceData(data){
       planObj = {}
     }
   }
-
+  console.log("PlansArray: ", plansArray)
   /**
   Initializing the source for dataAdapter
   **/
@@ -284,11 +280,12 @@ function createSourceData(data){
     $(item).find(".jqx-kanban-item-content").append("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal-"+data.id+"' id='edit-"+data.id+"'>Edit</button>")
     $(item).find(".jqx-kanban-item-content").append(addItemModal(data,resource))
     $(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Update</button>')
+    $(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Trails</button>')
 
     var newContent = {}
     $(document).on('shown.bs.modal','#itemModal-'+data.id,function(event) {
       console.log("Item modal selected: #itemModal-",data.id)
-      //console.log("Button that triggered Modal: ", $(event.relatedTarget))
+
       var modal = $(this)
       let estTime = modal.find('#modal-est-'+data.id)
       estTime.focus()
@@ -332,7 +329,6 @@ function createSourceData(data){
                 }
   kCO["width"] = '100%'
   kCO["height"] = '100%'
-  //console.log("KCO: \n",kCO)
   $('#kanban1').jqxKanban(kCO)
 
 } //create source data method end
@@ -353,17 +349,8 @@ $(document).on('click','#btn-update',function(e){
   console.log("planJson: ", planJson)
 })
 
-/**
-* Trying storage event, not working
-**/
-/*$(document).bind('storage', function (e) {
-    console.log("binding storage:", e.originalEvent.newItem, e.originalEvent.newValue)
- });*/
-
 $(document).on('itemAttrClicked', '#kanban1', function (event) {
   var args = event.args;
-  //let source = $('#kanban1').jqxKanban('source')
-  //console.log('source is : ', source)
   if(args.attribute == "template") {
   $('#kanban1').jqxKanban('removeItem', args.item.id)
   }
@@ -402,7 +389,7 @@ $(document).on('click', '#btn-kanbanSave', function(e){
   let pid = planJson["ProjectPlanID"]
   $.ajax({
     type: "PUT",
-    url: "http://localhost:3000/project-plans/"+pid,
+    url: "http://127.0.0.1:3000/project-plans/"+pid,
     contentType: "application/json",
     data: JSON.stringify(planJson),
     success: function(data){
@@ -412,21 +399,11 @@ $(document).on('click', '#btn-kanbanSave', function(e){
     <strong>Project Plan Information updated in /uploads/plansdocs/'+ data['fid']+' !</strong>\
     </div>')
     $("#termsInfoSaveMsg").append('<br>')
-    //$("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
-    //$("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+
     }
   })
 })
-//function projectListPage(){
-//  window.location.href = "http://localhost:3000/projectList.html"
-//}
 
-function mainpage(){
-  window.location.href = "http://localhost:3000"
-}
-
-
-$(document).on('click', '#terms-back',mainpage)
 
 function convert2Plan(src, rsrc){
   let ld = src.localData
@@ -434,7 +411,6 @@ function convert2Plan(src, rsrc){
 
   }
 }
-
 
 function getListOrder(id) {
      var list = document.getElementById(id).childNodes

@@ -324,7 +324,8 @@ function saveProjInfo(e){
       instrument['Instrument Type'] = $("#inst-"+j+"-"+i).val()
       instrument['Form Name'] = $("#iforms-"+j+"-"+i).val()
       instrument['Estimated Time'] = $("#est-"+j+"-"+i).val()
-      instrument['Assigned To'] = username
+      //instrument['Assigned To'] = username
+      instrument['Assignee'] = username
       instruments.push(instrument)
       instrument = {}
     }
