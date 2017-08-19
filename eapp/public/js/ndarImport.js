@@ -36,6 +36,9 @@ var serverUrl = "http://127.0.0.1:3000"
 function getDataDictionary(e3){
   e3.preventDefault()
   $("#div-projectFields").empty()
+  $("#termsInfoSaveMsg").empty()
+  $("#termsInfoSaveMsg").append('<br>')
+  $("#terms-list").empty()
   if(document.getElementById('preview') != null) {
     $('#preview').remove()
     $('#import').removeClass("col-xs-7").addClass("col-xs-12")
@@ -294,6 +297,7 @@ function checkNotes(key,notes){
 // The information is saved in a local file named 'proj-info.json'
 function saveProjInfo(e){
   e.preventDefault()
+
   for (let i=1; i<count; i++){
     if(document.getElementById("projfield-" + i).checked){
       console.log(document.getElementById("projfield-"+ i).checked)
@@ -337,6 +341,7 @@ function saveProjInfo(e){
       console.log('success')
       console.log("data received",data)
       $("#div-projectFields").empty()
+      $("#termsInfoSaveMsg").empty()
       $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
       <a href="#" class="close" data-dismiss="alert">&times;</a>\
   <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
