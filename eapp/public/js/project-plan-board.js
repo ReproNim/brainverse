@@ -280,7 +280,7 @@ function createSourceData(data){
     $(item).find(".jqx-kanban-item-content").append("<button type='button' class='btn btn-default btn-sm' data-toggle='modal' data-target='#itemModal-"+data.id+"' id='edit-"+data.id+"'>Edit</button>")
     $(item).find(".jqx-kanban-item-content").append(addItemModal(data,resource))
     $(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Update</button>')
-    $(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Trails</button>')
+    //$(item).find(".jqx-kanban-item-content").append('<button type="button" class="btn btn-default btn-sm" id="btn-update">Trails</button>')
 
     var newContent = {}
     $(document).on('shown.bs.modal','#itemModal-'+data.id,function(event) {

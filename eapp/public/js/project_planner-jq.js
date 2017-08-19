@@ -361,8 +361,8 @@ function saveProjInfo(e){
     <strong>Project Plans Information Saved in /uploads/plansdocs/'+ data['fid']+' !</strong>\
     </div>')
     $("#pjInfoSaveMsg").append('<br>')
-    $("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
-    $("#pj-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+    //$("#pj-list").append('<button id= "btn-pj-list" class="btn btn-primary">Project Lists </button><br>')
+    //$("#pj-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
     }
   })
   console.log('done')
