@@ -336,6 +336,10 @@ function saveProjInfo(e){
     }
   })
   console.log('done')
+
+  //Close Form Preview on save button
+  $('#preview').remove()
+  $('#import').removeClass("col-xs-7").addClass("col-xs-12")
 }
 
 function projectListPage(){
