@@ -5,6 +5,7 @@ var source = {}
 let resourcesSource = {}
 let resources = {}
 let inv_resources = {}
+let personnelArray =[]
 
 
 let serverURL = "http://127.0.0.1:3000"
@@ -55,13 +56,18 @@ On selection of a project plan, display the project plan in the kanban board spa
 **/
 $("#pforms").change(function(){
   console.log("Plan Selected: ", $("#pforms").val())
+  plansArray = []
+  columnArray = []
+  personnelArray =[]
   $("#kanban1").empty()
   $("#kanban1").remove()
   $("#kanban-space").empty()
+  $("#btn-kanbanSave").remove()
   $("#kanban-space").append('<div id ="kanban1"></div>')
   getPlanJson($("#pforms").val())
+  //$("#kanban-form-display").empty()
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
-  $("#kanban-form-display").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
+  //$("#kanban-form-display").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
 })
 
 /**
@@ -71,12 +77,12 @@ $("#pforms").change(function(){
 function getPlanJson(formName){
   //check if form is in local storage
   //let planJson = JSON.parse(localStorage.getItem(formName))
-  let planJson = null
+  //let planJson = null
   planName = formName
 
   let url = serverURL+"/project-plans/" + formName
 
-  planJson = JSON.parse(localStorage.getItem(planName))
+  let planJson = JSON.parse(localStorage.getItem(planName))
 
   /*
   * if the file is not in localstorage, read from the disk
@@ -151,14 +157,16 @@ return modalEx
 * Display on the Kanban board
 **/
 function createSourceData(data){
-  /*let plansArray = []*/
+  //let plansArray = []
   let planObj = {}
 
  /* Create Resources Array for resourcesDataAdapter */
   let resObj = {}
   let resArray = []
-  let personnelArray = data["Personnel"]
+
   let numOfSessions = data["Sessions"].length
+
+  personnelArray = data["Personnel"]
   let numOfResources = personnelArray.length
   console.log("personneArray:", personnelArray.length)
 
