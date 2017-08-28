@@ -10,10 +10,11 @@ module.exports = () => {
 
 
   const jsonParser = bodyParser.json()
-  const rdfHelper = require('./../util/graph.js')
+  //const rdfHelper = require('./../util/graph.js')
+  const rdfHelper = require('./../util/nidme-graph.js')
 
   global.store = app.locals.store
-  global.rgraph = app.locals.rgraph
+  //global.rgraph = app.locals.rgraph
 
   app.use(fileUpload())
 
@@ -125,8 +126,9 @@ module.exports = () => {
     })
     let obj_info = pj_plan_info
     //obj_info['objID'] = uuid()
-    rdfHelper.saveToRDFstore(obj_info,function(tstring){
-      console.log("callback fn: tstring: ", tstring)
+    //rdfHelper.saveToRDFstore(obj_info,function(tstring){
+    rdfHelper.saveToRDFstore(obj_info,function(graphId,tstring){
+      console.log("savetTRDF callback fn: tstring: ", tstring)
 
       let cpath = path.join(__dirname, '/../../uploads/acquisition/plan-graph-' + obj_info['ProjectPlanID'] + '.ttl')
       let fname = 'plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'

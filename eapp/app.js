@@ -15,7 +15,7 @@ module.exports = () => {
   const GitHubStrategy = require('passport-github2').Strategy
   const partials = require('express-partials')
   const config = require('./config/app-config.js')
-  const rdfHelper = require('./util/graph.js')
+  const rdfHelper = require('./util/nidme-graph.js')
 
   global.uid = {}
 
@@ -145,7 +145,7 @@ module.exports = () => {
 
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
-  app.locals.rgraph = app.locals.setup.graph
+  //app.locals.rgraph = app.locals.setup.graph
   //console.log("app.locals:", app.locals.store, app.locals.rgraph)
 
   // Setup Globally Included Routes
