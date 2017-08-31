@@ -28,6 +28,27 @@ var _rdfStoreSetup = function(){
   _addToStoreNamespace("xsd","http://www.w3.org/2001/XMLSchema#")
   _addToStoreNamespace("dc","http://purl.org/dc/terms/")
   console.log("Namespaces:---->", namespaces)
+  var listOfFiles = new Promise(function(resolve){
+  fs.readdir(path.join(__dirname, '/../../uploads/acquisition'), function(err,list){
+      if(err) throw err;
+      resolve(list)
+  })
+})
+listOfFiles.then(function(list){
+  var arrayOfPromises = list.map(function(f){
+    let data = fs.createReadStream(path.join(__dirname,'/../../uploads/acquisition/'+f))
+    let name = f.split(".")
+    return new Promise(function(resolve){
+      store.load('text/turtle',data,"nidm:"+name[0], function(err,results){
+        resolve(name[0])
+      })
+    })
+  }) //array of promises
+  //console.log("array: ", arrayOfPromises)
+  return Promise.all(arrayOfPromises)
+}).then(function(g){
+  console.log("All Promises resolved")
+})
   return {store:rstore}
 }
 var _addToStoreNamespace = function(prefix, uri){
@@ -140,7 +161,8 @@ class NIDMGraph {
 
   addPlan(jsonObj){
     //console.log("jsonObj", jsonObj)
-    let planId = "nidm:plan_"+ uuid()
+    //let planId = "nidm:plan_"+ uuid()
+    let planId = "nidm:plan_"+ jsonObj["ProjectPlanID"]
     let n = store.rdf.createNamedNode(store.rdf.resolve(planId))
     this.rgraph.add(store.rdf.createTriple(n,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:type")),
@@ -165,20 +187,25 @@ class NIDMGraph {
           //console.log("pndose set: ", this.pnodes)
           this.addPerson(pnode,parr[p].uid)
         }
+      }else if(key == "created") {
+        this.rgraph.add(store.rdf.createTriple(n,
+        store.rdf.createNamedNode(store.rdf.resolve("dc:created")),
+        store.rdf.createLiteral(jsonObj["created"],null,store.rdf.resolve("xsd:dateTime"))))
+
+      }else if(key == "wasDerivedFrom"){
+        this.rgraph.add(store.rdf.createTriple(n,
+        store.rdf.createNamedNode(store.rdf.resolve("prov:wasDerivedFrom")),
+        store.rdf.createNamedNode(store.rdf.resolve("nidm:plan_"+jsonObj['wasDerivedFrom']))))
       } else{
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("nidm:"+key)),
         store.rdf.createLiteral(jsonObj[key])))
       }
     }
-
     let sessionCol = this.addCollection("sessionCollection", snodes)
     this.rgraph.add(store.rdf.createTriple(n,
     store.rdf.createNamedNode(store.rdf.resolve("nidm:sessionPlans")),
     sessionCol))
-    this.rgraph.add(store.rdf.createTriple(n,
-    store.rdf.createNamedNode(store.rdf.resolve("dc:created")),
-    store.rdf.createLiteral(moment().format(),null,store.rdf.resolve("xsd:dateTime"))))
     return n
   }
 
@@ -210,8 +237,9 @@ class NIDMGraph {
     return entColNode
   }
 
-  addToStore(addCallback){
-    let graphId = "nidm:graph_" + uuid()
+  addToStore(jsonObj,addCallback){
+    //let graphId = "nidm:graph_" + uuid()
+    let graphId = "nidm:plan-graph-" + jsonObj["ProjectPlanID"]
     console.log("addtoStore graphId: ", graphId)
     store.insert(this.rgraph, graphId, function(err) {
       if(err){
@@ -250,7 +278,7 @@ function serializeToTurtle(sObj){
       let node_length = sObj[key].length
       let pObj = sObj[key]
       for(let i = 0; i<node_length-1; i++){
-        console.log("key'predicate and object's value: ", pObj[i])
+        //console.log("key'predicate and object's value: ", pObj[i])
         let pf_key = getPrefixKeyForm(pObj[i])
         s = s + pf_key + " ;\n"
         s = s + "  "
@@ -343,7 +371,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
     }
     var nidmg = new NIDMGraph()
     nidmg.addPlan(jsonObj)
-    nidmg.addToStore(function(graphId){
+    nidmg.addToStore(jsonObj,function(graphId){
       console.log("addToStore callabck:", graphId)
       store.graph(graphId,function(err, graph){
         console.log("---inside graph ------", graphId)
@@ -359,7 +387,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
           subject[triple.subject.nominalValue].push(objS)
         })
         //console.log("graphToNT: ---->\n", graph.toNT())
-        console.log("subject list: ", subject)
+        //console.log("subject list: ", subject)
         console.log("----Serializing graph to turtle --->>>")
         let s = serializeToTurtle(subject)
         tstring = tstring + s
