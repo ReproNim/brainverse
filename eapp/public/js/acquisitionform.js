@@ -276,7 +276,7 @@ function saveAqInfo(e){
       contentType: "application/json",
       data: JSON.stringify(saveObj),
       success: function(data){
-        console.log('success')
+        console.log('success:', data)
         //$("#div-projectFields").empty()
         $("#termsInfoSaveMsg").empty()
         $("#terms-list").empty()

@@ -11,8 +11,10 @@ module.exports = () => {
 
   const jsonParser = bodyParser.json()
 
-  let store = app.locals.store
-  let rgraph = app.locals.rgraph
+  //const rdfHelper = require('./../util/nidme-graph.js')
+  global.store = app.locals.store
+  let rgraph = store.rdf.createGraph()
+  //let rgraph = app.locals.rgraph
   /**
   New acquisition data
   **/
@@ -27,8 +29,10 @@ module.exports = () => {
       console.log("callback fn: tstring: ", tstring)
 
       //let cpath = 'uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl'
-      let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl')
-      let fname = 'entity-graph-' + obj_info['ExperimentID'] + '.ttl'
+      //let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl')
+      //let fname = 'entity-graph-' + obj_info['ExperimentID'] + '.ttl'
+      let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['experimentid'] + '.ttl')
+      let fname = 'entity-graph-' + obj_info['experimentid'] + '.ttl'
 
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
