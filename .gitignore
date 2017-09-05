@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 uploads
-lib/
 eapp/config/app-config.js
 eapp/public/html/ex/
 eapp/public/css/extra/
