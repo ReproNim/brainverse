@@ -8,6 +8,7 @@ const moment = require('moment')
 
 
 let namespaces = {}
+
 var _rdfStoreSetup = function(){
   let rstore = rdfstore.create(function(err, store) {
     if(err){
@@ -47,16 +48,16 @@ listOfFiles.then(function(list){
   //console.log("array: ", arrayOfPromises)
   return Promise.all(arrayOfPromises)
 }).then(function(g){
-  console.log("All Promises resolved")
+  console.log("app set up: All Promises resolved: ", g)
 })
   return {store:rstore}
 }
+
 var _addToStoreNamespace = function(prefix, uri){
   namespaces[uri] = prefix
-  //console.log("addToStoreName: namespaces", namespaces)
 }
+
 function getPrefix(uri){
-  //console.log("namespaces:", namespaces)
   return namespaces[uri]
 }
 
@@ -65,7 +66,6 @@ var _getRegisteredGraphsList = function(){
           var values = []
           for (var i = 0; i < graphs.length; i++) {
             values.push(graphs[i].valueOf())
-            //console.log("graphs: ", graphs[i])
           }
     console.log("values", values)
     return values
@@ -73,51 +73,42 @@ var _getRegisteredGraphsList = function(){
 }
 
 
-class NIDMGraph {
-
+var NIDMGraph = class NIDMGraph {
+  /*
+  * create a RDF graph
+  */
   constructor(){
     this.pnodes = {}
     this.rgraph = store.rdf.createGraph()
   }
 
-  /*function setNamespaces(ns){
-    let keys = Object.keys(ns)
-    for(key in keys){
-      namespaces[uri] = prefix
-    }
-  }
-
-  function setPrefixes(pfs){
-    let keys = Object.keys(pfs)
-    for(key in keys){
-      store.rdf.setPrefix(key, pfs[key])
-    }
-  }
-
-  function getPrefixes(prefix){
-    return store.rdf.prefixes.get(prefix)
-  }*/
-
+  /*
+  * Add Instrument Node to the Graph
+  */
   addInstrument(instObj){
     let instId = "nidm:instrument_" + uuid()
     let n = store.rdf.createNamedNode(store.rdf.resolve(instId))
     this.rgraph.add(store.rdf.createTriple(n,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:type")),
     store.rdf.createNamedNode(store.rdf.resolve("nidm:Instrument"))))
-    for(var key in instObj){
+    for(var key1 in instObj){
+      let key = key1.replace(/\s+/g, '')
       if(key == "Assignee"){
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("nidm:assignee")),
-          this.pnodes[instObj[key]]))
+          this.pnodes[instObj[key1]]))
       }else{
         this.rgraph.add(store.rdf.createTriple(n,
           store.rdf.createNamedNode(store.rdf.resolve("nidm:"+key)),
-          store.rdf.createLiteral(instObj[key])))
+          store.rdf.createLiteral(instObj[key1])))
       }
     }
-    //addState()
     return n;
   }
+
+  /*
+  * Add Session to the Graph
+  */
 
   addSession(sessionObj){
     let instNodes = []
@@ -127,7 +118,9 @@ class NIDMGraph {
     store.rdf.createNamedNode(store.rdf.resolve("rdf:type")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Entity"))))
 
-    for(var key in sessionObj){
+    for(var key1 in sessionObj){
+      let key = key1.replace(/\s+/g, '')
+
       if(key == "Instruments"){
         let instArray = sessionObj["Instruments"]
         for(let i = 0; i< instArray.length; i++){
@@ -137,7 +130,7 @@ class NIDMGraph {
       }else{
         this.rgraph.add(store.rdf.createTriple(sn,
           store.rdf.createNamedNode(store.rdf.resolve("nidm:" + key)),
-          store.rdf.createLiteral(sessionObj[key])))
+          store.rdf.createLiteral(sessionObj[key1])))
       }
     }
     let instColNode = this.addCollection("instrumentCollection", instNodes)
@@ -149,19 +142,8 @@ class NIDMGraph {
     return sn;
   }
 
-  /*function createTripleWithNamedNode(s,p,o){
-    let triple = store.rdf.createTriple(
-    store.rdf.createNamedNode(store.rdf.resolve(s)),
-    store.rdf.createNamedNode(store.rdf.resolve(p)),
-    store.rdf.createNamedNode(store.rdf.resolve(o)))
-    return triple
-  }
-  function createTripleWithLiteral(s,p,l){
-  }*/
 
   addPlan(jsonObj){
-    //console.log("jsonObj", jsonObj)
-    //let planId = "nidm:plan_"+ uuid()
     let planId = "nidm:plan_"+ jsonObj["ProjectPlanID"]
     let n = store.rdf.createNamedNode(store.rdf.resolve(planId))
     this.rgraph.add(store.rdf.createTriple(n,
@@ -171,7 +153,9 @@ class NIDMGraph {
     let sarray = []
     let snodes = []
 
-    for(var key in jsonObj){
+    for(var key1 in jsonObj){
+      let key = key1.replace(/\s+/g, '')
+      console.log("key1: ", key1, "   key: ", key)
       if(key == "Sessions"){
         sarray = jsonObj["Sessions"]
         for(let k = 0;k<sarray.length;k++){
@@ -199,7 +183,7 @@ class NIDMGraph {
       } else{
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("nidm:"+key)),
-        store.rdf.createLiteral(jsonObj[key])))
+        store.rdf.createLiteral(jsonObj[key1])))
       }
     }
     let sessionCol = this.addCollection("sessionCollection", snodes)
@@ -237,20 +221,21 @@ class NIDMGraph {
     return entColNode
   }
 
-  addToStore(jsonObj,addCallback){
-    //let graphId = "nidm:graph_" + uuid()
-    let graphId = "nidm:plan-graph-" + jsonObj["ProjectPlanID"]
-    console.log("addtoStore graphId: ", graphId)
-    store.insert(this.rgraph, graphId, function(err) {
-      if(err){
-        console.log("Not able to insert subgraph to nidm:graph")
-      }
-      //this.processGraph(graphId, function(graphId,tstring){
-      //  console.log("processGraph Callback: graphId: ", graphId)
-        addCallback(graphId)
-      //})
-    })//insert
+  addNDAExperiment(jsonObj){
+    let ndaId = "nidm:entity_" + uuid()
+    let ndaNode = store.rdf.createNamedNode(store.rdf.resolve("nidm:entity_"+ ndaId))
+    this.rgraph.add(store.rdf.createTriple(n,
+    store.rdf.createNamedNode(store.rdf.resolve("rdf:type")),
+    store.rdf.createNamedNode(store.rdf.resolve("prov:Entity"))))
+    for(var key in jsonObj){
+      this.rgraph.add(store.rdf.createTriple(n,
+        store.rdf.createNamedNode(store.rdf.resolve("nda:"+key)),
+        store.rdf.createLiteral(jsonObj[key])))
+    }
+    return ndaNode
   }
+
+
   getInstrument(instId){
   }
   getSession(sessionId){
@@ -260,6 +245,25 @@ class NIDMGraph {
   queryGraph(graphId){
   }
 }
+
+
+function _addToStore(nidmGraph,graphId,addCallback){
+  //let graphId = "nidm:plan-graph-" + jsonObj["ProjectPlanID"]
+  //console.log("addtoStore graphId------>: ", graphId)
+  //console.log("nidmGraph.rgraph----->", nidmGraph.rgraph)
+  store.insert(nidmGraph.rgraph, graphId, function(err) {
+    if(err){
+      console.log("Not able to insert subgraph to nidm:graph")
+    }
+    /*store.graph(graphId,function(err,graph1){
+      console.log("Inserted to ~~~~ graphId:~~~>", graphId)
+      console.log(graph1.toNT)
+    })*/
+      addCallback(graphId)
+    //})
+  })//insert
+}
+
 function serializeToTurtle(sObj){
     let s = ""
     let num_nodes = Object.keys(sObj).length
@@ -348,13 +352,14 @@ function serializeToTurtle(sObj){
 
 
 
-var _saveToRDFstore = function(jsonObj, callback_tstring){
+//var _saveToRDFstore = function(jsonObj, graphId, fileName,callback_tstring){
+var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
   let tstring = ""
   let cpath = path.join(__dirname,'/../../uploads/acquisition/')
-  let fname = 'plan-graph-' + jsonObj['ProjectPlanID'] + '.ttl'
 
-  fs.stat(cpath+fname, function(err, stat) {
-    console.log(cpath+fname)
+  fs.stat(cpath+fileName, function(err, stat) {
+    console.log(cpath+fileName)
+
     if(err == null){
       console.log('File exists')
       tstring = tstring + "\n"
@@ -369,10 +374,11 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
     } else{
       console.log('Some other error: ', err.code);
     }
-    var nidmg = new NIDMGraph()
-    nidmg.addPlan(jsonObj)
-    nidmg.addToStore(jsonObj,function(graphId){
-      console.log("addToStore callabck:", graphId)
+    /*
+      Adding to Store
+    */
+    _addToStore(nidmGraph,graphId,function(graphId){
+      console.log("addToStore callback:", graphId)
       store.graph(graphId,function(err, graph){
         console.log("---inside graph ------", graphId)
         let subject={}
@@ -386,7 +392,7 @@ var _saveToRDFstore = function(jsonObj, callback_tstring){
           objS[triple.predicate.toString()] = triple.object.toString()
           subject[triple.subject.nominalValue].push(objS)
         })
-        //console.log("graphToNT: ---->\n", graph.toNT())
+        console.log("graphToNT: ---->\n", graph.toNT())
         //console.log("subject list: ", subject)
         console.log("----Serializing graph to turtle --->>>")
         let s = serializeToTurtle(subject)
@@ -403,5 +409,6 @@ module.exports = {
   rdfStoreSetup : _rdfStoreSetup,
   getRegisteredGraphsList: _getRegisteredGraphsList,
   saveToRDFstore: _saveToRDFstore,
+  addToStore: _addToStore,
   NIDMGraph : NIDMGraph
 }

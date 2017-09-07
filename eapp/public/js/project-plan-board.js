@@ -36,7 +36,7 @@ $.ajax({
   url: serverURL +"/project-plans",
   accept: "application/json",
   success: function(data){
-    console.log('acquistions forms:success', data)
+    console.log('project plans:success', data)
     let pforms = data.list
     if(pforms.length == 0){
       console.log("no forms")

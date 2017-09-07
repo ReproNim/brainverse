@@ -340,6 +340,7 @@ function saveProjInfo(e){
   projPlanObj["Sessions"] = sessions
   projPlanObj["created"] = moment().format()
   projPlanObj["wasDerivedFrom"] = "None"
+  projPlanObj["version"] = 0
 
   $.ajax({
     type: "POST",
