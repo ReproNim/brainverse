@@ -5,8 +5,6 @@ const loadJsonFile = require('load-json-file')
 const fs = require('fs')
 const rdfstore = require('rdfstore')
 const moment = require('moment')
-const readfiles = require('readfiles')
-
 
 let namespaces = {}
 
@@ -231,15 +229,16 @@ var NIDMGraph = class NIDMGraph {
   }
 
   addNDAExperiment(jsonObj){
-    let ndaId = "nidm:entity_" + uuid()
-    let ndaNode = store.rdf.createNamedNode(store.rdf.resolve("nidm:entity_"+ ndaId))
-    this.rgraph.add(store.rdf.createTriple(n,
+    let ndaId = "nidm:entity_" + jsonObj['objID']
+    let ndaNode = store.rdf.createNamedNode(store.rdf.resolve(ndaId))
+    this.rgraph.add(store.rdf.createTriple(ndaNode,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:type")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Entity"))))
-    for(var key in jsonObj){
-      this.rgraph.add(store.rdf.createTriple(n,
+    for(var key1 in jsonObj){
+      let key = key1.replace(/\s+/g, '')
+      this.rgraph.add(store.rdf.createTriple(ndaNode,
         store.rdf.createNamedNode(store.rdf.resolve("nda:"+key)),
-        store.rdf.createLiteral(jsonObj[key])))
+        store.rdf.createLiteral(jsonObj[key1])))
     }
     return ndaNode
   }

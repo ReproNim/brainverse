@@ -10,11 +10,11 @@ module.exports = () => {
   const rdfstore = require('rdfstore')
 
   const jsonParser = bodyParser.json()
+  const rdfHelper = require('./../util/nidme-graph.js')
 
-  //const rdfHelper = require('./../util/nidme-graph.js')
   global.store = app.locals.store
-  let rgraph = store.rdf.createGraph()
-  //let rgraph = app.locals.rgraph
+  //let rgraph = store.rdf.createGraph()
+
   /**
   New acquisition data
   **/
@@ -25,21 +25,28 @@ module.exports = () => {
     let obj_info = req.body
     obj_info['objID'] = uuid()
 
-    saveToRDFstore(obj_info,function(tstring){
+    let fName = 'experiments/entity-graph-' + obj_info['experimentid'] + '.ttl'
+    let graphId = "nidm:entity-graph-" + obj_info['experimentid']
+    let nidmg = new rdfHelper.NIDMGraph()
+    nidmg.addNDAExperiment(obj_info)
+    /**
+    ** Saving Graph to RDF Store
+    **/
+    rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("callback fn: tstring: ", tstring)
 
       //let cpath = 'uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl'
       //let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['ExperimentID'] + '.ttl')
       //let fname = 'entity-graph-' + obj_info['ExperimentID'] + '.ttl'
-      let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['experimentid'] + '.ttl')
-      let fname = 'entity-graph-' + obj_info['experimentid'] + '.ttl'
-
+      //let cpath = path.join(__dirname, '/../../uploads/acquisition/entity-graph-' + obj_info['experimentid'] + '.ttl')
+      //let fname = 'entity-graph-' + obj_info['experimentid'] + '.ttl'
+      let cpath = path.join(__dirname, '/../../uploads/acquisition/'+fName)
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
         }
         console.log("The file was saved!");
-        res.json({'tid': obj_info['objID'], 'fid': fname})
+        res.json({'tid': obj_info['objID'], 'fid': fName})
       })
     })
   })
@@ -67,7 +74,7 @@ module.exports = () => {
     res.redirect('/')
   }
 
-  function saveToRDFstore(jsonObj, callback_tstring){
+  /*function saveToRDFstore(jsonObj, callback_tstring){
     let tstring = ""
     let cpath = path.join(__dirname,'/../../uploads/acquisition/')
     let fname = 'entity-graph-' + jsonObj['ExperimentID'] + '.ttl'
@@ -147,4 +154,5 @@ module.exports = () => {
     }
     return s
   }
+  */
 }
