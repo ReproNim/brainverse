@@ -11,17 +11,11 @@ module.exports = () => {
 
 
   const jsonParser = bodyParser.json()
-  //const rdfHelper = require('./../util/graph.js')
   const rdfHelper = require('./../util/nidme-graph.js')
 
   global.store = app.locals.store
-  //global.rgraph = app.locals.rgraph
 
   app.use(fileUpload())
-
-  /*app.get('/', function(req, res){
-    res.render('index')
-  })*/
 
   app.get('/account', ensureAuthenticated, function(req,res){
     res.send({'user':req.user})
@@ -112,41 +106,37 @@ module.exports = () => {
 
   app.post('/project-plans/new',ensureAuthenticated, jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
-    console.log('recived at server side')
-    //console.log(req.body)
+    console.log('[Recieved at server side]: ',req.body)
+
     let pj_plan_info = req.body
     pj_plan_info['ProjectPlanID'] = uuid()
-    console.log(pj_plan_info)
-    pid = pj_plan_info['ProjectPlanID'].split('-')
-    pname = pj_plan_info['Project Name'].split(' ')
-    //let cpath = path.join(__dirname, '/../../uploads/plansdocs/proj-plan-'+ pname[0]+'-'+ pid[0] +'.json')
-    let cpath = path.join(__dirname, '/../../uploads/plansdocs/plan-'+ pname[0]+'-'+ pj_plan_info['ProjectPlanID'] +'.json')
+    console.log("[Project Plan Info]: ", pj_plan_info)
 
+    let pname = pj_plan_info['Project Name'].split(' ')
+    let jsonFile = 'plan-'+ pname[0]+'-'+ pj_plan_info['ProjectPlanID'] +'.json'
+    let cpath = path.join(__dirname, '/../../uploads/plansdocs/'+ jsonFile)
+    /**
+    ** Writing plan to JSON document
+    **/
     writeJsonFile(cpath, req.body).then(() => {
-      console.log('done')
-      //res.json({'status':'success', 'plan_id':'proj-plan-'+ pname[0]+'-'+ pid[0] +'.json'})
+      console.log('[Plan written to JSON Document]: ', jsonFile )
     })
-    //let obj_info = pj_plan_info
 
-    var nidmg = new rdfHelper.NIDMGraph()
-    nidmg.addPlan(pj_plan_info)
-
-    let fName = 'plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
+    let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
     let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"]
-
-
+    let nidmg = new rdfHelper.NIDMGraph()
+    nidmg.addPlan(pj_plan_info)
+    /**
+    ** Saving Graph to RDF Store
+    **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("savetTRDF callback fn: tstring: ", tstring)
-
-      //let cpath = path.join(__dirname, '/../../uploads/acquisition/plan-graph-' + obj_info['ProjectPlanID'] + '.ttl')
-      //let fname = 'plan-graph-' + obj_info['ProjectPlanID'] + '.ttl'
       let cpath = path.join(__dirname, '/../../uploads/acquisition/'+fName)
-
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
         }
-        console.log("The file was saved!");
+        console.log("[The graph was serialized to Turtle file and was saved!]: ",fName );
         res.json({'pid': pj_plan_info['ProjectPlanID'], 'fid': fName})
       })
     })
@@ -175,10 +165,10 @@ module.exports = () => {
     var nidmg = new rdfHelper.NIDMGraph()
     nidmg.addPlan(pj_plan_info)
 
-    let fName = 'plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
+    let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
     let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"]
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
-      console.log("saveTRDF callback fn: tstring: ", tstring)
+      console.log("[saveToRDF callback fn: tstring] : ", tstring)
 
       let cpath = path.join(__dirname, '/../../uploads/acquisition/' + fName)
 
@@ -186,7 +176,7 @@ module.exports = () => {
         if(err) {
           return console.log(err);
         }
-        console.log("The file was saved!");
+        console.log("[The new updated turtle file was saved!]");
         res.json({'pid': pj_plan_info['ProjectPlanID'], 'fid': fName})
       })
     })
@@ -195,10 +185,6 @@ module.exports = () => {
 
   app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file:',req.params.name )
-    /*fs.readFile(path.join(__dirname, '/../../uploads/plansdocs/acquisition/'+req.params.name), function(err,contents){
-      console.log("contents: ", contents)
-      res.send(contents)
-    })*/
     loadJsonFile(path.join(__dirname, '/../../uploads/plansdocs/'+req.params.name)).then(ob => {
       console.log("ob:==>", ob)
       res.json(ob)
@@ -211,7 +197,6 @@ module.exports = () => {
           for (var i = 0; i < graphs.length; i++) {
             values.push(graphs[i].valueOf())
           }
-          //console.log("Registered graphs: ", values)
           resolve(values)
         })
       //})
@@ -221,7 +206,7 @@ module.exports = () => {
         var graphOfPromises = values.map(function(graph){
           return new Promise(function(resolve){
             store.execute(queryFunction("<"+graph+">"), function(err,results){
-              console.log("graph: ", graph, "  results: ~~>\n", results)
+              console.log("graph: ", graph, "  results: \n", results)
               if(results == []){
                 resolve({})
               }else{
@@ -242,7 +227,6 @@ module.exports = () => {
         if(obj != {}){
           for(i=0;i<obj.length;i++){
             let flag = true
-            //console.log("i=",i, " ", obj[i]["origin"])
             for(j=0;j<obj.length;j++){
               if(obj[i]["origin"] === obj[j]["derivedFrom"]){
                 flag = false
@@ -258,53 +242,47 @@ module.exports = () => {
         let list = []
         for(i=0;i<unique.length;i++){
           let parr = unique[i]["origin"].split("#")
-          //let pf = parr[1].split("-")[0].split("_")
           let pf = parr[1].split("_")[1]
-
-          //list.push("proj-plan-"+unique[i]["pjname"]+"-"+pf[1]+".json")
           list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
         }
         console.log("list: ", list)
         res.json({'list':list})
-        //return Promise.resolve(list)
-  }).catch(function(error){
-    console.log("error:", error)
+    }).catch(function(error){
+      console.log("error:", error)
+    })
   })
-})
 
   app.get('/history/project-plans/:name', ensureAuthenticated, function(req,res){
-  var listOfGraphs = new Promise(function(resolve){
-      store.registeredGraphs(function(results, graphs) {
-        var values = []
-        for (var i = 0; i < graphs.length; i++) {
-          values.push(graphs[i].valueOf())
-        }
-        console.log("Registered graphs: ", values)
-        resolve(values)
+    var listOfGraphs = new Promise(function(resolve){
+        store.registeredGraphs(function(results, graphs) {
+          var values = []
+          for (var i = 0; i < graphs.length; i++) {
+            values.push(graphs[i].valueOf())
+          }
+          console.log("Registered graphs: ", values)
+          resolve(values)
+        })
       })
-    })
-  listOfGraphs.then(function(values){
-        var graphOfPromises = values.map(function(graph){
-          return new Promise(function(resolve){
-            store.execute(queryFunction("<"+graph+">"), function(err,results){
-              resolve({
-                "origin":results[0].s.value,
-                "derivedFrom":results[0].derivedFrom.value,
-                "date":results[0].date.value,
-                "pjname":results[0].pjname.value
-              })
-            })//execute
-          })//promise
-        })//graph of promises
-        return Promise.all(graphOfPromises)
-  }).then(function(objArr){
-        //console.log("objArr:", objArr)
+    listOfGraphs.then(function(values){
+          var graphOfPromises = values.map(function(graph){
+            return new Promise(function(resolve){
+              store.execute(queryFunction("<"+graph+">"), function(err,results){
+                resolve({
+                  "origin":results[0].s.value,
+                  "derivedFrom":results[0].derivedFrom.value,
+                  "date":results[0].date.value,
+                  "pjname":results[0].pjname.value
+                })
+              })//execute
+            })//promise
+          })//graph of promises
+          return Promise.all(graphOfPromises)
+    }).then(function(objArr){
         let unique = {}
         let obj = {}
         for(i=0;i<objArr.length;i++){
           let flag = true
-          //console.log("i=",i, " ", obj[i]["origin"])
-          for(j=0;j<objArr.length;j++){
+            for(j=0;j<objArr.length;j++){
             if(objArr[i]["origin"] === objArr[j]["derivedFrom"]){
               flag = false
               break;
@@ -340,9 +318,7 @@ module.exports = () => {
         let history = []
         for(m of Object.keys(dirGraph)){
           let parr = m.split("#")
-          //let pf = parr[1].split("-")[0].split("_")
           let pf = parr[1].split("_")[1]
-          //name1 = "proj-plan-"+ dirGraph[m][0]["pjname"]+"-"+pf[1]+".json"
           name1 = "plan-"+ dirGraph[m][0]["pjname"]+"-"+pf+".json"
           console.log("name: ", name, " name1: ", name1, " dirgraph: ", dirGraph[m][0]["pjname"])
           if(name == name1){
@@ -351,8 +327,7 @@ module.exports = () => {
         }
          res.json(history)
         //res.json(dirGraph)
-        //return Promise.resolve(list)
-  }).catch(function(error){
+    }).catch(function(error){
     console.log(error)
   })
 
@@ -372,14 +347,7 @@ module.exports = () => {
 
 
   function queryFunction(graphId){
-    /*let query = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
-    PREFIX nidm:<http://purl.org/nidash/nidm#> \
-    SELECT * \
-    FROM NAMED '+ graphId + '\
-    {GRAPH '+graphId+'{ ?s prov:wasDerivedFrom ?p. \
-    } }'*/
-
-    let query1 = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
+    let query = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
     PREFIX nidm:<http://purl.org/nidash/nidm#> \
     PREFIX dc:<http://purl.org/dc/terms/> \
     SELECT * \
@@ -388,6 +356,6 @@ module.exports = () => {
       nidm:ProjectName ?pjname; \
       dc:created ?date.\
     } }'
-    return query1
+    return query
   }
 }

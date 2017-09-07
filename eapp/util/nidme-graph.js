@@ -5,6 +5,7 @@ const loadJsonFile = require('load-json-file')
 const fs = require('fs')
 const rdfstore = require('rdfstore')
 const moment = require('moment')
+const readfiles = require('readfiles')
 
 
 let namespaces = {}
@@ -29,28 +30,37 @@ var _rdfStoreSetup = function(){
   _addToStoreNamespace("xsd","http://www.w3.org/2001/XMLSchema#")
   _addToStoreNamespace("dc","http://purl.org/dc/terms/")
   console.log("Namespaces:---->", namespaces)
-  var listOfFiles = new Promise(function(resolve){
-  fs.readdir(path.join(__dirname, '/../../uploads/acquisition'), function(err,list){
-      if(err) throw err;
-      resolve(list)
-  })
-})
-listOfFiles.then(function(list){
-  var arrayOfPromises = list.map(function(f){
-    let data = fs.createReadStream(path.join(__dirname,'/../../uploads/acquisition/'+f))
-    let name = f.split(".")
-    return new Promise(function(resolve){
-      store.load('text/turtle',data,"nidm:"+name[0], function(err,results){
-        resolve(name[0])
-      })
-    })
-  }) //array of promises
-  //console.log("array: ", arrayOfPromises)
-  return Promise.all(arrayOfPromises)
-}).then(function(g){
-  console.log("app set up: All Promises resolved: ", g)
-})
+  let cpath = path.join(__dirname, '/../../uploads/acquisition/')
+  loadFilesToRDFStore(cpath+"plans/")
+  loadFilesToRDFStore(cpath+"experiments/")
   return {store:rstore}
+}
+
+function loadFilesToRDFStore(path){
+  var listOfFiles = new Promise(function(resolve){
+    fs.readdir(path, function(err,list){
+      if(err) throw err;
+      console.log("lists: ", list)
+      resolve(list)
+    })
+  })
+  listOfFiles.then(function(list){
+    var arrayOfPromises = list.map(function(f){
+      let data = fs.createReadStream(path+f)
+      if(f != '.DS_Store'){
+        let name = f.split(".")
+        return new Promise(function(resolve){
+          store.load('text/turtle',data,"nidm:"+name[0], function(err,results){
+            resolve(name[0])
+          })
+        })
+      }
+    }) //array of promises
+    //console.log("array: ", arrayOfPromises)
+    return Promise.all(arrayOfPromises)
+  }).then(function(g){
+    console.log("app set up: All Promises resolved: ", g)
+  })
 }
 
 var _addToStoreNamespace = function(prefix, uri){
@@ -138,7 +148,6 @@ var NIDMGraph = class NIDMGraph {
     this.rgraph.add(store.rdf.createTriple(sn,
     store.rdf.createNamedNode(store.rdf.resolve("nidm:instruments")),
     instColNode))
-
     return sn;
   }
 
@@ -234,33 +243,15 @@ var NIDMGraph = class NIDMGraph {
     }
     return ndaNode
   }
-
-
-  getInstrument(instId){
-  }
-  getSession(sessionId){
-  }
-  getPlan(planId){
-  }
-  queryGraph(graphId){
-  }
 }
 
 
 function _addToStore(nidmGraph,graphId,addCallback){
-  //let graphId = "nidm:plan-graph-" + jsonObj["ProjectPlanID"]
-  //console.log("addtoStore graphId------>: ", graphId)
-  //console.log("nidmGraph.rgraph----->", nidmGraph.rgraph)
   store.insert(nidmGraph.rgraph, graphId, function(err) {
     if(err){
       console.log("Not able to insert subgraph to nidm:graph")
     }
-    /*store.graph(graphId,function(err,graph1){
-      console.log("Inserted to ~~~~ graphId:~~~>", graphId)
-      console.log(graph1.toNT)
-    })*/
-      addCallback(graphId)
-    //})
+    addCallback(graphId)
   })//insert
 }
 
@@ -350,9 +341,6 @@ function serializeToTurtle(sObj){
     return node_name
   }
 
-
-
-//var _saveToRDFstore = function(jsonObj, graphId, fileName,callback_tstring){
 var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
   let tstring = ""
   let cpath = path.join(__dirname,'/../../uploads/acquisition/')
@@ -392,7 +380,7 @@ var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
           objS[triple.predicate.toString()] = triple.object.toString()
           subject[triple.subject.nominalValue].push(objS)
         })
-        console.log("graphToNT: ---->\n", graph.toNT())
+        //console.log("graphToNT: ---->\n", graph.toNT())
         //console.log("subject list: ", subject)
         console.log("----Serializing graph to turtle --->>>")
         let s = serializeToTurtle(subject)
