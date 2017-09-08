@@ -199,7 +199,6 @@ module.exports = () => {
           }
           resolve(values)
         })
-      //})
     })
     listOfGraphs.then(function(values){
         console.log("Registered graphs: ", values)
@@ -221,7 +220,7 @@ module.exports = () => {
           })//promise
         })//graph of promises
         return Promise.all(graphOfPromises)
-  }).then(function(obj){
+    }).then(function(obj){
         console.log("obj:", obj)
         let unique = []
         if(obj != {}){

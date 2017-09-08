@@ -284,11 +284,7 @@ function serializeToTurtle(sObj){
 
   }
 
-/*
-  serializeToJsonld(){
-
-}*/
-  function getPrefixKeyForm(sobj){
+function getPrefixKeyForm(sobj){
     let key = Object.keys(sobj)[0]
     let pfname = key.split("/")
     let iri = key.split("#")
@@ -308,8 +304,6 @@ function serializeToTurtle(sObj){
 
     let prefix_name = getPrefix(iri_complete)
     let node_name = prefix_name + ":" + key_name + " "
-    //console.log("iri_complete: ", iri_complete)
-    //console.log("prefix name: ", prefix_name)
     let value = sobj[key]
     //dateTime
     if(value.indexOf('^^') === -1){
@@ -338,7 +332,7 @@ function serializeToTurtle(sObj){
     node_name = node_name + xtype[0] + "^^"+ prefix_name+":"+parr[1]
   }
     return node_name
-  }
+}
 
 var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
   let tstring = ""
