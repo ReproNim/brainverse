@@ -156,22 +156,25 @@ module.exports = () => {
     console.log("pj_plan_info: ", pj_plan_info)
 
     let pname = pj_plan_info['Project Name'].split(' ')
-
     let cpath = path.join(__dirname, '/../../uploads/plansdocs/plan-'+ pname[0]+'-'+pj_plan_info['ProjectPlanID'] +'.json')
     console.log("cpath for file update: ", cpath)
+    /**
+    ** Writing plan to JSON document
+    **/
     writeJsonFile(cpath, req.body).then(() => {
       console.log('json document written done')
     })
-    var nidmg = new rdfHelper.NIDMGraph()
-    nidmg.addPlan(pj_plan_info)
 
     let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
     let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"]
+    var nidmg = new rdfHelper.NIDMGraph()
+    nidmg.addPlan(pj_plan_info)
+    /**
+    ** Saving Graph to RDF Store
+    **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("[saveToRDF callback fn: tstring] : ", tstring)
-
       let cpath = path.join(__dirname, '/../../uploads/acquisition/' + fName)
-
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
@@ -182,7 +185,6 @@ module.exports = () => {
     })
   })
 
-
   app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file:',req.params.name )
     loadJsonFile(path.join(__dirname, '/../../uploads/plansdocs/'+req.params.name)).then(ob => {
@@ -192,23 +194,23 @@ module.exports = () => {
   })
   app.get('/project-plans', ensureAuthenticated, function(req, res){
     var listOfGraphs = new Promise(function(resolve){
-        store.registeredGraphs(function(results, graphs) {
-          var values = []
-          for (var i = 0; i < graphs.length; i++) {
-            values.push(graphs[i].valueOf())
-          }
-          resolve(values)
-        })
+      store.registeredGraphs(function(results, graphs) {
+        var values = []
+        for (var i = 0; i < graphs.length; i++) {
+          values.push(graphs[i].valueOf())
+        }
+        resolve(values)
+      })
     })
     listOfGraphs.then(function(values){
-        console.log("Registered graphs: ", values)
-        var graphOfPromises = values.map(function(graph){
-          return new Promise(function(resolve){
-            store.execute(queryFunction("<"+graph+">"), function(err,results){
-              console.log("graph: ", graph, "  results: \n", results)
-              if(results == []){
-                resolve({})
-              }else{
+      console.log("Registered graphs: ", values)
+      var graphOfPromises = values.map(function(graph){
+        return new Promise(function(resolve){
+          store.execute(queryFunction("<"+graph+">"), function(err,results){
+            console.log("graph: ", graph, "  results: \n", results)
+            if(results == []){
+              resolve({})
+            }else{
               resolve({
                 "origin":results[0].s.value,
                 "derivedFrom":results[0].derivedFrom.value,
@@ -216,36 +218,36 @@ module.exports = () => {
                 "pjname":results[0].pjname.value
               })
             }
-            })//execute
-          })//promise
-        })//graph of promises
-        return Promise.all(graphOfPromises)
+          })//execute
+        })//promise
+      })//graph of promises
+      return Promise.all(graphOfPromises)
     }).then(function(obj){
-        console.log("obj:", obj)
-        let unique = []
-        if(obj != {}){
-          for(i=0;i<obj.length;i++){
-            let flag = true
-            for(j=0;j<obj.length;j++){
-              if(obj[i]["origin"] === obj[j]["derivedFrom"]){
-                flag = false
-                break;
-              }
-            }
-            if(flag){
-              unique.push(obj[i])
+      console.log("obj:", obj)
+      let unique = []
+      if(obj != {}){
+        for(i=0;i<obj.length;i++){
+          let flag = true
+          for(j=0;j<obj.length;j++){
+            if(obj[i]["origin"] === obj[j]["derivedFrom"]){
+              flag = false
+              break;
             }
           }
+          if(flag){
+            unique.push(obj[i])
+          }
         }
-        console.log("unique array", unique)
-        let list = []
-        for(i=0;i<unique.length;i++){
-          let parr = unique[i]["origin"].split("#")
-          let pf = parr[1].split("_")[1]
-          list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
-        }
-        console.log("list: ", list)
-        res.json({'list':list})
+      }
+      console.log("unique array", unique)
+      let list = []
+      for(i=0;i<unique.length;i++){
+        let parr = unique[i]["origin"].split("#")
+        let pf = parr[1].split("_")[1]
+        list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
+      }
+      console.log("list: ", list)
+      res.json({'list':list})
     }).catch(function(error){
       console.log("error:", error)
     })
@@ -253,83 +255,82 @@ module.exports = () => {
 
   app.get('/history/project-plans/:name', ensureAuthenticated, function(req,res){
     var listOfGraphs = new Promise(function(resolve){
-        store.registeredGraphs(function(results, graphs) {
-          var values = []
-          for (var i = 0; i < graphs.length; i++) {
-            values.push(graphs[i].valueOf())
-          }
-          console.log("Registered graphs: ", values)
-          resolve(values)
-        })
+      store.registeredGraphs(function(results, graphs) {
+        var values = []
+        for (var i = 0; i < graphs.length; i++) {
+          values.push(graphs[i].valueOf())
+        }
+        console.log("Registered graphs: ", values)
+        resolve(values)
       })
+    })
     listOfGraphs.then(function(values){
-          var graphOfPromises = values.map(function(graph){
-            return new Promise(function(resolve){
-              store.execute(queryFunction("<"+graph+">"), function(err,results){
-                resolve({
-                  "origin":results[0].s.value,
-                  "derivedFrom":results[0].derivedFrom.value,
-                  "date":results[0].date.value,
-                  "pjname":results[0].pjname.value
-                })
-              })//execute
-            })//promise
-          })//graph of promises
-          return Promise.all(graphOfPromises)
+      var graphOfPromises = values.map(function(graph){
+        return new Promise(function(resolve){
+          store.execute(queryFunction("<"+graph+">"), function(err,results){
+            resolve({
+              "origin":results[0].s.value,
+              "derivedFrom":results[0].derivedFrom.value,
+              "date":results[0].date.value,
+              "pjname":results[0].pjname.value
+            })
+          })//execute
+        })//promise
+      })//graph of promises
+      return Promise.all(graphOfPromises)
     }).then(function(objArr){
-        let unique = {}
-        let obj = {}
-        for(i=0;i<objArr.length;i++){
-          let flag = true
-            for(j=0;j<objArr.length;j++){
-            if(objArr[i]["origin"] === objArr[j]["derivedFrom"]){
-              flag = false
-              break;
-            }
+      let unique = {}
+      let obj = {}
+      for(i=0;i<objArr.length;i++){
+        let flag = true
+        for(j=0;j<objArr.length;j++){
+          if(objArr[i]["origin"] === objArr[j]["derivedFrom"]){
+            flag = false
+            break;
           }
-          if(flag){
-            unique[objArr[i]["origin"]] = objArr[i]
-          }
-          obj[objArr[i]["origin"]] = objArr[i]
         }
-        console.log("unique obj", unique)
-        console.log("obj: ~~~", obj)
-        let dirGraph = {}
-        for(k of Object.keys(unique)){
-          let list=[]
-          let node = obj[k]
-          let i = 0
-          console.log("key", k);
-          console.log("node: ", node["derivedFrom"])
-          let parent = node["derivedFrom"]
-          while(parent != "http://purl.org/nidash/nidm#plan_None"){
-            list[i] = node
-            node = {}
-            node = obj[parent]
-            console.log("node: ", node["derivedFrom"])
-            parent = node["derivedFrom"]
-            i++
-          }
+        if(flag){
+          unique[objArr[i]["origin"]] = objArr[i]
+        }
+        obj[objArr[i]["origin"]] = objArr[i]
+      }
+      console.log("unique obj", unique)
+      console.log("obj: ~~~", obj)
+      let dirGraph = {}
+      for(k of Object.keys(unique)){
+        let list=[]
+        let node = obj[k]
+        let i = 0
+        console.log("key", k);
+        console.log("node: ", node["derivedFrom"])
+        let parent = node["derivedFrom"]
+        while(parent != "http://purl.org/nidash/nidm#plan_None"){
           list[i] = node
-          dirGraph[obj[k]["origin"]] = list
+          node = {}
+          node = obj[parent]
+          console.log("node: ", node["derivedFrom"])
+          parent = node["derivedFrom"]
+          i++
         }
-        let name = req.params.name
-        let history = []
-        for(m of Object.keys(dirGraph)){
-          let parr = m.split("#")
-          let pf = parr[1].split("_")[1]
-          name1 = "plan-"+ dirGraph[m][0]["pjname"]+"-"+pf+".json"
-          console.log("name: ", name, " name1: ", name1, " dirgraph: ", dirGraph[m][0]["pjname"])
-          if(name == name1){
-            history = dirGraph[m]
-          }
+        list[i] = node
+        dirGraph[obj[k]["origin"]] = list
+      }
+      let name = req.params.name
+      let history = []
+      for(m of Object.keys(dirGraph)){
+        let parr = m.split("#")
+        let pf = parr[1].split("_")[1]
+        name1 = "plan-"+ dirGraph[m][0]["pjname"]+"-"+pf+".json"
+        console.log("name: ", name, " name1: ", name1, " dirgraph: ", dirGraph[m][0]["pjname"])
+        if(name == name1){
+          history = dirGraph[m]
         }
-         res.json(history)
+      }
+      res.json(history)
         //res.json(dirGraph)
     }).catch(function(error){
-    console.log(error)
-  })
-
+      console.log(error)
+    })
   })
 
   app.post('/query',jsonParser,function(req,res){
