@@ -80,7 +80,9 @@ var _getRegisteredGraphsList = function(){
   })
 }
 
-
+/**
+** NIDM Graph Class
+**/
 var NIDMGraph = class NIDMGraph {
   /*
   * create a RDF graph
@@ -89,7 +91,6 @@ var NIDMGraph = class NIDMGraph {
     this.pnodes = {}
     this.rgraph = store.rdf.createGraph()
   }
-
   /*
   * Add Instrument Node to the Graph
   */
@@ -115,9 +116,8 @@ var NIDMGraph = class NIDMGraph {
   }
 
   /*
-  * Add Session to the Graph
+  * Add Session Node to the Graph
   */
-
   addSession(sessionObj){
     let instNodes = []
     let sessionId = "nidm:session_"+ uuid()
@@ -142,14 +142,14 @@ var NIDMGraph = class NIDMGraph {
       }
     }
     let instColNode = this.addCollection("instrumentCollection", instNodes)
-
     this.rgraph.add(store.rdf.createTriple(sn,
     store.rdf.createNamedNode(store.rdf.resolve("nidm:instruments")),
     instColNode))
     return sn;
   }
-
-
+  /*
+  * Add Plan Node to the Graph
+  */
   addPlan(jsonObj){
     let planId = "nidm:plan_"+ jsonObj["ProjectPlanID"]
     let n = store.rdf.createNamedNode(store.rdf.resolve(planId))
@@ -171,23 +171,20 @@ var NIDMGraph = class NIDMGraph {
         }
       }else if(key == "Personnel"){
         let parr = jsonObj["Personnel"]
-        //console.log("Personnel; ", parr)
         for(let p = 0; p < parr.length; p++){
           let pnode = store.rdf.createNamedNode(store.rdf.resolve("nidm:" + parr[p].user))
           this.pnodes[parr[p].user] = pnode
-          //console.log("pndose set: ", this.pnodes)
           this.addPerson(pnode,parr[p].uid)
         }
       }else if(key == "created") {
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("dc:created")),
         store.rdf.createLiteral(jsonObj["created"],null,store.rdf.resolve("xsd:dateTime"))))
-
       }else if(key == "wasDerivedFrom"){
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("prov:wasDerivedFrom")),
         store.rdf.createNamedNode(store.rdf.resolve("nidm:plan_"+jsonObj['wasDerivedFrom']))))
-      } else{
+      }else{
         this.rgraph.add(store.rdf.createTriple(n,
         store.rdf.createNamedNode(store.rdf.resolve("nidm:"+key)),
         store.rdf.createLiteral(jsonObj[key1])))
@@ -200,10 +197,14 @@ var NIDMGraph = class NIDMGraph {
     return n
   }
 
+  /*
+  * Add Person Node to the Graph
+  */
   addPerson(pnode,uid){
     this.rgraph.add(store.rdf.createTriple(pnode,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Agent"))))
+
     this.rgraph.add(store.rdf.createTriple(pnode,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Person"))))
@@ -213,13 +214,15 @@ var NIDMGraph = class NIDMGraph {
     store.rdf.createLiteral(uid)))
   }
 
+  /*
+  * Add Collection Node the the Graph
+  */
   addCollection(name,cArray){
     let collectionId = "nidm:"+ name + "_"+ uuid()
     let entColNode = store.rdf.createNamedNode(store.rdf.resolve(collectionId))
     this.rgraph.add(store.rdf.createTriple(entColNode,
     store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Collection"))))
-
     for(let j=0;j<cArray.length;j++){
       this.rgraph.add(store.rdf.createTriple(entColNode,
         store.rdf.createNamedNode(store.rdf.resolve("prov:hadMember")),
@@ -228,6 +231,9 @@ var NIDMGraph = class NIDMGraph {
     return entColNode
   }
 
+  /*
+  * Add NDA Experiment node to the graph
+  */
   addNDAExperiment(jsonObj){
     let ndaId = "nidm:entity_" + jsonObj['objID']
     let ndaNode = store.rdf.createNamedNode(store.rdf.resolve(ndaId))
@@ -242,9 +248,11 @@ var NIDMGraph = class NIDMGraph {
     }
     return ndaNode
   }
-}
+} // End of Class definition
 
-
+/**
+** Add/Insert the NIDM graph created to the store with sepecifc URI
+**/
 function _addToStore(nidmGraph,graphId,addCallback){
   store.insert(nidmGraph.rgraph, graphId, function(err) {
     if(err){
@@ -254,60 +262,62 @@ function _addToStore(nidmGraph,graphId,addCallback){
   })//insert
 }
 
+/**
+** Serialize To Turtle
+**/
 function serializeToTurtle(sObj){
-    let s = ""
-    let num_nodes = Object.keys(sObj).length
-    let count = 0
+  let s = ""
+  let num_nodes = Object.keys(sObj).length
+  let count = 0
 
-    for(var key in sObj){
-      let pfname = key.split("/")
-      let iri = key.split("#")
-      let kname = pfname[pfname.length-1].split("#")
-      let iri_complete = iri[0] + "#"
-      let prefix_name = getPrefix(iri_complete)
-      let node_name = prefix_name+":"+ kname[1]
-      console.log("~~node name:~~~ ", node_name)
-      s = s + node_name + " "
-
-      let node_length = sObj[key].length
-      let pObj = sObj[key]
-      for(let i = 0; i<node_length-1; i++){
-        //console.log("key'predicate and object's value: ", pObj[i])
-        let pf_key = getPrefixKeyForm(pObj[i])
-        s = s + pf_key + " ;\n"
-        s = s + "  "
-      }
-      let pf_key = getPrefixKeyForm(pObj[node_length-1])
-      s = s + pf_key + " .\n"
-    }//for
-    return s
-
-  }
-
-function getPrefixKeyForm(sobj){
-    let key = Object.keys(sobj)[0]
+  for(var key in sObj){
     let pfname = key.split("/")
     let iri = key.split("#")
-    let key_name = ''
-    let iri_complete = ''
-
     let kname = pfname[pfname.length-1].split("#")
-    //console.log("pfname, kname 1: ", pfname, " :", kname)
-    if(kname.length==1){
-      key_name = kname[0]
-      iri_complete = key.substring(0,key.indexOf(kname[0]))
+    let iri_complete = iri[0] + "#"
+    let prefix_name = getPrefix(iri_complete)
+    let node_name = prefix_name+":"+ kname[1]
+    console.log("~~node name:~~~ ", node_name)
+    s = s + node_name + " "
 
+    let node_length = sObj[key].length
+    let pObj = sObj[key]
+    for(let i = 0; i<node_length-1; i++){
+      //console.log("key'predicate and object's value: ", pObj[i])
+      let pf_key = getPrefixKeyForm(pObj[i])
+      s = s + pf_key + " ;\n"
+      s = s + "  "
+    }
+    let pf_key = getPrefixKeyForm(pObj[node_length-1])
+    s = s + pf_key + " .\n"
+  }//for
+  return s
+}
+
+/**
+** Convert to Prefix:Key Form from URI
+**/
+function getPrefixKeyForm(sobj){
+  let key = Object.keys(sobj)[0]
+  let pfname = key.split("/")
+  let iri = key.split("#")
+  let key_name = ''
+  let iri_complete = ''
+
+  let kname = pfname[pfname.length-1].split("#")
+  //console.log("pfname, kname 1: ", pfname, " :", kname)
+  if(kname.length==1){
+    key_name = kname[0]
+    iri_complete = key.substring(0,key.indexOf(kname[0]))
     }else{
       key_name = kname[1].replace(/\s+/g, '')
       iri_complete = iri[0] + "#"
     }
-
-    let prefix_name = getPrefix(iri_complete)
-    let node_name = prefix_name + ":" + key_name + " "
-    let value = sobj[key]
-    //dateTime
-    if(value.indexOf('^^') === -1){
-    //
+  let prefix_name = getPrefix(iri_complete)
+  let node_name = prefix_name + ":" + key_name + " "
+  let value = sobj[key]
+  //dateTime
+  if(value.indexOf('^^') === -1){
     pfname = value.split("/")
     if(pfname.length>1){
       kname = pfname[pfname.length-1].split("#")
@@ -334,13 +344,16 @@ function getPrefixKeyForm(sobj){
     return node_name
 }
 
+/**
+** Saves the RDF Graph to Store
+** Serializes to Turtle file
+**/
 var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
   let tstring = ""
   let cpath = path.join(__dirname,'/../../uploads/acquisition/')
 
   fs.stat(cpath+fileName, function(err, stat) {
     console.log(cpath+fileName)
-
     if(err == null){
       console.log('File exists')
       tstring = tstring + "\n"
