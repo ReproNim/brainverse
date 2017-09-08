@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>BrainVerse</title>
+
+    <!-- Bootstrap -->
+    <link href="/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/history-d3.css" rel="stylesheet">
+    <link href="/brainverse.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div id="nav">
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="">
+            <p><h3>History</h3></p>
+            <br>
+            <form id="timeline-display">
+              <div class="form-group row" id="plan-form">
+                <label for="pforms" class="col-xs-5 col-form-label">Plans</label>
+                <div class="col-xs-5">
+                  <select class="form-control" id="pforms">
+                  <option value="plan0">Select a plan</option>
+                  </select>
+                </div>
+              </div>
+            <div id = "history-space">
+              <div id ="timeline">
+              </div>
+            </div>
+            </form>
+            <div id = "termsInfoSaveMsg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script src='/dist/jquery/jquery.min.js'>
+    </script>
+    <script>
+      try{
+      $ = jQuery = module.exports
+      }catch(e){}
+    </script>
+    <script src='/dist/handlebars/handlebars.min.js', type='text/javascript'>
+    </script>
+    <script src='/dist/bootstrap/bootstrap.min.js', type='text/javascript'>
+    </script>
+    <script src='/templates/template.js'></script>
+    <script src=userAccount.js></script>
+    <script src='/dist/moment/moment.js' type='text/javascript'></script>
+    <script src="d3.min.js" type="text/javascript"></script>
+    <script>if (typeof module === "object") { window.d3 = module.exports }</script>
+    <script src="history-d3.js"></script>
+    <script src="history.js"></script>
+  </body>
+</html>

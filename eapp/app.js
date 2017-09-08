@@ -15,7 +15,7 @@ module.exports = () => {
   const GitHubStrategy = require('passport-github2').Strategy
   const partials = require('express-partials')
   const config = require('./config/app-config.js')
-  const rdfHelper = require('./util/graph.js')
+  const rdfHelper = require('./util/nidme-graph.js')
 
   global.uid = {}
 
@@ -145,7 +145,7 @@ module.exports = () => {
 
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
-  app.locals.rgraph = app.locals.setup.graph
+  //app.locals.rgraph = app.locals.setup.graph
   //console.log("app.locals:", app.locals.store, app.locals.rgraph)
 
   // Setup Globally Included Routes
@@ -155,6 +155,9 @@ module.exports = () => {
   		require(path.join(__dirname, 'routes/'+filename))(app)
   })
 
+ /**
+ ** TODO Create a directory structure specified on a default configuration file
+ **/
   fs.mkdir(path.join(__dirname,'/../uploads/'),function(err){
     if(err){
       console.log('directory exists. No need to create it')
@@ -173,6 +176,16 @@ module.exports = () => {
       if(err3){
         console.log('sub-directory:acquistion exists. No need to create it')
       }
+      fs.mkdir(path.join(__dirname,'/../uploads/acquisition/experiments'),function(err5){
+        if(err5){
+          console.log('sub-directory:acquistion/experiments exists. No need to create it')
+        }
+      })
+      fs.mkdir(path.join(__dirname,'/../uploads/acquisition/plans'),function(err6){
+        if(err6){
+          console.log('sub-directory:acquistion/plans exists. No need to create it')
+        }
+      })
     })
     fs.mkdir(path.join(__dirname,'/../uploads/plansdocs'),function(err4){
       if(err4){

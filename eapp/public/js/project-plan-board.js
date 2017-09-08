@@ -36,7 +36,7 @@ $.ajax({
   url: serverURL +"/project-plans",
   accept: "application/json",
   success: function(data){
-    console.log('acquistions forms:success', data)
+    console.log('project plans:success', data)
     let pforms = data.list
     if(pforms.length == 0){
       console.log("no forms")
@@ -63,11 +63,11 @@ $("#pforms").change(function(){
   $("#kanban1").remove()
   $("#kanban-space").empty()
   $("#btn-kanbanSave").remove()
+  $("#btn-kanbanHistory").remove()
   $("#kanban-space").append('<div id ="kanban1"></div>')
   getPlanJson($("#pforms").val())
-  //$("#kanban-form-display").empty()
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
-  //$("#kanban-form-display").append('<button id= "btn-addParticipant" type="submit" class="btn btn-primary">Add Pariticipant</button>')
+  $("#kanban-form-display").append('<a href="/history.html" id= "btn-kanbanHistory" class="btn btn-primary">History</button>')
 })
 
 /**
@@ -82,27 +82,29 @@ function getPlanJson(formName){
 
   let url = serverURL+"/project-plans/" + formName
 
-  let planJson = JSON.parse(localStorage.getItem(planName))
+  //let planJson = JSON.parse(localStorage.getItem(planName))
+  let planJson = null
 
   /*
   * if the file is not in localstorage, read from the disk
   */
-  if(planJson == null){
+  //if(planJson == null){
     $.ajax({
       type: "GET",
       url: url,
       accept: "application/json",
       success: function(data){
-        //console.log('acquisitions term forms:success', data)
+        console.log('acquisitions term forms:success', data)
         planJson = data
         setStorage(planJson,planName)
         createSourceData(planJson)
 
       }//data
     })
-  } else{
+  //}
+  /*else{
     createSourceData(planJson)
-  }
+  }*/
 }//end of getPlanJson function
 
 function setStorage(planJson,planName){
