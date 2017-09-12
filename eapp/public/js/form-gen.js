@@ -20,6 +20,7 @@ class AlpacaForm {
     this.element = element;
     this.properties = {};
     this.fields = {};
+    this.form = {};
     this.baseForm = {
       "schema": {
         "type": "object",
@@ -27,7 +28,8 @@ class AlpacaForm {
 
       },
       "options": {
-        "fields": this.fields
+        "fields": this.fields,
+        "form": this.form
       }
     };
   }
@@ -65,6 +67,20 @@ class AlpacaForm {
       }
     }
   }
+   textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
+     this.properties[title.toLowerCase()] = {
+       "title": title,
+       "type": type,
+       "required": true
+     }
+    this.fields[title.toLowerCase()] = {
+      "type": "textarea",
+      "label": label,
+      "id": id,
+      "placeholder": placehold,
+      "disabled": disable
+    }
+   }
 
   radioForm(title, label, id, op1, op2, disable=false) {
     /*Radio Form Method
@@ -122,7 +138,14 @@ class AlpacaForm {
     }
   }
 
-
+  submitBtnForm(title, sActionFunc){
+    this.form["buttons"] = {
+      "submit": {
+        'title': title,
+        'click': sActionFunc
+      }
+    }
+  }
   alpacaGen() {
     //Generates the alpaca form
     $(this.element).alpaca(this.baseForm);

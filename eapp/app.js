@@ -141,7 +141,7 @@ module.exports = () => {
   app.use(express.static(path.join(__dirname, 'public/terms')))
   app.use(express.static(path.join(__dirname, 'public/lib')))
   app.use(express.static(path.join(__dirname, 'public/images')))
-
+  app.use(express.static(path.join(__dirname,'public/experiment-planner')))
 
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
