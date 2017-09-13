@@ -1,0 +1,298 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Explore Neuro Imaging Data Model Experiment (NIDM) Terms</title>
+
+  <link href="/dist/css/bootstrap.css" rel="stylesheet">
+  <link href="/term-search/css/nidm-term-search.css" type="text/css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/lib/font-awesome-4.7.0/css/font-awesome.min.css"/>
+  <link href="/css/brainverse.css" rel="stylesheet">
+  <!--script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script-->
+  <script src='/dist/jquery/jquery.min.js'>
+  </script>
+  <script>
+    try{
+    $ = jQuery = module.exports
+    }catch(e){}
+  </script>
+  <script src="https://unpkg.com/vue"></script>
+  <script type='text/javascript' src="/lib/rdfstore_min.js">
+  </script>
+
+  <script type="text/x-template" id="grid-template">
+  <table>
+    <thead>
+      <tr>
+        <th v-for="key in columns">
+          {{ key }}
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="entry in data">
+        <td v-for="key in columns">
+          {{entry[key]}}
+        </td>
+        <td><!--a href="#"><i class="fa fa-pencil fa-fw"></i></a-->
+          <button id="show-modal" @click="showModal = true"><i class="fa fa-github-square" aria-hidden="true"></i></a></button>
+        <!--a href="#"><i class="fa fa-github-square" aria-hidden="true"></i></a>
+        <a href="#"><i class="fa fa-external-link" aria-hidden="true"></i></a-->
+      </td>
+      </tr>
+    </tbody>
+  </table>
+</script>
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+
+          <div class="modal-header">
+            <slot name="header">
+              default header
+            </slot>
+          </div>
+
+          <div class="modal-body">
+            <slot name="body">
+              default body
+            </slot>
+          </div>
+
+          <div class="modal-footer">
+            <slot name="footer">
+              default footer
+              <button class="modal-default-button" @click="$emit('close')">
+                OK
+              </button>
+            </slot>
+          </div>
+        </div>
+      </div>
+    </div>
+  </transition>
+</script>
+
+
+</head>
+
+<body>
+  <div id="nav">
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-12" id="import">
+        <div class="">
+          <div id="gridC">
+            <p> <h3>Select NIDM OWL File </h3></p>
+            <select v-model="selected">
+              <option disabled value="">Please select one</option>
+              <option v-for="option in options" v-bind:value="option.value">
+                {{option.text}}
+              </option>
+            </select>
+            <p>Selected: {{ selected }}</p>
+            <br>
+            <br>
+
+            <!-- use the modal component, pass in the prop -->
+            <modal v-if="showModal" @close="showModal = false">
+              <h3 slot="header">custom header</h3>
+            </modal>
+            <demo-grid
+              :data="prefixData"
+              :columns="prefixColumns">
+            </demo-grid>
+            <br>
+            <br>
+            <demo-grid
+              :data="gridData"
+              :columns="gridColumns"
+              :showModal="showModal">
+            </demo-grid>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src='/dist/handlebars/handlebars.min.js', type='text/javascript'>
+  </script>
+  <script src='/dist/bootstrap/bootstrap.js', type='text/javascript'></script>
+  <script src='/js/templates/template.js'></script>
+  <script src='/js/userAccount.js'></script>
+  <script>
+  let prefixes = {}
+  let prefixArray = []
+  let query = " PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\
+  PREFIX obo:<http://purl.obolibrary.org/obo/>\
+  SELECT *\
+  WHERE { ?subject rdfs:label ?label ;\
+    obo:IAO_0000115 ?desc .\
+      } \
+  "
+  // register modal component
+  Vue.component('modal', {
+    template: '#modal-template'
+  })
+
+  // register the grid component
+  Vue.component('demo-grid', {
+    template: '#grid-template',
+    props: {
+      data: Array,
+      columns: Array
+    },
+    data: function () {
+      var sortOrders = {}
+      this.columns.forEach(function (key) {
+        sortOrders[key] = 1
+      })
+      return {
+        sortKey: '',
+        sortOrders: sortOrders
+      }
+    }
+  })
+  var gridC = new Vue({
+    el: '#gridC',
+    data: {
+      selected:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl',
+      options:[
+        {text:'NIDM-Experiment', value:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl'},
+        {text:'NIDM-Results', value:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-results_130.owl'}
+      ],
+      gridColumns: [],
+      gridData: [],
+      prefixColumns: [],
+      prefixData:[],
+      showModal: false
+    },
+    computed: {
+      showDefaultOwl:{
+        get: function(){
+
+        },
+        // setter
+        set: function (gurl) {
+          $.ajax({
+            type: "GET",
+            url: gurl,
+            success: function(data1){
+              successCallBack(data1,gridC)
+            }
+          })//ajax call
+        }
+      }
+    },
+    watch: {
+      'selected': function() {
+        console.log("gridC.selected", gridC.selected)
+        $.ajax({
+          type: "GET",
+          url: gridC.selected,
+          success: function(data){
+            successCallBack(data,gridC)
+          }
+        })//ajax call
+      }
+    }//end of watch
+  })
+  gridC.showDefaultOwl = 'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl'
+
+  function successCallBack(data,gridComponent){
+    let lines = data.split("\n")
+    for(let i=0;i<lines.length; i++){
+      let line = lines[i].split(" ")
+      if(line[0] == "@prefix"){
+        substrPrefix = line[2].substring(1,line[2].length-2)
+        if(line[1] == ":"){
+          console.log("TODO")
+          prefixes[substrPrefix] = "turtle"
+        }else{
+          prefixes[substrPrefix] = line[1].substring(0,line[1].length-1)
+        }
+      }else if(line[0] == "@base"){
+        prefixes[substrPrefix] = "owl"
+      }else{
+        break;
+      }
+    }
+    console.log("split data:  --\n", prefixes)
+    new rdfstore.Store(function(err, store) {
+      store.load("text/turtle",data,function(err, results){
+        if(err){
+          console.log(err)
+        }
+        store.execute(query,function(success,results) {
+          let items = results
+          let triples = []
+          let triple = {}
+          let prefixItems = []
+          let prefixItem = {}
+          for(let i = 0 ; i<items.length; i++){
+            //triple['URI'] = items[i]['subject'].value
+            triple['Term'] = items[i]['label'].value
+            triple['Description'] = items[i]['desc'].value
+            prefixItem = getPrefixItem(items[i]['subject'].value)
+            triple['URI'] = prefixItem['termWithPrefix']
+            if(!isExist(triple, triples,'URI')){
+              triples.push(triple)
+            }
+            if(!isExist(prefixItem, prefixItems,'Prefix')){
+              console.log("prefixItem:", prefixItem.Prefix)
+              prefixItems.push(prefixItem)
+            }
+            triple = {}
+            prefixItem = {}
+          }
+          console.log("demo.selected", gridComponent.selected)
+          gridComponent.gridColumns = ['Term', 'Description', 'URI']
+          gridComponent.gridData = triples
+          gridComponent.prefixColumns = ['Prefix', 'URI']
+          gridComponent.prefixData = prefixItems
+          gridComponent.showModal = false
+        })//end of store execute
+      })//end of load
+    })//rdf store
+  } //end of successCallBack
+
+  function isExist(obj, arr,prop){
+    for(index=0;index < arr.length; index++){
+      let x = arr[index]
+      if(x[prop] === obj[prop])
+        return true
+    }
+    return false
+  }
+
+  function getPrefixItem(uri){
+    let prefixItem = {}
+    let pfname = uri.split("#")
+    let iri = uri.split("/")
+    for(item in prefixes){
+      if(uri.indexOf(item)!=-1){
+        prefixItem['Prefix'] = prefixes[item]
+        prefixItem['URI'] = item
+        if(pfname.length>1){
+          let parr = iri[iri.length-1].split("#")
+          prefixItem['termWithPrefix'] = prefixes[item]+ ":" + parr[1]
+        }else{
+          prefixItem['termWithPrefix'] = prefixes[item]+ ":" + iri[iri.length-1]
+        }
+      }
+    }
+    return prefixItem
+  }
+</script>
+</body>
+</html>
