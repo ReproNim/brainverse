@@ -135,13 +135,8 @@ module.exports = () => {
     next();
   });
 
-  app.use(express.static(path.join(__dirname, 'public/css')))
-  app.use(express.static(path.join(__dirname, 'public/html')))
-  app.use(express.static(path.join(__dirname, 'public/js')))
-  app.use(express.static(path.join(__dirname, 'public/terms')))
-  app.use(express.static(path.join(__dirname, 'public/lib')))
-  app.use(express.static(path.join(__dirname, 'public/images')))
-
+  app.use(express.static(path.join(__dirname, 'public/')))
+  app.use(express.static(path.join(__dirname, 'modules/')))
 
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
