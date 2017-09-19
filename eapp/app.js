@@ -136,6 +136,7 @@ module.exports = () => {
   });
 
   app.use(express.static(path.join(__dirname, 'public/')))
+  app.use(express.static(path.join(__dirname, 'modules/')))
 
   app.locals.setup = rdfHelper.rdfStoreSetup()
   app.locals.store = app.locals.setup.store
