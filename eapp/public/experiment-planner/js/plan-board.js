@@ -44,13 +44,6 @@ $(document).on('hidden.bs.modal','#newSessionModal', function(e){
   $('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(sname,sname)
-  $('#div-kanban').on('columnAttrClicked', function(event){
-    var args = event.args;
-    if (args.attribute == "button") {
-      console.log("args.attribute:", args)
-      args.cancelToggle = true;
-    }
-  })
 })
 
 function createKanbanBoard(name,label){
@@ -67,12 +60,12 @@ function createKanbanBoard(name,label){
     var columnItems = $("#div-kanban").jqxKanban('getColumnItems', column.dataField).length;
     // update header's status.
     element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")");
-    element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
+    element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
     $('#updateSessionModal').append(updateSessionColumn)
     console.log("element:-->",element)
     // update collapsed header's status.
-    collapsedElement.find(".jqx-kanban-column-header-status").html(" (" + columnItems +  ")");
-    collapsedElement.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><div style="width: 100%; height: 100%;top:-15px" class="fa-edit-icon"></div></div>')
+    //collapsedElement.find(".jqx-kanban-column-header-status").html(" (" + columnItems +  ")");
+    //collapsedElement.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><div style="width: 100%; height: 100%;top:-15px" class="fa-edit-icon"></div></div>')
     //$('.fa-edit-icon').not(':last').remove();
   }
   kCO["width"] = '80%'
@@ -80,3 +73,20 @@ function createKanbanBoard(name,label){
   $('#div-kanban').jqxKanban(kCO)
   $('#div-kanban').jqxKanban('removeItem', "0");
 }
+$(document).on('columnAttrClicked', '#div-kanban', function (event) {
+  var args = event.args;
+
+  console.log("Argument: ",args)
+  console.log("Event: ", event)
+  if(args.attribute == "title"){
+      args.cancelToggle = true;
+    $('.fa-edit-icon').click(function(){
+      console.log("edit button clicked")
+    })
+  }
+  if (args.attribute == "button") {
+    args.cancelToggle = true;
+    console.log("Add button")
+  }
+
+})

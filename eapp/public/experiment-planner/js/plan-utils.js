@@ -74,8 +74,8 @@ function createModal(modalID, title,modalFooter){
     </div>'
   return htmlStr
 }
-function createForm(form, modalID){
-  form.inputForm('Name', 'Name', modalID-'name', 'string', undefined, null, false)
+function createForm(form, modalID,name){
+  form.inputForm('Name', 'Name', modalID-'name', 'string', undefined, name, false)
   form.alpacaGen()
 }
 function createPlanInfoForm(form, modalID, name, desc){
