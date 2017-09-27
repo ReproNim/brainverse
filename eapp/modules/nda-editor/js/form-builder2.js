@@ -88,6 +88,7 @@ var setup = function(fproperties,ffields)
 
         var editor = ace.edit(id);
         editor.setTheme("ace/theme/textmate");
+        editor.$blockScrolling = Infinity
         if (json)
         {
             editor.getSession().setMode("ace/mode/json");
@@ -107,11 +108,11 @@ var setup = function(fproperties,ffields)
 
         return editor;
     };
-
-    var editor1 = setupEditor("schema", schema);
+    console.log("setting up editors - 1--4")
+    /*var editor1 = setupEditor("schema", schema);
     var editor2 = setupEditor("options", options);
     var editor3 = setupEditor("data", data);
-    var editor4 = setupEditor("codeDiv");
+    var editor4 = setupEditor("codeDiv");*/
 
     var mainViewField = null;
     var mainPreviewField = null;
@@ -119,9 +120,10 @@ var setup = function(fproperties,ffields)
 
     var doRefresh = function(el, buildInteractionLayers, disableErrorHandling, cb)
     {
-        try
+        /*try
         {
             schema = JSON.parse(editor1.getValue());
+            console.log("[doRefresh]: editor1 getValue for Schema")
         }
         catch (e)
         {
@@ -130,6 +132,7 @@ var setup = function(fproperties,ffields)
         try
         {
             options = JSON.parse(editor2.getValue());
+            console.log("[doRefresh]: editor2 getValue for Options")
         }
         catch (e)
         {
@@ -138,10 +141,11 @@ var setup = function(fproperties,ffields)
         try
         {
             data = JSON.parse(editor3.getValue());
+            console.log("[doRefresh]: editor3 getValue for data")
         }
         catch (e)
         {
-        }
+        }*/
 
         if (schema)
         {
@@ -476,7 +480,7 @@ var setup = function(fproperties,ffields)
             });
 
             $(modal).find(".okay").click(function() {
-
+                console.log("---editSchema modal: Okacy clicked -----")
                 field.schema = control.getValue();
 
                 var top = findTop(field);
@@ -499,6 +503,7 @@ var setup = function(fproperties,ffields)
 
     var editOptions = function(alpacaFieldId, callback)
     {
+
         var field = Alpaca.fieldInstances[alpacaFieldId];
 
         var fieldOptionsSchema = field.getSchemaOfOptions();
@@ -552,7 +557,7 @@ var setup = function(fproperties,ffields)
             });
 
             $(modal).find(".okay").click(function() {
-
+                console.log("--editOptions Modal: Okay clicked---")
                 field.options = control.getValue();
 
                 var top = findTop(field);
@@ -583,7 +588,7 @@ var setup = function(fproperties,ffields)
         }
 
         doRefresh($("#viewDiv"), false, false, function(err, form) {
-
+            console.log("doRefresh viewDiv ")
             if (!err)
             {
                 mainViewField = form;
@@ -626,7 +631,7 @@ var setup = function(fproperties,ffields)
         $(".dropzone").remove();
         $(".interaction").remove();
         $(".cover").remove();
-
+        console.log("refreshDesigner called")
         if (mainDesignerField)
         {
             mainDesignerField.getFieldEl().replaceWith("<div id='designerDiv'></div>");
@@ -679,15 +684,18 @@ var setup = function(fproperties,ffields)
     };
 
     var rtChange = false;
-    editor1.on("change", function() {
+    /*editor1.on("change", function() {
         rtChange = true;
+        console.log("rtChange: editor1")
     });
     editor2.on("change", function() {
         rtChange = true;
+        console.log("rtChange: editor2")
     });
     editor3.on("change", function() {
         rtChange = true;
-    });
+        console.log("rtChange: editor3")
+    });*/
 
     // background "thread" to detect changes and update the preview div
     var rtProcessing = false;
@@ -696,6 +704,7 @@ var setup = function(fproperties,ffields)
         if (rtChange && !rtProcessing)
         {
             rtProcessing = true;
+            console.log("rt Function():rtProcessing set to true")
             if (mainPreviewField)
             {
                 mainPreviewField.getFieldEl().replaceWith("<div id='previewDiv'></div>");
@@ -776,7 +785,7 @@ var setup = function(fproperties,ffields)
         for (var type in Alpaca.fieldClassRegistry)
         {
             var instance = new Alpaca.fieldClassRegistry[type]();
-            console.log("instance::: ",instance)
+            //console.log("instance::: ",instance)
             var schemaSchema = instance.getSchemaOfSchema();
             var schemaOptions = instance.getOptionsForSchema();
             var optionsSchema = instance.getSchemaOfOptions();
@@ -829,23 +838,26 @@ var setup = function(fproperties,ffields)
     $(".tab-item-source").click(function() {
 
         // we have to monkey around a bit with ACE Editor to get it to refresh
-        editor1.setValue(editor1.getValue());
+        /*editor1.setValue(editor1.getValue());
         editor1.clearSelection();
         editor2.setValue(editor2.getValue());
         editor2.clearSelection();
         editor3.setValue(editor3.getValue());
-        editor3.clearSelection();
+        editor3.clearSelection();*/
+        console.log(".tab item source: click: all editors getValue and Clear Selection")
 
         setTimeout(function() {
             refreshPreview();
         }, 50);
     });
     $(".tab-item-view").click(function() {
+      console.log("tab-item-view: clicked")
         setTimeout(function() {
             refreshView();
         }, 50);
     });
     $(".tab-item-designer").click(function() {
+        console.log(".tab item designer clicked")
         setTimeout(function() {
             refreshDesigner();
         }, 50);
@@ -856,8 +868,9 @@ var setup = function(fproperties,ffields)
         }, 50);
     });
 
-    $(".tab-source-schema").click(function() {
+    /*$(".tab-source-schema").click(function() {
         // we have to monkey around a bit with ACE Editor to get it to refresh
+        console.log(".tab source-schema: clicked: editor1.get and clear selection")
         editor1.setValue(editor1.getValue());
         editor1.clearSelection();
     });
@@ -872,7 +885,7 @@ var setup = function(fproperties,ffields)
         // we have to monkey around a bit with ACE Editor to get it to refresh
         editor3.setValue(editor3.getValue());
         editor3.clearSelection();
-    });
+    });*/
 
     var insertField = function(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey)
     {
@@ -995,20 +1008,25 @@ var setup = function(fproperties,ffields)
     var regenerate = function(top)
     {
         // walk the control tree and re-assemble the schema, options + data
+        console.log("---Regenerating -----")
         var _schema = {};
         assembleSchema(top, _schema);
+        console.log("[regenerate]_schema: ", _schema)
         var _options = {};
         assembleOptions(top, _options);
+        console.log("[regenerate]_options: ", _options)
         // data is easy
         var _data = top.getValue();
         if (!_data) {
             _data = {};
         }
-
-        editor1.setValue(JSON.stringify(_schema, null, "    "));
+        console.log("Setting Editors 1, 2, 3")
+        /*editor1.setValue(JSON.stringify(_schema, null, "    "));
         editor2.setValue(JSON.stringify(_options, null, "    "));
-        editor3.setValue(JSON.stringify(_data, null, "    "));
-
+        editor3.setValue(JSON.stringify(_data, null, "    "));*/
+        schema = _schema
+        options = _options
+        data = _data
         setTimeout(function() {
             refresh();
         }, 100);
@@ -1055,10 +1073,10 @@ var setup = function(fproperties,ffields)
             if (!config.data) {
                 config.data = {};
             }
-
-            editor1.setValue(JSON.stringify(config.schema, null, "    "));
+            console.log("load button clicked")
+            /*editor1.setValue(JSON.stringify(config.schema, null, "    "));
             editor2.setValue(JSON.stringify(config.options, null, "    "));
-            editor3.setValue(JSON.stringify(config.data, null, "    "));
+            editor3.setValue(JSON.stringify(config.data, null, "    "));*/
 
             //alert("Your form was loaded from HTML5 local storage");
         }
