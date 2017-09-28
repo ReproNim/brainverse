@@ -1,4 +1,5 @@
-var setup = function(fproperties,ffields)
+//var setup = function(fproperties,ffields)
+var setup = function()
 {
     //Alpaca.logLevel = Alpaca.DEBUG;
 
@@ -21,13 +22,28 @@ var setup = function(fproperties,ffields)
             </div> \
         </div> \
     ';
-    var schema = {
+    /*aProp = localStorage.getItem('alpacaDesignerProperties')
+    aField = localStorage.getItem('alpacaDesignerFields')*/
+
+    /*var schema = {
         "type": "object",
         "properties":fproperties
       }
     var options = {
       "fields": ffields
+    }*/
+    /*var schema = {
+        "type": "object",
+        "properties":aProp
+      }
+    var options = {
+      "fields": aField
     }
+    localStorage.setItem("alpacaDesignerSchema", schema)
+    localStorage.setItem("alpacaDesignerOptions", options)*/
+    var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
+    var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
+
     var data ={}
     /*var schema = {
         "type": "object",
@@ -108,7 +124,7 @@ var setup = function(fproperties,ffields)
 
         return editor;
     };
-    console.log("setting up editors - 1--4")
+    console.log("setting up editor --- ")
     /*var editor1 = setupEditor("schema", schema);
     var editor2 = setupEditor("options", options);
     var editor3 = setupEditor("data", data);
@@ -146,10 +162,14 @@ var setup = function(fproperties,ffields)
         catch (e)
         {
         }*/
+        var config = {}
+
+        schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
+        options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
 
         if (schema)
         {
-            var config = {
+            config = {
                 "schema": schema
             };
             if (options)
@@ -400,6 +420,7 @@ var setup = function(fproperties,ffields)
 
             $(el).alpaca(config);
         }
+      //}//end of else
     };
 
     var removeFunctionFields = function(schema, options)
@@ -766,19 +787,21 @@ var setup = function(fproperties,ffields)
         "title": "Array",
         "description": "An array of sub-properties"
     }];
-    for (var i = 0; i < types.length; i++)
-    {
-        var title = types[i].title;
-        var type = types[i].type;
-        var description = types[i].description;
+    function appendTypes(){
+      for (var i = 0; i < types.length; i++)
+      {
+          var title = types[i].title;
+          var type = types[i].type;
+          var description = types[i].description;
 
-        var div = $("<div class='form-element draggable ui-widget-content' data-type='" + type + "'></div>");
-        $(div).append("<div><span class='form-element-title'>" + title + "</span> (<span class='form-element-type'>" + type + "</span>)</div>");
-        $(div).append("<div class='form-element-field-description'>" + description + "</div>");
+          var div = $("<div class='form-element draggable ui-widget-content' data-type='" + type + "'></div>");
+          $(div).append("<div><span class='form-element-title'>" + title + "</span> (<span class='form-element-type'>" + type + "</span>)</div>");
+          $(div).append("<div class='form-element-field-description'>" + description + "</div>");
 
-        $("#types").append(div);
+          $("#types").append(div);
+      }
     }
-
+    appendTypes()
     var afterAlpacaInit = function()
     {
         // show all fields
@@ -795,7 +818,7 @@ var setup = function(fproperties,ffields)
             var type = instance.getType();
             var fieldType = instance.getFieldType();
 
-            var div = $("<div class='form-element draggable ui-widget-content' data-type='" + type + "' data-field-type='" + fieldType + "'></div>");
+            var div = $("<div id='tfield' class='form-element draggable ui-widget-content' data-type='" + type + "' data-field-type='" + fieldType + "'></div>");
             $(div).append("<div><span class='form-element-title'>" + title + "</span> (<span class='form-element-type'>" + fieldType + "</span>)</div>");
             $(div).append("<div class='form-element-field-description'>" + description + "</div>");
 
@@ -852,15 +875,27 @@ var setup = function(fproperties,ffields)
     });
     $(".tab-item-view").click(function() {
       console.log("tab-item-view: clicked")
-        setTimeout(function() {
+        //setTimeout(function() {
             refreshView();
-        }, 50);
+      //  }, 50);
     });
     $(".tab-item-designer").click(function() {
         console.log(".tab item designer clicked")
-        setTimeout(function() {
+        if(document.getElementById('tfield') == null){
+          appendTypes()
+          $("<div></div>").alpaca({
+              "data": "test",
+              "postRender": function(control)
+              {
+                  afterAlpacaInit();
+              }
+          });
+
+        }
+
+        //setTimeout(function() {
             refreshDesigner();
-        }, 50);
+        //}, 50);
     });
     $(".tab-item-code").click(function() {
         setTimeout(function() {
@@ -1027,9 +1062,11 @@ var setup = function(fproperties,ffields)
         schema = _schema
         options = _options
         data = _data
-        setTimeout(function() {
+        localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
+        localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
+        //setTimeout(function() {
             refresh();
-        }, 100);
+        //}, 100);
     };
 
     var removeField = function(alpacaId)

@@ -98,6 +98,73 @@ function getDataDictionary(e3){
           $('#import').removeClass("col-xs-7").addClass("col-xs-12")
           form.alpacaDestroy()
         }
+
+        if(document.getElementById('viewDiv') != null) {
+          console.log("view empty---")
+          var exists = $('#viewDiv').alpaca("exist")
+          if(exists){
+            console.log("viewDiv exists: ", exists)
+            console.log("trying to destroy the alpaca form in view Div --")
+            $('#viewDiv').alpaca("destroy")
+            let e = $('#viewDiv').alpaca("exist")
+            console.log("After viewDiv form destory: ", e)
+            //$("#viewDiv").empty()
+            $('#view').empty()
+          }
+
+          $('#view').append('<div class="row">\
+            <div class="col-md-12">\
+              <div id="viewDiv"></div>\
+            </div>\
+          </div>')
+        }
+        if(document.getElementById('designerDiv') != null) {
+          console.log("designerdiv empty----")
+          var exists1 = $('#designerDiv').alpaca("exist")
+          if(exists1){
+            $('#designerDiv').alpaca("destroy")
+            console.log("After designerDiv form destory: ",$('#designerDiv').alpaca("exist"))
+          }
+          $('#designer').empty()
+          $('#designer').append('<div class="row">\
+            <div class="col-md-7">\
+              <div class="row">\
+                <div class="col-md-12">\
+                  <div id="designerDiv"></div>\
+                </div>\
+              </div>\
+            </div>\
+            <div class="col-md-5">\
+              <div class="row">\
+                <div class="col-md-12">\
+                  <div>\
+                    <ul class="nav nav-tabs">\
+                      <li class="active"><a href="#types" data-toggle="tab">Types</a></li>\
+                      <li><a href="#basic" data-toggle="tab">Basic</a></li>\
+                      <li><a href="#advanced" data-toggle="tab">Advanced</a></li>\
+                    </ul>\
+                  </div>\
+                  <div class="tab-content">\
+                    <div class="tab-pane active" id="types"></div>\
+                    <div class="tab-pane" id="basic"></div>\
+                    <div class="tab-pane" id="advanced"></div>\
+                  </div>\
+                </div>\
+              </div>\
+            </div>\
+          </div>')
+        }
+        var schema = {
+           "type": "object",
+           "properties": {}
+         }
+        var options = {
+         "fields": {}
+        }
+        localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
+        localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
+        //setup()
+        //setup({},{})
       });
       $('#div-projectFields').append('<button id="btn-preview" type="button" class="btn btn-primary" style="margin-left:10px">Preview Form</button>')
       $("#div-projectFields").append('</tbody></table></div>')
@@ -117,16 +184,33 @@ function previewForm() {
     }
   }
   //console.log("Terms Added to the form:properties --->", form.properties)
+  /*if(document.getElementById('viewDiv') == null){
+    $('#view').append('<div class="row">\
+      <div class="col-md-12">\
+        <div id="viewDiv"></div>\
+      </div>\
+    </div>')
+  }*/
   fproperties = form.properties
   ffields = form.fields
-  // wait a bit to allow ACE to load
-  setTimeout(function() {
-      //$('designerDiv').empty()
-      //$('viewDiv').empty()
-      setup(fproperties,ffields);
-  }, 200);
+  /*localStorage.setItem("alpacaDesignerProperties", JSON.stringify(fproperties))
+  localStorage.setItem("alpacaDesignerFields", JSON.stringify(ffields))*/
+   var schema = {
+      "type": "object",
+      "properties": fproperties
+    }
+   var options = {
+    "fields": ffields
+  }
+  localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
+  localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
+  //setup(fproperties,ffields)
+  //setup()
   //form.alpacaGen();
+  $(".tab-item-view").click()
+  //$(".tab-item-designer").click()
 }
+setup()
 
 function add_term_to_form(selectedField){
   //Create ungenerated JSON form
