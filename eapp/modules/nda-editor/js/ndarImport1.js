@@ -183,19 +183,9 @@ function previewForm() {
       add_term_to_form(termsKey[i-1])
     }
   }
-  //console.log("Terms Added to the form:properties --->", form.properties)
-  /*if(document.getElementById('viewDiv') == null){
-    $('#view').append('<div class="row">\
-      <div class="col-md-12">\
-        <div id="viewDiv"></div>\
-      </div>\
-    </div>')
-  }*/
   fproperties = form.properties
   ffields = form.fields
-  /*localStorage.setItem("alpacaDesignerProperties", JSON.stringify(fproperties))
-  localStorage.setItem("alpacaDesignerFields", JSON.stringify(ffields))*/
-   var schema = {
+  var schema = {
       "type": "object",
       "properties": fproperties
     }
@@ -204,12 +194,10 @@ function previewForm() {
   }
   localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
   localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
-  //setup(fproperties,ffields)
-  //setup()
   //form.alpacaGen();
   $(".tab-item-view").click()
-  //$(".tab-item-designer").click()
 }
+//calling the setup function
 setup()
 
 function add_term_to_form(selectedField){
@@ -220,6 +208,10 @@ function add_term_to_form(selectedField){
     let fieldName = selectedField.name
     let fieldDescription = selectedField.description
     let fieldValueRange = selectedField.valueRange
+    let fieldRequired = false
+    if(selectedField.required == "Required"){
+      fieldRequired = true
+    }
 
     // check the 'notes' field for any value specified
     let notes = checkNotes(selectedField.name,selectedField.notes)
@@ -234,14 +226,14 @@ function add_term_to_form(selectedField){
       /* Case1: No Value Range */
       if (selectedField.type == "Integer") {
         //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, true)
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, false)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
       }
       else if (selectedField.type == "Date") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, true)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
       }
       else {
         //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, true)
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, false)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
       }
     }
     else if (selectedField.valueRange.indexOf(';')> -1){
@@ -276,25 +268,30 @@ function add_term_to_form(selectedField){
         //options = Object.values(notes)
         options = nvalues
         if(doubleoption){
-          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, options, true)
+          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, options,fieldRequired,false)
+          console.log("Adding radio for: ", fieldName)
         }
         else{
           for(let m=0;m<options.length;m++){
             optionList.push(options[m])
           }
-          form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
-
+          //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
+          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired, true)
+          console.log("Adding radio for: ", fieldName)
         }
       }
       else{
         if(doubleoption){
           form.radioForm(fieldName, fieldDescription, 'preview'+idnum, sub_options2, true)
+          console.log("Adding radio for: ", fieldName)
         }
         else{
           for(let m=0;m<sub_options2.length;m++){
             optionList.push(sub_options2[m])
           }
-          form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
+          //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
+          console.log("Adding radio for: ", fieldName)
+          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired,true)
         }
       }
     }
@@ -324,13 +321,13 @@ function add_term_to_form(selectedField){
 
       if(sub_options1[1].trim()>20){
         if (selectedField.type == "Integer") {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, true)
+          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
         }
         else if (selectedField.type == "Date") {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, true)
+          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
         }
         else {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, true)
+          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired,true)
         }
       }
 
@@ -348,18 +345,20 @@ function add_term_to_form(selectedField){
             optionList.push(sub_options1[m])
           }
         }
-        form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
+        //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
+        console.log("Adding radio for: ", fieldName)
+        form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired, false)
       }
     }
     else{
       if (selectedField.type == "Integer") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, true)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
       }
       else if (selectedField.type == "Date") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, true)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
       }
       else {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, true)
+        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired, true)
       }
     }
 
@@ -464,14 +463,18 @@ $('#btn-pjInfoSave').click(saveProjInfo)
 $('#terms-list').click(projectListPage)
 
 $(document).on('click', '#btn-preview', function() {
-    $('#import').removeClass("col-xs-12").addClass("col-xs-7")
+    //$('#import').removeClass("col-xs-12").addClass("col-xs-7")
     if(document.getElementById('preview') != null) {
       $('#preview').remove()
     }
-    $('#import').after('<div class="col-xs-5" id="preview">\
+    /*$('#import').after('<div class="col-xs-5" id="preview">\
       <p><h3>Preview Form</h3></p>\
       <br>\
         <div id="form1" style="overflow:scroll;overflow:auto"></div>\
+    </div>');*/
+    $('#import').append('<div class="col-xs-12" id="preview">\
+      <p><h3>Preview/Editor</h3></p>\
+      <div id="form1" style="overflow:scroll;overflow:auto"></div>\
     </div>');
     previewForm()
 
