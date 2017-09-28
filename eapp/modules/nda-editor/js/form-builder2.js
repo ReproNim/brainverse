@@ -1,4 +1,7 @@
-//var setup = function(fproperties,ffields)
+/*
+* Setting Up form editor
+* This code is adapted from http://www.alpacajs.org/demos/form-builder/form-builder.html
+*/
 var setup = function()
 {
     //Alpaca.logLevel = Alpaca.DEBUG;
@@ -28,8 +31,7 @@ var setup = function()
 
     var data ={}
 
-
-    var setupEditor = function(id, json)
+  /*  var setupEditor = function(id, json)
     {
         var text = "";
         if (json)
@@ -58,8 +60,8 @@ var setup = function()
         }, 100);
 
         return editor;
-    };
-    console.log("setting up editor --- ")
+    };*/
+    console.log("--- Setting up Form Editor Space--- ")
     var mainViewField = null;
     var mainPreviewField = null;
     var mainDesignerField = null;
@@ -88,7 +90,6 @@ var setup = function()
             }
             config.options.focus = false;
             config.postRender = function(form) {
-
                 if (buildInteractionLayers)
                 {
                     // cover every control with an interaction layer
@@ -404,7 +405,7 @@ var setup = function()
             });
 
             $(modal).find(".okay").click(function() {
-                console.log("---editSchema modal: Okacy clicked -----")
+                console.log("---editSchema modal: Okay clicked -----")
                 field.schema = control.getValue();
 
                 var top = findTop(field);
@@ -526,7 +527,7 @@ var setup = function()
         });
     };
 
-    var refreshPreview = function(callback)
+    /*var refreshPreview = function(callback)
     {
         if (mainPreviewField)
         {
@@ -548,7 +549,7 @@ var setup = function()
             }
 
         });
-    };
+    };*/
 
     var refreshDesigner = function(callback)
     {
@@ -578,7 +579,7 @@ var setup = function()
         });
     };
 
-    var refreshCode = function(callback)
+    /*var refreshCode = function(callback)
     {
         var json = {
             "schema": schema
@@ -599,7 +600,7 @@ var setup = function()
         {
             callback();
         }
-    };
+    };*/
 
     var refresh = function(callback)
     {
@@ -607,7 +608,7 @@ var setup = function()
         $(current).click();
     };
 
-    var rtChange = false;
+    /*var rtChange = false;
 
     // background "thread" to detect changes and update the preview div
     var rtProcessing = false;
@@ -638,7 +639,7 @@ var setup = function()
         setTimeout(rtFunction, 1000);
 
     };
-    rtFunction();
+    rtFunction();*/
 
     var isCoreField = function(type)
     {
@@ -780,11 +781,11 @@ var setup = function()
         }
         refreshDesigner();
     });
-    $(".tab-item-code").click(function() {
+    /*$(".tab-item-code").click(function() {
         setTimeout(function() {
             refreshCode();
         }, 50);
-    });
+    });*/
 
     var insertField = function(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey)
     {
