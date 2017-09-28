@@ -22,77 +22,12 @@ var setup = function()
             </div> \
         </div> \
     ';
-    /*aProp = localStorage.getItem('alpacaDesignerProperties')
-    aField = localStorage.getItem('alpacaDesignerFields')*/
 
-    /*var schema = {
-        "type": "object",
-        "properties":fproperties
-      }
-    var options = {
-      "fields": ffields
-    }*/
-    /*var schema = {
-        "type": "object",
-        "properties":aProp
-      }
-    var options = {
-      "fields": aField
-    }
-    localStorage.setItem("alpacaDesignerSchema", schema)
-    localStorage.setItem("alpacaDesignerOptions", options)*/
     var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
     var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
 
     var data ={}
-    /*var schema = {
-        "type": "object",
-        "properties": {
-            "email": {
-                "type": "string",
-                "required": false
-            },
-            "password": {
-                "type": "string",
-                "required": false,
-                "pattern": {}
-            },
-            "file": {
-                "type": "string",
-                "required": false
-            },
-            "check": {
-                "type": "boolean",
-                "required": false,
-                "default": true
-            }
-        }
-    };
-    var options = {
-        "fields": {
-            "email": {
-                "type": "text",
-                "label": "Email Address"
-            },
-            "password": {
-                "type": "password",
-                "label": "Password"
-            },
-            "file": {
-                "type": "file",
-                "label": "File Upload"
-            },
-            "check": {
-                "type": "checkbox",
-                "rightLabel": "Sign me up for the News Letter!",
-                "label": "Newsletter"
-            }
-        }
-    };
-    var data = {
-        "email": "Joe Smith",
-        "password": "MyPassword"
-    };*/
+
 
     var setupEditor = function(id, json)
     {
@@ -125,45 +60,13 @@ var setup = function()
         return editor;
     };
     console.log("setting up editor --- ")
-    /*var editor1 = setupEditor("schema", schema);
-    var editor2 = setupEditor("options", options);
-    var editor3 = setupEditor("data", data);
-    var editor4 = setupEditor("codeDiv");*/
-
     var mainViewField = null;
     var mainPreviewField = null;
     var mainDesignerField = null;
 
     var doRefresh = function(el, buildInteractionLayers, disableErrorHandling, cb)
     {
-        /*try
-        {
-            schema = JSON.parse(editor1.getValue());
-            console.log("[doRefresh]: editor1 getValue for Schema")
-        }
-        catch (e)
-        {
-        }
-
-        try
-        {
-            options = JSON.parse(editor2.getValue());
-            console.log("[doRefresh]: editor2 getValue for Options")
-        }
-        catch (e)
-        {
-        }
-
-        try
-        {
-            data = JSON.parse(editor3.getValue());
-            console.log("[doRefresh]: editor3 getValue for data")
-        }
-        catch (e)
-        {
-        }*/
         var config = {}
-
         schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
         options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
 
@@ -705,18 +608,6 @@ var setup = function()
     };
 
     var rtChange = false;
-    /*editor1.on("change", function() {
-        rtChange = true;
-        console.log("rtChange: editor1")
-    });
-    editor2.on("change", function() {
-        rtChange = true;
-        console.log("rtChange: editor2")
-    });
-    editor3.on("change", function() {
-        rtChange = true;
-        console.log("rtChange: editor3")
-    });*/
 
     // background "thread" to detect changes and update the preview div
     var rtProcessing = false;
@@ -861,24 +752,19 @@ var setup = function()
     $(".tab-item-source").click(function() {
 
         // we have to monkey around a bit with ACE Editor to get it to refresh
-        /*editor1.setValue(editor1.getValue());
-        editor1.clearSelection();
-        editor2.setValue(editor2.getValue());
-        editor2.clearSelection();
-        editor3.setValue(editor3.getValue());
-        editor3.clearSelection();*/
+
         console.log(".tab item source: click: all editors getValue and Clear Selection")
 
         setTimeout(function() {
             refreshPreview();
         }, 50);
     });
+
     $(".tab-item-view").click(function() {
       console.log("tab-item-view: clicked")
-        //setTimeout(function() {
-            refreshView();
-      //  }, 50);
+      refreshView();
     });
+
     $(".tab-item-designer").click(function() {
         console.log(".tab item designer clicked")
         if(document.getElementById('tfield') == null){
@@ -892,35 +778,13 @@ var setup = function()
           });
 
         }
-
-        //setTimeout(function() {
-            refreshDesigner();
-        //}, 50);
+        refreshDesigner();
     });
     $(".tab-item-code").click(function() {
         setTimeout(function() {
             refreshCode();
         }, 50);
     });
-
-    /*$(".tab-source-schema").click(function() {
-        // we have to monkey around a bit with ACE Editor to get it to refresh
-        console.log(".tab source-schema: clicked: editor1.get and clear selection")
-        editor1.setValue(editor1.getValue());
-        editor1.clearSelection();
-    });
-
-    $(".tab-source-options").click(function() {
-        // we have to monkey around a bit with ACE Editor to get it to refresh
-        editor2.setValue(editor2.getValue());
-        editor2.clearSelection();
-    });
-
-    $(".tab-source-data").click(function() {
-        // we have to monkey around a bit with ACE Editor to get it to refresh
-        editor3.setValue(editor3.getValue());
-        editor3.clearSelection();
-    });*/
 
     var insertField = function(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey)
     {
@@ -1056,9 +920,6 @@ var setup = function()
             _data = {};
         }
         console.log("Setting Editors 1, 2, 3")
-        /*editor1.setValue(JSON.stringify(_schema, null, "    "));
-        editor2.setValue(JSON.stringify(_options, null, "    "));
-        editor3.setValue(JSON.stringify(_data, null, "    "));*/
         schema = _schema
         options = _options
         data = _data
@@ -1080,7 +941,7 @@ var setup = function()
         });
     };
 
-    $(".tab-item-source").click();
+    //$(".tab-item-source").click();
 
 
     // load button
