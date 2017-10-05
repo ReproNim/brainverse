@@ -25,9 +25,11 @@ var setup = function(){
     </div> \
   ';
 
-  var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
-  var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
-
+  //var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
+  //var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
+  var schema = {}
+  var options = {}
+  console.log("schema just during setup: ", schema)
   var data ={}
 
   console.log("--- Setting up Form Editor Space--- ")
@@ -921,8 +923,8 @@ var setup = function(){
     });
 
     // save button
-    $(".save-button").off().click(function() {
-
+    $(".save-button").off().click(function(e) {
+        e.preventDefault()
         if (!localStorage)
         {
             alert("Your browser must support HTML5 local storage in order to use this feature")
@@ -943,9 +945,9 @@ var setup = function(){
             config.data = data;
         }
         var configString = JSON.stringify(config)
-
+        console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
-
+        convertAlpacaToNDA(schema,options)
         alert("Your form was saved in HTML5 local storage")
     })
 }

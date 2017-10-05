@@ -80,8 +80,7 @@ function getDataDictionary(e3){
             <td class="td-term"> '+ termsKey[i].name+'</td>\
             <td> '+ termsKey[i].description+ '</td>\
             </tr>')
-
-            count++
+          count++
       }
       //SELECT ALL
       $('#div-projectFields').append('<br><button id="btn-toggleAll" type="button" class="btn btn-primary">Select All</button>')
@@ -212,7 +211,7 @@ function add_term_to_form(selectedField){
     if(selectedField.required == "Required"){
       fieldRequired = true
     }
-
+    let idnum = selectedField.id
     // check the 'notes' field for any value specified
     let notes = checkNotes(selectedField.name,selectedField.notes)
     console.log(notes)
@@ -226,14 +225,14 @@ function add_term_to_form(selectedField){
       /* Case1: No Value Range */
       if (selectedField.type == "Integer") {
         //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, true)
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
       }
       else if (selectedField.type == "Date") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
       }
       else {
         //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, true)
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
       }
     }
     else if (selectedField.valueRange.indexOf(';')> -1){
@@ -268,7 +267,7 @@ function add_term_to_form(selectedField){
         //options = Object.values(notes)
         options = nvalues
         if(doubleoption){
-          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, options,fieldRequired,false)
+          form.radioForm(fieldName, fieldDescription, 'preview-'+idnum, options,fieldRequired,false)
           console.log("Adding radio for: ", fieldName)
         }
         else{
@@ -276,13 +275,13 @@ function add_term_to_form(selectedField){
             optionList.push(options[m])
           }
           //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
-          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired, true)
+          form.radioForm(fieldName, fieldDescription, 'preview-'+idnum, optionList, fieldRequired, true)
           console.log("Adding radio for: ", fieldName)
         }
       }
       else{
         if(doubleoption){
-          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, sub_options2, true)
+          form.radioForm(fieldName, fieldDescription, 'preview-'+idnum, sub_options2, true)
           console.log("Adding radio for: ", fieldName)
         }
         else{
@@ -291,7 +290,7 @@ function add_term_to_form(selectedField){
           }
           //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
           console.log("Adding radio for: ", fieldName)
-          form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired,true)
+          form.radioForm(fieldName, fieldDescription, 'preview-'+idnum, optionList, fieldRequired,true)
         }
       }
     }
@@ -321,13 +320,13 @@ function add_term_to_form(selectedField){
 
       if(sub_options1[1].trim()>20){
         if (selectedField.type == "Integer") {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
+          form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
         }
         else if (selectedField.type == "Date") {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+          form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
         }
         else {
-          form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired,true)
+          form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,true)
         }
       }
 
@@ -347,22 +346,22 @@ function add_term_to_form(selectedField){
         }
         //form.selectForm(fieldName, fieldDescription, optionList, 'preview'+idnum, false)
         console.log("Adding radio for: ", fieldName)
-        form.radioForm(fieldName, fieldDescription, 'preview'+idnum, optionList, fieldRequired, false)
+        form.radioForm(fieldName, fieldDescription, 'preview-'+idnum, optionList, fieldRequired, false)
       }
     }
     else{
       if (selectedField.type == "Integer") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
       }
       else if (selectedField.type == "Date") {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
       }
       else {
-        form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, fieldRequired, true)
+        form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired, true)
       }
     }
 
-    idnum++
+    //idnum++
 
 }//end of addTerms function
 
@@ -392,7 +391,7 @@ function checkNotes(key,notes){
 
 // Save the project information entered and the selected fields
 // The information is saved in a local file named 'proj-info.json'
-function saveProjInfo(e){
+/*function saveProjInfo(e){
   e.preventDefault()
 
   for (let i=1; i<count; i++){
@@ -413,7 +412,7 @@ function saveProjInfo(e){
   }*/
 
   //Save the data entered
-  saveObj2['DictionaryID'] = ''
+  /*saveObj2['DictionaryID'] = ''
   saveObj2['shortName'] = shortName
   saveObj2["Name"] = document.getElementById("proj-name").value
   saveObj2["Description"] = document.getElementById("proj-desc").value
@@ -452,15 +451,15 @@ function saveProjInfo(e){
   //Close Form Preview on save button
   $('#preview').remove()
   $('#import').removeClass("col-xs-7").addClass("col-xs-12")
-}
+}*/
 
 function projectListPage(){
   window.location.href = serverUrl + "/nda/html/acquistionForm.html"
 }
 
 $("#btn-dd-selected").click(getDataDictionary)
-$('#btn-pjInfoSave').click(saveProjInfo)
-$('#terms-list').click(projectListPage)
+//$('#btn-pjInfoSave').click(saveProjInfo)
+//$('#terms-list').click(projectListPage)
 
 $(document).on('click', '#btn-preview', function() {
     //$('#import').removeClass("col-xs-12").addClass("col-xs-7")
@@ -479,3 +478,77 @@ $(document).on('click', '#btn-preview', function() {
     previewForm()
 
   })
+
+  function convertAlpacaToNDA(schema,options){
+    //let ndaObj = {}
+    let ndaTerms = []
+    let ndaTerm = {}
+    console.log("SCHEMA value saving: --", schema)
+    saveObj2['DictionaryID'] = ''
+    saveObj2['shortName'] = shortName
+    saveObj2["Name"] = document.getElementById("nda-form-name").value
+    saveObj2["Description"] = document.getElementById("nda-form-desc").value
+
+    if($.isEmptyObject(schema)){
+      //check if any field is checked
+      console.log("[if]only selected box convert count= ", count)
+      for (let i=1; i<count; i++){
+        if(document.getElementById("projfield-" + i).checked){
+          console.log(document.getElementById("projfield-"+ i).checked)
+          //chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
+          chkboxSelectedArray.push(termsIndex[document.getElementById("projfield-"+ i).value])
+        } else{
+          console.log("checkbox is not selected")
+        }
+      }
+      saveObj2['fields'] = chkboxSelectedArray
+
+    }else{
+      console.log("else: Convert Alpaca to NDA")
+      //Start converting from the schema and options
+      console.log("OPTIONS value saving: --", options.fields)
+      let ndafields = options.fields
+      //for(let i=0;i<ndafields.length;i++){
+      $.each(ndafields, function(key, field) {
+        console.log(key, field);
+        ndaTerm = {}
+        let ndaId = field.id.split('-')[1]
+        console.log("ndaId: ", ndaId)
+        ndaTerm['id'] = ndaId
+        ndaTerm['required'] = schema.properties[key].required
+        ndaTerm['condition'] = termsIndex[ndaId].condition
+        ndaTerm['aliases'] = termsIndex[ndaId].aliases
+        ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
+        ndaTerm['position'] = termsIndex[ndaId].position
+        ndaTerm['dataElementId'] = termsIndex[ndaId].dataElement
+        ndaTerm['name'] = key
+        ndaTerm['type'] = termsIndex[ndaId].type
+        ndaTerm['size'] = termsIndex[ndaId].size
+        ndaTerm['description'] = field.label
+        ndaTerm['valueRange'] = schema.properties[key].enum
+        ndaTerm['notes'] = termsIndex[ndaId].notes
+        ndaTerm['translation'] = termsIndex[ndaId].translations
+        ndaTerms.push(ndaTerm)
+        console.log("ndaTerm: ", ndaTerm)
+      })
+      saveObj2['fields'] = ndaTerms
+    }
+    console.log("SAVING ----",saveObj2)
+    $.ajax({
+      type: "POST",
+      url: serverUrl + "/nda/dictionaries",
+      contentType: "application/json",
+      data: JSON.stringify(saveObj2),
+      success: function(data){
+        console.log('success')
+        console.log("data received",data)
+        $("#div-projectFields").empty()
+        $("#termsInfoSaveMsg").empty()
+        $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+        <a href="#" class="close" data-dismiss="alert">&times;</a>\
+        <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
+        </div>')
+        $("#termsInfoSaveMsg").append('<br>')
+      }
+    })
+}

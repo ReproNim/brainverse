@@ -11,7 +11,7 @@ module.exports = () => {
   const jsonParser = bodyParser.json()
   let ndarUrl = "https://ndar.nih.gov/api/datadictionary/v2/datastructure"
 
-  app.post('/dictionaries/new', jsonParser, function(req,res){
+  /*app.post('/dictionaries/new', jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('received at server side')
     //console.log(req.body)
@@ -28,7 +28,7 @@ module.exports = () => {
       console.log('done')
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
     })
-  })
+  })*/
 
   app.get('/ndar-categories', function(req, res){
     let url = ndarUrl + "/categories"
