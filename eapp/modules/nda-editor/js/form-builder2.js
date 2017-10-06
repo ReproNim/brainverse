@@ -950,4 +950,32 @@ var setup = function(){
         convertAlpacaToNDA(schema,options)
         alert("Your form was saved in HTML5 local storage")
     })
+    $(".git-push-button").off().click(function(e) {
+        e.preventDefault()
+        if (!localStorage)
+        {
+            alert("Your browser must support HTML5 local storage in order to use this feature")
+            return;
+        }
+
+        var config = {}
+        if (schema)
+        {
+            config.schema = schema
+        }
+        if (options)
+        {
+            config.options = options
+        }
+        if (data)
+        {
+            config.data = data;
+        }
+        var configString = JSON.stringify(config)
+        console.log("alpacaDesignerConfig: ", config)
+        localStorage.setItem("alpacaDesignerConfig", configString)
+        pushToGitHub(schema,options)
+        alert("Your form was saved in HTML5 local storage")
+    })
+
 }

@@ -536,7 +536,7 @@ $(document).on('click', '#btn-preview', function() {
     console.log("SAVING ----",saveObj2)
     $.ajax({
       type: "POST",
-      url: serverUrl + "/nda/dictionaries",
+      url: serverUrl + "/nda/dictionaries/local",
       contentType: "application/json",
       data: JSON.stringify(saveObj2),
       success: function(data){
@@ -551,4 +551,78 @@ $(document).on('click', '#btn-preview', function() {
         $("#termsInfoSaveMsg").append('<br>')
       }
     })
-}
+  }
+
+  function pushToGitHub(schema,options){
+    //let ndaObj = {}
+    let ndaTerms = []
+    let ndaTerm = {}
+    console.log("SCHEMA value saving: --", schema)
+    saveObj2['DictionaryID'] = ''
+    saveObj2['shortName'] = shortName
+    saveObj2["Name"] = document.getElementById("nda-form-name").value
+    saveObj2["Description"] = document.getElementById("nda-form-desc").value
+
+    if($.isEmptyObject(schema)){
+      //check if any field is checked
+      console.log("[if]only selected box convert count= ", count)
+      for (let i=1; i<count; i++){
+        if(document.getElementById("projfield-" + i).checked){
+          console.log(document.getElementById("projfield-"+ i).checked)
+          //chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
+          chkboxSelectedArray.push(termsIndex[document.getElementById("projfield-"+ i).value])
+        } else{
+          console.log("checkbox is not selected")
+        }
+      }
+      saveObj2['fields'] = chkboxSelectedArray
+
+    }else{
+      console.log("else: Convert Alpaca to NDA")
+      //Start converting from the schema and options
+      console.log("OPTIONS value saving: --", options.fields)
+      let ndafields = options.fields
+      //for(let i=0;i<ndafields.length;i++){
+      $.each(ndafields, function(key, field) {
+        console.log(key, field);
+        ndaTerm = {}
+        let ndaId = field.id.split('-')[1]
+        console.log("ndaId: ", ndaId)
+        ndaTerm['id'] = ndaId
+        ndaTerm['required'] = schema.properties[key].required
+        ndaTerm['condition'] = termsIndex[ndaId].condition
+        ndaTerm['aliases'] = termsIndex[ndaId].aliases
+        ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
+        ndaTerm['position'] = termsIndex[ndaId].position
+        ndaTerm['dataElementId'] = termsIndex[ndaId].dataElement
+        ndaTerm['name'] = key
+        ndaTerm['type'] = termsIndex[ndaId].type
+        ndaTerm['size'] = termsIndex[ndaId].size
+        ndaTerm['description'] = field.label
+        ndaTerm['valueRange'] = schema.properties[key].enum
+        ndaTerm['notes'] = termsIndex[ndaId].notes
+        ndaTerm['translation'] = termsIndex[ndaId].translations
+        ndaTerms.push(ndaTerm)
+        console.log("ndaTerm: ", ndaTerm)
+      })
+      saveObj2['fields'] = ndaTerms
+    }
+    console.log("SAVING ----",saveObj2)
+    $.ajax({
+      type: "POST",
+      url: serverUrl + "/nda/dictionaries/github",
+      contentType: "application/json",
+      data: JSON.stringify(saveObj2),
+      success: function(data){
+        console.log('success')
+        console.log("data received",data)
+        $("#div-projectFields").empty()
+        $("#termsInfoSaveMsg").empty()
+        $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
+        <a href="#" class="close" data-dismiss="alert">&times;</a>\
+        <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
+        </div>')
+        $("#termsInfoSaveMsg").append('<br>')
+      }
+    })
+  }
