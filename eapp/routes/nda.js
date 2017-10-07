@@ -40,6 +40,7 @@ module.exports = () => {
 
   app.post('/nda/dictionaries/github', ensureAuthenticated,jsonParser, function(req,res){
     console.log("github: req.user: ",req.user)
+    let user = req.user
     if (!req.body) return res.sendStatus(400)
     console.log('[nda/dictionaries/github] Received at server side')
     //console.log(req.body)
@@ -86,7 +87,7 @@ module.exports = () => {
             //console.log("resn1", resn1)
             if(!err1 && resn1.statusCode == 200 || resn1.statusCode == 202){
               console.log("resn1.statusCode", resn1.statusCode)
-              createFileInRepo(url,term_info,fileName)
+              createFileInRepo(url,term_info,fileName,user)
             }
             //console.log("resn: ", resn1)
             console.log("post: fork: ", JSON.parse(body1).full_name)
@@ -95,18 +96,18 @@ module.exports = () => {
       }else{
         console.log("It already exist----")
         //create File in the repo
-        createFileInRepo(url,term_info,fileName)
+        createFileInRepo(url,term_info,fileName,user)
       }
 
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
     })// end of request GET end
   })
 
-  function createFileInRepo(url,jsonTermObj,pathToFile){
+  function createFileInRepo(url,jsonTermObj,pathToFile,user){
     let content = Buffer.from(JSON.stringify(jsonTermObj,undefined,2)).toString('base64')
     var options = {
       method: 'PUT',
-      url: url + 'repos/smpadhy/ni-terms/contents/'+ pathToFile,
+      url: url + 'repos/'+ user.username+'/ni-terms/contents/'+ pathToFile,
       headers: {
         'Authorization': 'token '+ github_token,
         'User-Agent': 'brainverse',
@@ -119,12 +120,35 @@ module.exports = () => {
       json: true
     }
     request(options,function(err,response,body){
-      console.log("statusCode for createFile: ", response)
-      if(response.statusCode == 200){
-        console.log("body: ", body)
+      console.log("statusCode for createFile: ", response.statusCode)
+      if(response.statusCode == 200 || response.statusCode == 201){
+        //console.log("body: ", body)
+        createPullRequest(url,pathToFile,user)
       }
     })
   }
+  function createPullRequest(url,pathToFile,user){
+    var options = {
+      method: 'POST',
+      url: url + 'repos/ReproNim/ni-terms/pulls',
+      headers: {
+        'Authorization': 'token '+ github_token,
+        'User-Agent': 'brainverse',
+        'Content-Type': 'application/json'
+      },
+      body: {
+        "title": "Data Dictionary: "+ pathToFile +" curated",
+        "body": "Edited or Added Terms",
+        "head": user.username+":master",
+        "base": "master"
+      },
+      json: true
+    }
+    request(options,function(err,response,body){
+      console.log("StatusCode for Pull Request: ", response.statusCode)
+    })
+  }
+
   function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
     res.redirect('/')
