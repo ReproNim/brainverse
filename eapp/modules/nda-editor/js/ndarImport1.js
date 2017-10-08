@@ -42,12 +42,11 @@ function getDataDictionaryListGitHub(){
     success: function(data){
       console.log('get forms: github:success')
       console.log("data:  ",data)
-      //let dE = JSON.parse(data)
-      console.log(data.list)
-      /*$("#ndar-dd").select2()
+      let dE = data.list
+      //$("#ndar-dd").select2()
       for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].Name +'</option>')
-      }*/
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+      }
     }
   })
 
