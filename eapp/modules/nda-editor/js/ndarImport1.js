@@ -18,20 +18,40 @@ var serverUrl = "http://127.0.0.1:3000"
 * Data Dictionaries
 */
 
-  $.ajax({
-    type: "GET",
-    url: serverUrl + "/ndar-terms/forms",
-    accept: "application/json",
-    success: function(data){
-      console.log('get forms:success')
-      let dE = JSON.parse(data)
-      console.log(dE)
-      $("#ndar-dd").select2()
-      for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+$.ajax({
+  type: "GET",
+  url: serverUrl + "/ndar-terms/forms",
+  accept: "application/json",
+  success: function(data){
+    console.log('get forms:success')
+    let dE = JSON.parse(data)
+    console.log(dE)
+    $("#ndar-dd").select2()
+    for (let i=0;i<dE.length;i++){
+      $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
     }
+    getDataDictionaryListGitHub()
   }
 })
+
+function getDataDictionaryListGitHub(){
+  $.ajax({
+    type: "GET",
+    url: serverUrl + "/nda/dictionaries/github",
+    accept: "application/json",
+    success: function(data){
+      console.log('get forms: github:success')
+      console.log("data:  ",data)
+      //let dE = JSON.parse(data)
+      console.log(data.list)
+      /*$("#ndar-dd").select2()
+      for (let i=0;i<dE.length;i++){
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].Name +'</option>')
+      }*/
+    }
+  })
+
+}
 
 function getDataDictionary(e3){
   e3.preventDefault()

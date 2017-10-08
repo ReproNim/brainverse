@@ -9,7 +9,7 @@ module.exports = () => {
   const fs = require('fs')
   const moment = require('moment')
   const request = require('request')
-  //const rp = require('request-promise')
+  const rp = require('request-promise')
   const b64 = require('node-b64')
 
 
@@ -18,7 +18,76 @@ module.exports = () => {
 
   global.store = app.locals.store
 
-  //app.use(fileUpload())
+
+  app.get('/nda/dictionaries/github', ensureAuthenticated, jsonParser, function(req,res){
+
+    let url = 'https://api.github.com/'
+    let options = {
+      //method:'GET',
+      //uri: url+'repos/'+req.user.username+'/ni-terms/contents',
+      url: url+'repos/'+req.user.username+'/ni-terms/contents',
+      headers:{
+        'User-Agent':'brainverse',
+        'Authorization': 'token '+ github_token,
+        'accept':'application/json'
+      }
+    }
+    new Promise(function(resolve, reject){
+      request.get(options, function(err, resn, body){
+        //rp(options)
+        resolve(body)
+      })
+    }).then(function(fileListInRepo){
+      let filesInfo = []
+      let gitFilesInfo = JSON.parse(fileListInRepo)
+      for(let i = 0; i<gitFilesInfo.length; i++){
+        if(gitFilesInfo[i].name !== 'README.md'){
+          filesInfo.push(gitFilesInfo[i].path)
+        }
+      }
+      console.log("fileName list: ", filesInfo)
+      let gitObj = {}
+      let nameList = []
+      var arr = filesInfo.map(function(filePath) {
+        let options_download = {
+          //method: 'GET',
+          //uri: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
+          url: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
+          headers:{
+            'User-Agent':'brainverse',
+            'Authorization': 'token '+ github_token,
+            'accept':'application/vnd.github.v3.raw'
+          }
+        }
+        return new Promise(function(resolve){
+          request.get(options_download, function(err, response,body){
+            console.log("body:------------->\n ", JSON.parse(body))
+            console.log("<-------------------->")
+            resolve(JSON.parse(body))
+          })
+        })
+      })
+      return Promise.all(arr)
+    })
+    .then(function(contents){
+      let nameList = []
+      let dataD = contents
+      for(let i = 0; i< contents.length;i++){
+        let pid = dataD[i].DictionaryID.split('-')
+        let psname = dataD[i].shortName.split(' ')
+        let pname = dataD[i].Name.split(' ')
+        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name})
+        let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+        writeJsonFile(cpath,dataD[i]).then(() => {
+          console.log('data dictionary saved: ', filePath)
+        })
+      }
+      res.json({"list":nameList})
+    })
+    .catch(function(err){
+      console.log("get: contents list call err: ", err)
+    })
+  })
 
   app.post('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
