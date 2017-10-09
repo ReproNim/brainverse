@@ -87,6 +87,83 @@ module.exports = () => {
     })
   })
 
+  app.get('/nda/dictionaries/github/:shortName', ensureAuthenticated, jsonParser, function(req,res){
+    console.log('loading file:--',req.params.shortName )
+
+    //let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    /*var listOfFiles = new Promise(function(resolve){
+      fs.readdir(path, function(err,list){
+        if(err) throw err
+        console.log("lists:---> ", list)
+        resolve(list)
+      })
+    })
+    listOfFiles.then(function(list){
+      let fname = ''
+      console.log("lists: then---> ", list)
+      for(let i = 0; i< list.length;i++){
+        if(list[i].indexOf(req.params.shortName)!= -1){
+          fname = list[i]
+          break;
+        }
+      }
+      loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname)).then(ob => {
+        console.log("ob:==>", ob)
+        res.json(ob)
+      })
+    })*/
+    let url = 'https://api.github.com/'
+    let options = {
+      url: url+'repos/'+req.user.username+'/ni-terms/contents',
+      headers:{
+        'User-Agent':'brainverse',
+        'Authorization': 'token '+ github_token,
+        'accept':'application/json'
+      }
+    }
+    new Promise(function(resolve, reject){
+      request.get(options, function(err, resn, body){
+        resolve(body)
+      })
+    }).then(function(fileListInRepo){
+      let filesInfo = []
+      let gitFilesInfo = JSON.parse(fileListInRepo)
+      for(let i = 0; i<gitFilesInfo.length; i++){
+        if(gitFilesInfo[i].name !== 'README.md'){
+          filesInfo.push(gitFilesInfo[i].path)
+        }
+      }
+      console.log("fileName list: ", filesInfo)
+      let fname = ''
+      for(let i = 0; i<filesInfo.length;i++){
+        if(filesInfo[i].indexOf(req.params.shortName)!== -1){
+          fname = filesInfo[i]
+          break;
+        }
+      }
+      let options_download = {
+          url: url+'repos/'+req.user.username+'/ni-terms/contents/'+fname,
+          headers:{
+            'User-Agent':'brainverse',
+            'Authorization': 'token '+ github_token,
+            'accept':'application/vnd.github.v3.raw'
+          }
+        }
+        return new Promise(function(resolve){
+          request.get(options_download, function(err, response,body){
+            //resolve(JSON.parse(body))
+            resolve(body)
+          })
+        })
+    })
+    .then(function(contents){
+      res.send(contents)
+    })
+    .catch(function(err){
+      console.log("get: content call err: ", err)
+    })
+  })
+
   app.post('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('[nda/dictionaries/] Received at server side')

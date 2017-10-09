@@ -28,7 +28,6 @@ $("#nda-src").change(function(){
   }else{
     getDataDictionaryListGitHub()
   }
-
 })
 
 function getDataDictionaryListNDA(){
@@ -63,7 +62,6 @@ function getDataDictionaryListGitHub(){
       }
     }
   })
-
 }
 
 function getDataDictionary(e3){
@@ -72,7 +70,7 @@ function getDataDictionary(e3){
   $("#termsInfoSaveMsg").empty()
   $("#termsInfoSaveMsg").append('<br>')
   $("#terms-list").empty()
-  if(document.getElementById('preview') != null) {
+  if(document.getElementById('preview') != null){
     $('#preview').remove()
     $('#import').removeClass("col-xs-7").addClass("col-xs-12")
     form.alpacaDestroy()
@@ -80,12 +78,18 @@ function getDataDictionary(e3){
 
   count = 1
   //chkboxSelectedArray = []
-  $("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
+  //$("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
 
   console.log(encodeURI($('#ndar-dd').val()))
   shortName = encodeURI($('#ndar-dd').val())
 
-  let nUrl = serverUrl + "/ndar-terms/"+ encodeURI($("#ndar-dd").val())
+  let nUrl = ""
+  if($("#nda-src").val() === "NDA"){
+    nUrl = serverUrl + "/ndar-terms/"+ shortName
+  }else{
+    nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
+  }
+  //let nUrl = serverUrl + "/ndar-terms/"+ encodeURI($("#ndar-dd").val())
   console.log("nUrl",nUrl)
   $.ajax({
     type: "GET",
@@ -93,8 +97,14 @@ function getDataDictionary(e3){
     accept: "application/json",
     success: function(data){
       console.log('success')
+      //let dE=data
       let dE = JSON.parse(data)
-      termsKey = dE.dataElements
+      console.log("DE:--->", dE)
+      if(dE.hasOwnProperty('dataElements')){
+        termsKey = dE.dataElements
+      }else{
+        termsKey = dE.fields
+      }
       console.log(termsKey[0])
       $("#div-projectFields").append('<div><table class="table  table-striped"">\
       <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
@@ -426,8 +436,6 @@ function projectListPage(){
 }
 
 $("#btn-dd-selected").click(getDataDictionary)
-//$('#btn-pjInfoSave').click(saveProjInfo)
-//$('#terms-list').click(projectListPage)
 
 $(document).on('click', '#btn-preview', function() {
     //$('#import').removeClass("col-xs-12").addClass("col-xs-7")
