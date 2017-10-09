@@ -946,8 +946,9 @@ var setup = function(){
         var configString = JSON.stringify(config)
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
-        convertAlpacaToNDA(schema,options)
+        //convertAlpacaToNDA(schema,options)
         //alert("Your form was saved in HTML5 local storage")
+        saveCuratedForm(schema,options,'local')
     })
     $(".git-push-button").off().click(function(e) {
         e.preventDefault()
@@ -973,8 +974,8 @@ var setup = function(){
         var configString = JSON.stringify(config)
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
-        pushToGitHub(schema,options)
-        alert("Your form was saved in HTML5 local storage")
+        saveCuratedForm(schema,options,'github')
+        //alert("Your form was saved in HTML5 local storage")
     })
 
 }

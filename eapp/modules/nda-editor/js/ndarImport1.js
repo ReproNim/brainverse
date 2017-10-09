@@ -9,6 +9,7 @@ let nsources = []
 let nparamObj = {}
 let shortName = ''
 let termsIndex = {}
+let orgTermForm = {}
 
 $('[data-toggle="tooltip"]').tooltip()
 $.fn.select2.defaults.set( "theme", "bootstrap" );
@@ -103,6 +104,7 @@ function getDDcallbk(data){
   count = 1
   let dE = JSON.parse(data)
   console.log("DE:--->", dE)
+  orgTermForm = dE
   if(dE.hasOwnProperty('dataElements')){
     termsKey = dE.dataElements
   }else{
@@ -453,93 +455,75 @@ $(document).on('click', '#btn-preview', function() {
 
   })
 
-  function convertAlpacaToNDA(schema,options){
-    //let ndaObj = {}
-    let ndaTerms = []
-    let ndaTerm = {}
-    console.log("SCHEMA value saving: --", schema)
+  function setCommonFields(){
+    let version = ''
+    console.log("version number : ", version)
     saveObj2['DictionaryID'] = ''
-    saveObj2['shortName'] = shortName
+    if(shortName.indexOf('-m')==-1){
+      version = shortName.substring((shortName.length-2),(shortName.length))
+      saveObj2['shortName'] = shortName + "-m" + (parseInt(version)+1)
+    }else{
+      version = shortName.substring((shortName.length-1),(shortName.length))
+      saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + "-m" + (parseInt(version)+1)
+    }
     saveObj2["Name"] = document.getElementById("nda-form-name").value
     saveObj2["Description"] = document.getElementById("nda-form-desc").value
-
-    if($.isEmptyObject(schema)){
-      //check if any field is checked
-      console.log("[if]only selected box convert count= ", count)
-      for (let i=1; i<count; i++){
-        if(document.getElementById("projfield-" + i).checked){
-          console.log(document.getElementById("projfield-"+ i).checked)
-          //chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
-          chkboxSelectedArray.push(termsIndex[document.getElementById("projfield-"+ i).value])
-        } else{
-          console.log("checkbox is not selected")
-        }
-      }
-      saveObj2['fields'] = chkboxSelectedArray
-
+    saveObj2["title"] = orgTermForm["title"]
+    saveObj2["DerivedFrom"] = orgTermForm["shortName"]
+  }
+  function setNDATerm(schema, key, field,position){
+    let ndaTerm = {}
+    if(field.hasOwnProperty('id')){
+      /** already in the nda form**/
+      let ndaId = field.id.split('-')[1]
+      console.log("ndaId: ", ndaId)
+      ndaTerm['id'] = ndaId
+      ndaTerm['required'] = schema.properties[key].required
+      ndaTerm['condition'] = termsIndex[ndaId].condition
+      ndaTerm['aliases'] = termsIndex[ndaId].aliases
+      ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
+      ndaTerm['position'] = termsIndex[ndaId].position
+      ndaTerm['dataElementId'] = termsIndex[ndaId].dataElementId
+      ndaTerm['name'] = key
+      ndaTerm['type'] = termsIndex[ndaId].type
+      ndaTerm['size'] = termsIndex[ndaId].size
+      ndaTerm['description'] = field.label
+      ndaTerm['valueRange'] = schema.properties[key].enum
+      ndaTerm['notes'] = termsIndex[ndaId].notes
+      ndaTerm['translation'] = termsIndex[ndaId].translations
     }else{
-      console.log("else: Convert Alpaca to NDA")
-      //Start converting from the schema and options
-      console.log("OPTIONS value saving: --", options.fields)
-      let ndafields = options.fields
-      //for(let i=0;i<ndafields.length;i++){
-      $.each(ndafields, function(key, field) {
-        console.log(key, field);
-        ndaTerm = {}
-        let ndaId = field.id.split('-')[1]
-        console.log("ndaId: ", ndaId)
-        ndaTerm['id'] = ndaId
-        ndaTerm['required'] = schema.properties[key].required
-        ndaTerm['condition'] = termsIndex[ndaId].condition
-        ndaTerm['aliases'] = termsIndex[ndaId].aliases
-        ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
-        ndaTerm['position'] = termsIndex[ndaId].position
-        ndaTerm['dataElementId'] = termsIndex[ndaId].dataElement
-        ndaTerm['name'] = key
-        ndaTerm['type'] = termsIndex[ndaId].type
-        ndaTerm['size'] = termsIndex[ndaId].size
-        ndaTerm['description'] = field.label
-        ndaTerm['valueRange'] = schema.properties[key].enum
-        ndaTerm['notes'] = termsIndex[ndaId].notes
-        ndaTerm['translation'] = termsIndex[ndaId].translations
-        ndaTerms.push(ndaTerm)
-        console.log("ndaTerm: ", ndaTerm)
-      })
-      saveObj2['fields'] = ndaTerms
+      /** adding new field **/
+      let ndaId = key
+      console.log("ndaId: ", ndaId)
+      ndaTerm['id'] = ndaId
+      ndaTerm['required'] = schema.properties[key].required
+      ndaTerm['condition'] = null
+      ndaTerm['aliases'] = null
+      ndaTerm['filterElement'] = null
+      ndaTerm['name'] = field.name
+      ndaTerm['description'] = field.label
+      ndaTerm['valueRange'] = schema.properties[key].enum
+      ndaTerm['type'] = schema.properties[key].type
+      ndaTerm['size'] = null
+      ndaTerm['position'] = position
+      ndaTerm['dataElementId'] = position
+      ndaTerm['notes'] = null
+      ndaTerm['translation'] = []
     }
-    console.log("SAVING ----",saveObj2)
-    $.ajax({
-      type: "POST",
-      url: serverUrl + "/nda/dictionaries/local",
-      contentType: "application/json",
-      data: JSON.stringify(saveObj2),
-      success: function(data){
-        console.log('success')
-        console.log("data received",data)
-        $("#div-projectFields").empty()
-        $("#termsInfoSaveMsg").empty()
-        $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
-        <a href="#" class="close" data-dismiss="alert">&times;</a>\
-        <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
-        </div>')
-        $("#termsInfoSaveMsg").append('<br>')
-      }
-    })
+    return ndaTerm
   }
 
-  function pushToGitHub(schema,options){
-    //let ndaObj = {}
+  function saveCuratedForm(schema,options,storageType){
     let ndaTerms = []
     let ndaTerm = {}
-    console.log("SCHEMA value saving: --", schema)
-    saveObj2['DictionaryID'] = ''
-    saveObj2['shortName'] = shortName
-    saveObj2["Name"] = document.getElementById("nda-form-name").value
-    saveObj2["Description"] = document.getElementById("nda-form-desc").value
 
-    if($.isEmptyObject(schema)){
+    setCommonFields()
+
+    console.log("SCHEMA value saving: --", schema)
+
+    if($.isEmptyObject(schema)){ //check to see if schema is empty as no preview is selected
       //check if any field is checked
-      console.log("[if]only selected box convert count= ", count)
+      console.log("[if] Only selected box convert count= ", count)
       for (let i=1; i<count; i++){
         if(document.getElementById("projfield-" + i).checked){
           console.log(document.getElementById("projfield-"+ i).checked)
@@ -552,39 +536,33 @@ $(document).on('click', '#btn-preview', function() {
       saveObj2['fields'] = chkboxSelectedArray
 
     }else{
-      console.log("else: Convert Alpaca to NDA")
+      console.log("else: Convert Alpaca schema, options to NDA")
       //Start converting from the schema and options
       console.log("OPTIONS value saving: --", options.fields)
       let ndafields = options.fields
-      //for(let i=0;i<ndafields.length;i++){
+      let position = 0
       $.each(ndafields, function(key, field) {
-        console.log(key, field);
+        console.log(key, field)
         ndaTerm = {}
-        let ndaId = field.id.split('-')[1]
-        console.log("ndaId: ", ndaId)
-        ndaTerm['id'] = ndaId
-        ndaTerm['required'] = schema.properties[key].required
-        ndaTerm['condition'] = termsIndex[ndaId].condition
-        ndaTerm['aliases'] = termsIndex[ndaId].aliases
-        ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
-        ndaTerm['position'] = termsIndex[ndaId].position
-        ndaTerm['dataElementId'] = termsIndex[ndaId].dataElement
-        ndaTerm['name'] = key
-        ndaTerm['type'] = termsIndex[ndaId].type
-        ndaTerm['size'] = termsIndex[ndaId].size
-        ndaTerm['description'] = field.label
-        ndaTerm['valueRange'] = schema.properties[key].enum
-        ndaTerm['notes'] = termsIndex[ndaId].notes
-        ndaTerm['translation'] = termsIndex[ndaId].translations
+        position++
+        ndaTerm = setNDATerm(schema, key, field, position)
         ndaTerms.push(ndaTerm)
         console.log("ndaTerm: ", ndaTerm)
       })
       saveObj2['fields'] = ndaTerms
     }
     console.log("SAVING ----",saveObj2)
+    let saveUrl = ''
+    if(storageType === 'github'){
+      saveUrl = serverUrl + "/nda/dictionaries/github"
+      console.log("Saving to Local and GitHub---")
+    }else{
+      saveUrl = serverUrl + "/nda/dictionaries/local"
+      console.log("Saving To Local---")
+    }
     $.ajax({
       type: "POST",
-      url: serverUrl + "/nda/dictionaries/github",
+      url: saveUrl,
       contentType: "application/json",
       data: JSON.stringify(saveObj2),
       success: function(data){
