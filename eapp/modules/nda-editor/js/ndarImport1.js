@@ -75,11 +75,8 @@ function getDataDictionary(e3){
     $('#import').removeClass("col-xs-7").addClass("col-xs-12")
     form.alpacaDestroy()
   }
-
-  count = 1
-  //chkboxSelectedArray = []
+  //count = 1
   //$("#ndar-dd-2").append('<p><h5> Select fields for your form </h4></p>')
-
   console.log(encodeURI($('#ndar-dd').val()))
   shortName = encodeURI($('#ndar-dd').val())
 
@@ -89,133 +86,134 @@ function getDataDictionary(e3){
   }else{
     nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
   }
-  //let nUrl = serverUrl + "/ndar-terms/"+ encodeURI($("#ndar-dd").val())
-  console.log("nUrl",nUrl)
   $.ajax({
     type: "GET",
     url: nUrl ,
     accept: "application/json",
     success: function(data){
-      console.log('success')
-      //let dE=data
-      let dE = JSON.parse(data)
-      console.log("DE:--->", dE)
-      if(dE.hasOwnProperty('dataElements')){
-        termsKey = dE.dataElements
-      }else{
-        termsKey = dE.fields
-      }
-      console.log(termsKey[0])
-      $("#div-projectFields").append('<div><table class="table  table-striped"">\
-      <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
-      <tbody>')
-      for (let i=0;i<termsKey.length;i++){
-        termsIndex[termsKey[i].id] = termsKey[i]
+      console.log('getDataDictionary: success')
+      getDDcallbk(data)
+    } // end of success
+  }) // ajax call
+}
+/*
+* getDataDictionary AJAX call sucess callback
+*/
+function getDDcallbk(data){
+  count = 1
+  let dE = JSON.parse(data)
+  console.log("DE:--->", dE)
+  if(dE.hasOwnProperty('dataElements')){
+    termsKey = dE.dataElements
+  }else{
+    termsKey = dE.fields
+  }
+  console.log("testing termsKey[0]: ", termsKey[0])
+  $("#div-projectFields").append('<div><table class="table  table-striped"">\
+  <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
+  <tbody>')
+  for (let i=0;i<termsKey.length;i++){
+    termsIndex[termsKey[i].id] = termsKey[i]
+    /*$("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
+    <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
+    >' +termsKey[i].name +'</label></div>')
+    */
+    $("#div-projectFields").append('<tr>\
+      <td class="td-chk">\
+        <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
+        ><td>\
+      <td class="td-term"> '+ termsKey[i].name+'</td>\
+      <td> '+ termsKey[i].description+ '</td>\
+      </tr>')
+    count++
+  }
+  //SELECT ALL
+  $('#div-projectFields').append('<br><button id="btn-toggleAll" type="button" class="btn btn-primary">Select All</button>')
+  $('#btn-toggleAll').click(function() {
+    $('#div-projectFields input[type="checkbox"]').prop('checked', true);
+  });
 
-          /*$("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
-            <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
-            >' +termsKey[i].name +'</label></div>')
-          */
-          $("#div-projectFields").append('<tr>\
-            <td class="td-chk">\
-              <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
-              ><td>\
-            <td class="td-term"> '+ termsKey[i].name+'</td>\
-            <td> '+ termsKey[i].description+ '</td>\
-            </tr>')
-          count++
-      }
-      //SELECT ALL
-      $('#div-projectFields').append('<br><button id="btn-toggleAll" type="button" class="btn btn-primary">Select All</button>')
-      $('#btn-toggleAll').click(function() {
-        $('#div-projectFields input[type="checkbox"]').prop('checked', true);
-      });
-
-      //DESELECT ALL
-      $('#div-projectFields').append('<button id="btn-toggleNone" type="button" class="btn btn-primary" style="margin-left:10px">Clear</button>')
-      $('#btn-toggleNone').click(function() {
-        $('#div-projectFields input[type="checkbox"]').prop('checked', false);
-        if(document.getElementById('preview') != null) {
-          $('#preview').remove()
-          $('#import').removeClass("col-xs-7").addClass("col-xs-12")
-          form.alpacaDestroy()
-        }
-
-        if(document.getElementById('viewDiv') != null) {
-          console.log("view empty---")
-          var exists = $('#viewDiv').alpaca("exist")
-          if(exists){
-            console.log("viewDiv exists: ", exists)
-            console.log("trying to destroy the alpaca form in view Div --")
-            $('#viewDiv').alpaca("destroy")
-            let e = $('#viewDiv').alpaca("exist")
-            console.log("After viewDiv form destory: ", e)
-            //$("#viewDiv").empty()
-            $('#view').empty()
-          }
-
-          $('#view').append('<div class="row">\
-            <div class="col-md-12">\
-              <div id="viewDiv"></div>\
-            </div>\
-          </div>')
-        }
-        if(document.getElementById('designerDiv') != null) {
-          console.log("designerdiv empty----")
-          var exists1 = $('#designerDiv').alpaca("exist")
-          if(exists1){
-            $('#designerDiv').alpaca("destroy")
-            console.log("After designerDiv form destory: ",$('#designerDiv').alpaca("exist"))
-          }
-          $('#designer').empty()
-          $('#designer').append('<div class="row">\
-            <div class="col-md-7">\
-              <div class="row">\
-                <div class="col-md-12">\
-                  <div id="designerDiv"></div>\
-                </div>\
-              </div>\
-            </div>\
-            <div class="col-md-5">\
-              <div class="row">\
-                <div class="col-md-12">\
-                  <div>\
-                    <ul class="nav nav-tabs">\
-                      <li class="active"><a href="#types" data-toggle="tab">Types</a></li>\
-                      <li><a href="#basic" data-toggle="tab">Basic</a></li>\
-                      <li><a href="#advanced" data-toggle="tab">Advanced</a></li>\
-                    </ul>\
-                  </div>\
-                  <div class="tab-content">\
-                    <div class="tab-pane active" id="types"></div>\
-                    <div class="tab-pane" id="basic"></div>\
-                    <div class="tab-pane" id="advanced"></div>\
-                  </div>\
-                </div>\
-              </div>\
-            </div>\
-          </div>')
-        }
-        var schema = {
-           "type": "object",
-           "properties": {}
-         }
-        var options = {
-         "fields": {}
-        }
-        localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
-        localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
-        //setup()
-        //setup({},{})
-      });
-      $('#div-projectFields').append('<button id="btn-preview" type="button" class="btn btn-primary" style="margin-left:10px">Preview Form</button>')
-      $("#div-projectFields").append('</tbody></table></div>')
+  //DESELECT ALL
+  $('#div-projectFields').append('<button id="btn-toggleNone" type="button" class="btn btn-primary" style="margin-left:10px">Clear</button>')
+  $('#btn-toggleNone').click(function() {
+    $('#div-projectFields input[type="checkbox"]').prop('checked', false);
+    if(document.getElementById('preview') != null) {
+      $('#preview').remove()
+      $('#import').removeClass("col-xs-7").addClass("col-xs-12")
+      form.alpacaDestroy()
     }
-  })
+
+    if(document.getElementById('viewDiv') != null) {
+      console.log("view empty---")
+      var exists = $('#viewDiv').alpaca("exist")
+      if(exists){
+        console.log("viewDiv exists: ", exists)
+        console.log("trying to destroy the alpaca form in view Div --")
+        $('#viewDiv').alpaca("destroy")
+        let e = $('#viewDiv').alpaca("exist")
+        console.log("After viewDiv form destory: ", e)
+        //$("#viewDiv").empty()
+        $('#view').empty()
+      }
+
+      $('#view').append('<div class="row">\
+        <div class="col-md-12">\
+          <div id="viewDiv"></div>\
+        </div>\
+      </div>')
+    }
+    if(document.getElementById('designerDiv') != null) {
+      console.log("designerdiv empty----")
+      var exists1 = $('#designerDiv').alpaca("exist")
+      if(exists1){
+        $('#designerDiv').alpaca("destroy")
+        console.log("After designerDiv form destory: ",$('#designerDiv').alpaca("exist"))
+      }
+      $('#designer').empty()
+      $('#designer').append('<div class="row">\
+        <div class="col-md-7">\
+          <div class="row">\
+            <div class="col-md-12">\
+              <div id="designerDiv"></div>\
+            </div>\
+          </div>\
+        </div>\
+        <div class="col-md-5">\
+          <div class="row">\
+            <div class="col-md-12">\
+              <div>\
+                <ul class="nav nav-tabs">\
+                  <li class="active"><a href="#types" data-toggle="tab">Types</a></li>\
+                  <li><a href="#basic" data-toggle="tab">Basic</a></li>\
+                  <li><a href="#advanced" data-toggle="tab">Advanced</a></li>\
+                </ul>\
+              </div>\
+              <div class="tab-content">\
+                <div class="tab-pane active" id="types"></div>\
+                <div class="tab-pane" id="basic"></div>\
+                <div class="tab-pane" id="advanced"></div>\
+              </div>\
+            </div>\
+          </div>\
+        </div>\
+      </div>')
+    }
+    var schema = {
+       "type": "object",
+       "properties": {}
+     }
+    var options = {
+     "fields": {}
+    }
+    localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
+    localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
+  }) //btn-toggleNone ends here
+  $('#div-projectFields').append('<button id="btn-preview" type="button" class="btn btn-primary" style="margin-left:10px">Preview Form</button>')
+  $("#div-projectFields").append('</tbody></table></div>')
 }
 
 //Preview function
-function previewForm() {
+function previewForm(){
   var fproperties = {}
   var ffields = {}
   form.alpacaDestroy()
@@ -239,7 +237,7 @@ function previewForm() {
   //form.alpacaGen();
   $(".tab-item-view").click()
 }
-//calling the setup function
+//calling the form-editor setup function
 setup()
 
 function add_term_to_form(selectedField){

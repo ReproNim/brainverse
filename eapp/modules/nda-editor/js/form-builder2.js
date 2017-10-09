@@ -886,7 +886,7 @@ var setup = function(){
 
 
     // load button
-    $(".load-button").off().click(function() {
+    /*$(".load-button").off().click(function() {
 
         if (!localStorage)
         {
@@ -920,7 +920,7 @@ var setup = function(){
             // bad value
         }
 
-    });
+    });*/
 
     // save button
     $(".save-button").off().click(function(e) {
@@ -930,7 +930,6 @@ var setup = function(){
             alert("Your browser must support HTML5 local storage in order to use this feature")
             return;
         }
-
         var config = {}
         if (schema)
         {
@@ -948,7 +947,7 @@ var setup = function(){
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
         convertAlpacaToNDA(schema,options)
-        alert("Your form was saved in HTML5 local storage")
+        //alert("Your form was saved in HTML5 local storage")
     })
     $(".git-push-button").off().click(function(e) {
         e.preventDefault()
