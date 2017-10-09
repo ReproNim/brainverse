@@ -61,8 +61,6 @@ module.exports = () => {
         }
         return new Promise(function(resolve){
           request.get(options_download, function(err, response,body){
-            console.log("body:------------->\n ", JSON.parse(body))
-            console.log("<-------------------->")
             resolve(JSON.parse(body))
           })
         })
@@ -76,7 +74,7 @@ module.exports = () => {
         let pid = dataD[i].DictionaryID.split('-')
         let psname = dataD[i].shortName.split(' ')
         let pname = dataD[i].Name.split(' ')
-        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name})
+        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":req.user.username})
         let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
         writeJsonFile(cpath,dataD[i]).then(() => {
           console.log('data dictionary saved: ', filePath)

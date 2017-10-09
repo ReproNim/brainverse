@@ -14,25 +14,39 @@ $('[data-toggle="tooltip"]').tooltip()
 $.fn.select2.defaults.set( "theme", "bootstrap" );
 var form = new AlpacaForm('#form1')
 var serverUrl = "http://127.0.0.1:3000"
+
+$("#nda-src").select2()
+$("#nda-src").append('<option value="NDA">NDA</option>')
+$("#nda-src").append('<option value="Repronim"> Repronim-Curated-NDA </option>')
+$("#ndar-dd").select2()
 /*
 * Data Dictionaries
 */
-
-$.ajax({
-  type: "GET",
-  url: serverUrl + "/ndar-terms/forms",
-  accept: "application/json",
-  success: function(data){
-    console.log('get forms:success')
-    let dE = JSON.parse(data)
-    console.log(dE)
-    $("#ndar-dd").select2()
-    for (let i=0;i<dE.length;i++){
-      $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
-    }
+$("#nda-src").change(function(){
+  if($("#nda-src").val() === "NDA"){
+    getDataDictionaryListNDA()
+  }else{
     getDataDictionaryListGitHub()
   }
+
 })
+
+function getDataDictionaryListNDA(){
+  $.ajax({
+    type: "GET",
+    url: serverUrl + "/ndar-terms/forms",
+    accept: "application/json",
+    success: function(data){
+      console.log('get forms:success')
+      let dE = JSON.parse(data)
+      console.log(dE)
+      $("#ndar-dd").empty()
+      for (let i=0;i<dE.length;i++){
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+      }
+    }
+  })
+}
 
 function getDataDictionaryListGitHub(){
   $.ajax({
@@ -43,9 +57,9 @@ function getDataDictionaryListGitHub(){
       console.log('get forms: github:success')
       console.log("data:  ",data)
       let dE = data.list
-      //$("#ndar-dd").select2()
+      $("#ndar-dd").empty()
       for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
       }
     }
   })
@@ -406,71 +420,6 @@ function checkNotes(key,notes){
     return null
   }
 }
-
-
-// Save the project information entered and the selected fields
-// The information is saved in a local file named 'proj-info.json'
-/*function saveProjInfo(e){
-  e.preventDefault()
-
-  for (let i=1; i<count; i++){
-    if(document.getElementById("projfield-" + i).checked){
-      console.log(document.getElementById("projfield-"+ i).checked)
-      //chkboxSelectedArray.push(document.getElementById("projfield-"+ i).value)
-      chkboxSelectedArray.push(termsIndex[document.getElementById("projfield-"+ i).value])
-    } else{
-      console.log("checkbox is not selected")
-    }
-  }
-
-  console.log(chkboxSelectedArray)
-  /*if (typeof(Storage) !== "undefined") {
-    localStorage.setItem('termform', JSON.stringify(chkboxSelectedArray))
-  } else {
-    console.log('no storage support')
-  }*/
-
-  //Save the data entered
-  /*saveObj2['DictionaryID'] = ''
-  saveObj2['shortName'] = shortName
-  saveObj2["Name"] = document.getElementById("proj-name").value
-  saveObj2["Description"] = document.getElementById("proj-desc").value
-  saveObj2['fields'] = chkboxSelectedArray
-
-  if (typeof(Storage) !== "undefined") {
-    //localStorage.setItem('termform', JSON.stringify(saveObj))
-    let psname = saveObj2['shortName'].split(' ')
-    let pname = saveObj2['Name'].split(' ')
-    let fname = 'terms-'+ psname[0]+'-'+ pname[0] +'.json'
-    localStorage.setItem(fname,JSON.stringify(saveObj2))
-  } else {
-    console.log('no storage support')
-  }
-
-  $.ajax({
-    type: "POST",
-    url: serverUrl + "/dictionaries/new",
-    contentType: "application/json",
-    data: JSON.stringify(saveObj2),
-    success: function(data){
-      console.log('success')
-      console.log("data received",data)
-      $("#div-projectFields").empty()
-      $("#termsInfoSaveMsg").empty()
-      $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
-      <a href="#" class="close" data-dismiss="alert">&times;</a>\
-  <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
-</div>')
-      $("#termsInfoSaveMsg").append('<br>')
-      $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Form </button><br>')
-      //$("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
-    }
-  })
-  console.log('done')
-  //Close Form Preview on save button
-  $('#preview').remove()
-  $('#import').removeClass("col-xs-7").addClass("col-xs-12")
-}*/
 
 function projectListPage(){
   window.location.href = serverUrl + "/nda/html/acquistionForm.html"
