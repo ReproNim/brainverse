@@ -19,6 +19,7 @@ var serverUrl = "http://127.0.0.1:3000"
 $("#nda-src").select2()
 $("#nda-src").append('<option value="NDA">NDA</option>')
 $("#nda-src").append('<option value="Repronim"> Repronim-Curated-NDA </option>')
+$("#nda-src").append('<option value="Local">Local</option>')
 $("#ndar-dd").select2()
 /*
 * Data Dictionaries
@@ -26,6 +27,8 @@ $("#ndar-dd").select2()
 $("#nda-src").change(function(){
   if($("#nda-src").val() === "NDA"){
     getDataDictionaryListNDA()
+  }else if($("#nda-src").val() === "Local"){
+    getDataDictionaryListLocal()
   }else{
     getDataDictionaryListGitHub()
   }
@@ -37,7 +40,7 @@ function getDataDictionaryListNDA(){
     url: serverUrl + "/ndar-terms/forms",
     accept: "application/json",
     success: function(data){
-      console.log('get forms:success')
+      console.log('get NDA forms:success')
       let dE = JSON.parse(data)
       console.log(dE)
       $("#ndar-dd").empty()
@@ -55,6 +58,22 @@ function getDataDictionaryListGitHub(){
     accept: "application/json",
     success: function(data){
       console.log('get forms: github:success')
+      console.log("data:  ",data)
+      let dE = data.list
+      $("#ndar-dd").empty()
+      for (let i=0;i<dE.length;i++){
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
+      }
+    }
+  })
+}
+function getDataDictionaryListLocal(){
+  $.ajax({
+    type: "GET",
+    url: serverUrl + "/nda/dictionaries/local",
+    accept: "application/json",
+    success: function(data){
+      console.log('get forms: local:success')
       console.log("data:  ",data)
       let dE = data.list
       $("#ndar-dd").empty()
@@ -84,6 +103,8 @@ function getDataDictionary(e3){
   let nUrl = ""
   if($("#nda-src").val() === "NDA"){
     nUrl = serverUrl + "/ndar-terms/"+ shortName
+  }else if($("#nda-src").val() === "Local"){
+    nUrl = serverUrl + "/nda/dictionaries/local/"+ shortName
   }else{
     nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
   }
@@ -102,7 +123,13 @@ function getDataDictionary(e3){
 */
 function getDDcallbk(data){
   count = 1
-  let dE = JSON.parse(data)
+  let dE = {}
+  if($("#nda-src").val() !== "Local"){
+    dE = JSON.parse(data)
+  }else{
+    dE = data
+  }
+
   console.log("DE:--->", dE)
   orgTermForm = dE
   if(dE.hasOwnProperty('dataElements')){
@@ -464,17 +491,18 @@ $(document).on('click', '#btn-preview', function() {
       saveObj2['shortName'] = shortName + "-m" + (parseInt(version)+1)
     }else{
       version = shortName.substring((shortName.length-1),(shortName.length))
-      saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + "-m" + (parseInt(version)+1)
+      saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + "m" + (parseInt(version)+1)
     }
     saveObj2["Name"] = document.getElementById("nda-form-name").value
     saveObj2["Description"] = document.getElementById("nda-form-desc").value
     saveObj2["title"] = orgTermForm["title"]
     saveObj2["DerivedFrom"] = orgTermForm["shortName"]
+    saveObj2["author"]=''
   }
   function setNDATerm(schema, key, field,position){
     let ndaTerm = {}
     if(field.hasOwnProperty('id')){
-      /** already in the nda form**/
+      /** fields already in the form**/
       let ndaId = field.id.split('-')[1]
       console.log("ndaId: ", ndaId)
       ndaTerm['id'] = ndaId

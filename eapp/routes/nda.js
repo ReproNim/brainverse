@@ -74,7 +74,7 @@ module.exports = () => {
         let pid = dataD[i].DictionaryID.split('-')
         let psname = dataD[i].shortName.split(' ')
         let pname = dataD[i].Name.split(' ')
-        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":req.user.username})
+        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
         let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
         writeJsonFile(cpath,dataD[i]).then(() => {
           console.log('data dictionary saved: ', filePath)
@@ -89,29 +89,6 @@ module.exports = () => {
 
   app.get('/nda/dictionaries/github/:shortName', ensureAuthenticated, jsonParser, function(req,res){
     console.log('loading file:--',req.params.shortName )
-
-    //let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
-    /*var listOfFiles = new Promise(function(resolve){
-      fs.readdir(path, function(err,list){
-        if(err) throw err
-        console.log("lists:---> ", list)
-        resolve(list)
-      })
-    })
-    listOfFiles.then(function(list){
-      let fname = ''
-      console.log("lists: then---> ", list)
-      for(let i = 0; i< list.length;i++){
-        if(list[i].indexOf(req.params.shortName)!= -1){
-          fname = list[i]
-          break;
-        }
-      }
-      loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname)).then(ob => {
-        console.log("ob:==>", ob)
-        res.json(ob)
-      })
-    })*/
     let url = 'https://api.github.com/'
     let options = {
       url: url+'repos/'+req.user.username+'/ni-terms/contents',
@@ -164,12 +141,66 @@ module.exports = () => {
     })
   })
 
+  app.get('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
+    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    var listOfFiles = new Promise(function(resolve){
+      fs.readdir(termDirPath, function(err,list){
+        if(err) throw err
+        //console.log("lists:---> ", list)
+        resolve(list)
+      })
+    })
+    listOfFiles.then(function(list){
+      console.log("lists: then---> ", list)
+      let namesArr = list.map(function(fname){
+        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+      })
+      return Promise.all(namesArr)
+    }).then(function(obs){
+      let nameList = []
+      console.log("obs:-->", obs)
+      for(let i = 0; i< obs.length;i++){
+        nameList.push({"shortName":obs[i].shortName,"title": obs[i].Name, "author":obs[i].author})
+      }
+      console.log("nameList:--> ", nameList)
+      res.json({"list":nameList})
+    })
+  })
+  app.get('/nda/dictionaries/local/:shortName', ensureAuthenticated,jsonParser, function(req,res){
+    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    var listOfFiles = new Promise(function(resolve){
+      fs.readdir(termDirPath, function(err,list){
+        if(err) throw err
+        //console.log("lists:---> ", list)
+        resolve(list)
+      })
+    })
+    listOfFiles.then(function(list){
+      console.log("lists: then---> ", list)
+      let namesArr = list.map(function(fname){
+        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+      })
+      return Promise.all(namesArr)
+    }).then(function(obs){
+      let ob = {}
+      for(let i = 0; i< obs.length;i++){
+        if(obs[i].shortName === req.params.shortName){
+          ob = obs[i]
+          break;
+        }
+      }
+      //console.log("ob:--> ", ob)
+      res.send(JSON.stringify(ob))
+    })
+  })
+
   app.post('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('[nda/dictionaries/] Received at server side')
     //console.log(req.body)
     let term_info = req.body
     term_info['DictionaryID'] = uuid()
+    term_info['author'] = req.user.username
     console.log(term_info)
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
@@ -190,6 +221,7 @@ module.exports = () => {
     //console.log(req.body)
     let term_info = req.body
     term_info['DictionaryID'] = uuid()
+    term_info['author'] = req.user.username
     console.log(term_info)
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
