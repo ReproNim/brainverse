@@ -17,26 +17,53 @@ module.exports = () => {
 
   global.store = app.locals.store
 
-
-  app.get('/nda/dictionaries/github', ensureAuthenticated, jsonParser, function(req,res){
-
-    let url = 'https://api.github.com/'
+  function promiseRequest(options){
+    return new Promise(function(resolve, reject){
+      request.get(options, function(err, resn, body){
+        console.log("response-->", resn.statusCode)
+        console.log("typeof (body): ", typeof(body))
+        if(typeof(body)==='string'){
+          resolve(JSON.parse(body))
+        }else{
+          resolve(body)
+        }
+      })
+    })
+  }
+  function setOptionsContents(rpath, acceptType, github_token){
     let options = {
-      url: url+'repos/'+req.user.username+'/ni-terms/contents',
+      url: rpath,
       headers:{
         'User-Agent':'brainverse',
         'Authorization': 'token '+ github_token,
-        'accept':'application/json'
+        'accept':acceptType
       }
     }
-    new Promise(function(resolve, reject){
-      request.get(options, function(err, resn, body){
-        //rp(options)
-        resolve(body)
+    return options
+  }
+  function getMetaInfoGithub(dataD){
+    let nameList = []
+    console.log("getMetaInfoGithub:dataD:-->")
+    for(let i = 0; i<dataD.length;i++){
+      let pid = dataD[i].DictionaryID.split('-')
+      let psname = dataD[i].shortName.split(' ')
+      let pname = dataD[i].Name.split(' ')
+      nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
+      let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+      writeJsonFile(cpath,dataD[i]).then(() => {
+        console.log('data dictionary saved: ', cpath)
       })
-    }).then(function(fileListInRepo){
+    }
+    return nameList
+  }
+  app.get('/nda/dictionaries/github', ensureAuthenticated, jsonParser, function(req,res){
+    let url = 'https://api.github.com/'
+    let rpath = url+'repos/'+req.user.username+'/ni-terms/contents'
+    let options = setOptionsContents(rpath, 'application/json', github_token)
+    promiseRequest(options).then(function(fileListInRepo){
       let filesInfo = []
-      let gitFilesInfo = JSON.parse(fileListInRepo)
+      //let gitFilesInfo = JSON.parse(fileListInRepo)
+      let gitFilesInfo = fileListInRepo
       for(let i = 0; i<gitFilesInfo.length; i++){
         if(gitFilesInfo[i].name !== 'README.md'){
           filesInfo.push(gitFilesInfo[i].path)
@@ -46,37 +73,15 @@ module.exports = () => {
       let gitObj = {}
       let nameList = []
       var arr = filesInfo.map(function(filePath) {
-        let options_download = {
-          //method: 'GET',
-          //uri: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
-          url: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
-          headers:{
-            'User-Agent':'brainverse',
-            'Authorization': 'token '+ github_token,
-            'accept':'application/vnd.github.v3.raw'
-          }
-        }
-        return new Promise(function(resolve){
-          request.get(options_download, function(err, response,body){
-            resolve(JSON.parse(body))
-          })
-        })
+        let rpath = url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath
+        let options_download = setOptionsContents(rpath,'application/vnd.github.v3.raw',github_token)
+        return promiseRequest(options_download)
       })
       return Promise.all(arr)
     })
     .then(function(contents){
-      let nameList = []
-      let dataD = contents
-      for(let i = 0; i< contents.length;i++){
-        let pid = dataD[i].DictionaryID.split('-')
-        let psname = dataD[i].shortName.split(' ')
-        let pname = dataD[i].Name.split(' ')
-        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
-        let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
-        writeJsonFile(cpath,dataD[i]).then(() => {
-          console.log('data dictionary saved: ', filePath)
-        })
-      }
+      let nameList = getMetaInfoGithub(contents)
+      console.log("After getMetaInfo : nameList:-->", nameList)
       res.json({"list":nameList})
     })
     .catch(function(err){
@@ -87,21 +92,11 @@ module.exports = () => {
   app.get('/nda/dictionaries/github/:shortName', ensureAuthenticated, jsonParser, function(req,res){
     console.log('loading file:--',req.params.shortName )
     let url = 'https://api.github.com/'
-    let options = {
-      url: url+'repos/'+req.user.username+'/ni-terms/contents',
-      headers:{
-        'User-Agent':'brainverse',
-        'Authorization': 'token '+ github_token,
-        'accept':'application/json'
-      }
-    }
-    new Promise(function(resolve, reject){
-      request.get(options, function(err, resn, body){
-        resolve(body)
-      })
-    }).then(function(fileListInRepo){
+    let rpath = url+'repos/'+req.user.username+'/ni-terms/contents'
+    let options = setOptionsContents(rpath, 'application/json', github_token)
+    promiseRequest(options).then(function(fileListInRepo){
       let filesInfo = []
-      let gitFilesInfo = JSON.parse(fileListInRepo)
+      let gitFilesInfo = fileListInRepo
       for(let i = 0; i<gitFilesInfo.length; i++){
         if(gitFilesInfo[i].name !== 'README.md'){
           filesInfo.push(gitFilesInfo[i].path)
@@ -115,23 +110,13 @@ module.exports = () => {
           break;
         }
       }
-      let options_download = {
-          url: url+'repos/'+req.user.username+'/ni-terms/contents/'+fname,
-          headers:{
-            'User-Agent':'brainverse',
-            'Authorization': 'token '+ github_token,
-            'accept':'application/vnd.github.v3.raw'
-          }
-        }
-        return new Promise(function(resolve){
-          request.get(options_download, function(err, response,body){
-            //resolve(JSON.parse(body))
-            resolve(body)
-          })
-        })
+      let rpath_download = url+'repos/'+req.user.username+'/ni-terms/contents/'+fname
+      let options_download = setOptionsContents(rpath_download,'application/vnd.github.v3.raw',github_token)
+      return promiseRequest(options_download)
     })
     .then(function(contents){
-      res.send(contents)
+      //res.send(contents)
+      res.json(contents)
     })
     .catch(function(err){
       console.log("get: content call err: ", err)
@@ -140,22 +125,11 @@ module.exports = () => {
   app.get('/nda/dictionaries/github_repronim', ensureAuthenticated, jsonParser, function(req,res){
 
     let url = 'https://api.github.com/'
-    let options = {
-      url: url+'repos/ReproNim/ni-terms/contents',
-      headers:{
-        'User-Agent':'brainverse',
-        'Authorization': 'token '+ github_token,
-        'accept':'application/json'
-      }
-    }
-    new Promise(function(resolve, reject){
-      request.get(options, function(err, resn, body){
-        //rp(options)
-        resolve(body)
-      })
-    }).then(function(fileListInRepo){
+    let rpath = url+'repos/ReproNim/ni-terms/contents'
+    let options = setOptionsContents(rpath, 'application/json', github_token)
+    promiseRequest(options).then(function(fileListInRepo){
       let filesInfo = []
-      let gitFilesInfo = JSON.parse(fileListInRepo)
+      let gitFilesInfo = fileListInRepo
       for(let i = 0; i<gitFilesInfo.length; i++){
         if(gitFilesInfo[i].name !== 'README.md'){
           filesInfo.push(gitFilesInfo[i].path)
@@ -165,37 +139,15 @@ module.exports = () => {
       let gitObj = {}
       let nameList = []
       var arr = filesInfo.map(function(filePath) {
-        let options_download = {
-          //method: 'GET',
-          //uri: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
-          url: url+'repos/ReproNim/ni-terms/contents/'+filePath,
-          headers:{
-            'User-Agent':'brainverse',
-            'Authorization': 'token '+ github_token,
-            'accept':'application/vnd.github.v3.raw'
-          }
-        }
-        return new Promise(function(resolve){
-          request.get(options_download, function(err, response,body){
-            resolve(JSON.parse(body))
-          })
-        })
+        let rpath = url+'repos/ReproNim/ni-terms/contents/'+filePath
+        let options_download = setOptionsContents(rpath,'application/vnd.github.v3.raw',github_token)
+        return promiseRequest(options_download)
       })
       return Promise.all(arr)
     })
     .then(function(contents){
-      let nameList = []
-      let dataD = contents
-      for(let i = 0; i< contents.length;i++){
-        let pid = dataD[i].DictionaryID.split('-')
-        let psname = dataD[i].shortName.split(' ')
-        let pname = dataD[i].Name.split(' ')
-        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
-        let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
-        writeJsonFile(cpath,dataD[i]).then(() => {
-          console.log('data dictionary saved: ', filePath)
-        })
-      }
+      let nameList = getMetaInfoGithub(contents)
+      console.log("After getMetaInfo : nameList:-->", nameList)
       res.json({"list":nameList})
     })
     .catch(function(err){
@@ -206,21 +158,11 @@ module.exports = () => {
   app.get('/nda/dictionaries/github_repronim/:shortName', ensureAuthenticated, jsonParser, function(req,res){
     console.log('loading file:--',req.params.shortName )
     let url = 'https://api.github.com/'
-    let options = {
-      url: url+'repos/ReproNim/ni-terms/contents',
-      headers:{
-        'User-Agent':'brainverse',
-        'Authorization': 'token '+ github_token,
-        'accept':'application/json'
-      }
-    }
-    new Promise(function(resolve, reject){
-      request.get(options, function(err, resn, body){
-        resolve(body)
-      })
-    }).then(function(fileListInRepo){
+    let rpath = url+'repos/ReproNim/ni-terms/contents'
+    let options = setOptionsContents(rpath, 'application/json', github_token)
+    promiseRequest(options).then(function(fileListInRepo){
       let filesInfo = []
-      let gitFilesInfo = JSON.parse(fileListInRepo)
+      let gitFilesInfo = fileListInRepo
       for(let i = 0; i<gitFilesInfo.length; i++){
         if(gitFilesInfo[i].name !== 'README.md'){
           filesInfo.push(gitFilesInfo[i].path)
@@ -234,23 +176,12 @@ module.exports = () => {
           break;
         }
       }
-      let options_download = {
-          url: url+'repos/ReproNim/ni-terms/contents/'+fname,
-          headers:{
-            'User-Agent':'brainverse',
-            'Authorization': 'token '+ github_token,
-            'accept':'application/vnd.github.v3.raw'
-          }
-        }
-        return new Promise(function(resolve){
-          request.get(options_download, function(err, response,body){
-            //resolve(JSON.parse(body))
-            resolve(body)
-          })
-        })
+      let rpath_download = url+'repos/ReproNim/ni-terms/contents/'+fname
+      let options_download = setOptionsContents(rpath_download,'application/vnd.github.v3.raw',github_token)
+      return promiseRequest(options_download)
     })
     .then(function(contents){
-      res.send(contents)
+      res.json(contents)
     })
     .catch(function(err){
       console.log("get: content call err: ", err)
