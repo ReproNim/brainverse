@@ -19,6 +19,7 @@ var serverUrl = "http://127.0.0.1:3000"
 $("#nda-src").select2()
 $("#nda-src").append('<option value="NDA">NDA</option>')
 $("#nda-src").append('<option value="Repronim"> Repronim-Curated-NDA </option>')
+$("#nda-src").append('<option value="fork"> User-Github-Fork </option>')
 $("#nda-src").append('<option value="Local">Local</option>')
 $("#ndar-dd").select2()
 /*
@@ -29,6 +30,8 @@ $("#nda-src").change(function(){
     getDataDictionaryListNDA()
   }else if($("#nda-src").val() === "Local"){
     getDataDictionaryListLocal()
+  }else if($("#nda-src").val() === "Repronim") {
+    getDataDictionaryListGitHubRepronim()
   }else{
     getDataDictionaryListGitHub()
   }
@@ -58,6 +61,22 @@ function getDataDictionaryListGitHub(){
     accept: "application/json",
     success: function(data){
       console.log('get forms: github:success')
+      console.log("data:  ",data)
+      let dE = data.list
+      $("#ndar-dd").empty()
+      for (let i=0;i<dE.length;i++){
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
+      }
+    }
+  })
+}
+function getDataDictionaryListGitHubRepronim(){
+  $.ajax({
+    type: "GET",
+    url: serverUrl + "/nda/dictionaries/github_repronim",
+    accept: "application/json",
+    success: function(data){
+      console.log('get forms: github-repronim:success')
       console.log("data:  ",data)
       let dE = data.list
       $("#ndar-dd").empty()
@@ -105,6 +124,8 @@ function getDataDictionary(e3){
     nUrl = serverUrl + "/ndar-terms/"+ shortName
   }else if($("#nda-src").val() === "Local"){
     nUrl = serverUrl + "/nda/dictionaries/local/"+ shortName
+  }else if($("#nda-src").val() === "Repronim"){
+    nUrl = serverUrl + "/nda/dictionaries/github_repronim/" + shortName
   }else{
     nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
   }
@@ -124,7 +145,9 @@ function getDataDictionary(e3){
 function getDDcallbk(data){
   count = 1
   let dE = {}
-  if($("#nda-src").val() !== "Local"){
+  //if($("#nda-src").val() !== "Local"){
+  console.log("typeof-->", typeof(data))
+  if(typeof(data)=='string'){
     dE = JSON.parse(data)
   }else{
     dE = data
@@ -463,6 +486,9 @@ function projectListPage(){
 }
 
 $("#btn-dd-selected").click(getDataDictionary)
+/*$("h4").click(function(){
+  window.location.href = serverUrl + "/nda-editor/html/nda-editor3.html"
+})*/
 
 $(document).on('click', '#btn-preview', function() {
     //$('#import').removeClass("col-xs-12").addClass("col-xs-7")

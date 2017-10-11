@@ -1,7 +1,6 @@
 module.exports = () => {
 
   const path = require('path')
-  //const fileUpload = require('express-fileupload')
   const bodyParser = require('body-parser')
   const writeJsonFile = require('write-json-file')
   const uuid = require('uuid-random')
@@ -23,8 +22,6 @@ module.exports = () => {
 
     let url = 'https://api.github.com/'
     let options = {
-      //method:'GET',
-      //uri: url+'repos/'+req.user.username+'/ni-terms/contents',
       url: url+'repos/'+req.user.username+'/ni-terms/contents',
       headers:{
         'User-Agent':'brainverse',
@@ -140,7 +137,125 @@ module.exports = () => {
       console.log("get: content call err: ", err)
     })
   })
+  app.get('/nda/dictionaries/github_repronim', ensureAuthenticated, jsonParser, function(req,res){
 
+    let url = 'https://api.github.com/'
+    let options = {
+      url: url+'repos/ReproNim/ni-terms/contents',
+      headers:{
+        'User-Agent':'brainverse',
+        'Authorization': 'token '+ github_token,
+        'accept':'application/json'
+      }
+    }
+    new Promise(function(resolve, reject){
+      request.get(options, function(err, resn, body){
+        //rp(options)
+        resolve(body)
+      })
+    }).then(function(fileListInRepo){
+      let filesInfo = []
+      let gitFilesInfo = JSON.parse(fileListInRepo)
+      for(let i = 0; i<gitFilesInfo.length; i++){
+        if(gitFilesInfo[i].name !== 'README.md'){
+          filesInfo.push(gitFilesInfo[i].path)
+        }
+      }
+      console.log("fileName list: ", filesInfo)
+      let gitObj = {}
+      let nameList = []
+      var arr = filesInfo.map(function(filePath) {
+        let options_download = {
+          //method: 'GET',
+          //uri: url+'repos/'+req.user.username+'/ni-terms/contents/'+filePath,
+          url: url+'repos/ReproNim/ni-terms/contents/'+filePath,
+          headers:{
+            'User-Agent':'brainverse',
+            'Authorization': 'token '+ github_token,
+            'accept':'application/vnd.github.v3.raw'
+          }
+        }
+        return new Promise(function(resolve){
+          request.get(options_download, function(err, response,body){
+            resolve(JSON.parse(body))
+          })
+        })
+      })
+      return Promise.all(arr)
+    })
+    .then(function(contents){
+      let nameList = []
+      let dataD = contents
+      for(let i = 0; i< contents.length;i++){
+        let pid = dataD[i].DictionaryID.split('-')
+        let psname = dataD[i].shortName.split(' ')
+        let pname = dataD[i].Name.split(' ')
+        nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
+        let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+        writeJsonFile(cpath,dataD[i]).then(() => {
+          console.log('data dictionary saved: ', filePath)
+        })
+      }
+      res.json({"list":nameList})
+    })
+    .catch(function(err){
+      console.log("get: contents list call err: ", err)
+    })
+  })
+
+  app.get('/nda/dictionaries/github_repronim/:shortName', ensureAuthenticated, jsonParser, function(req,res){
+    console.log('loading file:--',req.params.shortName )
+    let url = 'https://api.github.com/'
+    let options = {
+      url: url+'repos/ReproNim/ni-terms/contents',
+      headers:{
+        'User-Agent':'brainverse',
+        'Authorization': 'token '+ github_token,
+        'accept':'application/json'
+      }
+    }
+    new Promise(function(resolve, reject){
+      request.get(options, function(err, resn, body){
+        resolve(body)
+      })
+    }).then(function(fileListInRepo){
+      let filesInfo = []
+      let gitFilesInfo = JSON.parse(fileListInRepo)
+      for(let i = 0; i<gitFilesInfo.length; i++){
+        if(gitFilesInfo[i].name !== 'README.md'){
+          filesInfo.push(gitFilesInfo[i].path)
+        }
+      }
+      console.log("fileName list: ", filesInfo)
+      let fname = ''
+      for(let i = 0; i<filesInfo.length;i++){
+        if(filesInfo[i].indexOf(req.params.shortName)!== -1){
+          fname = filesInfo[i]
+          break;
+        }
+      }
+      let options_download = {
+          url: url+'repos/ReproNim/ni-terms/contents/'+fname,
+          headers:{
+            'User-Agent':'brainverse',
+            'Authorization': 'token '+ github_token,
+            'accept':'application/vnd.github.v3.raw'
+          }
+        }
+        return new Promise(function(resolve){
+          request.get(options_download, function(err, response,body){
+            //resolve(JSON.parse(body))
+            resolve(body)
+          })
+        })
+    })
+    .then(function(contents){
+      res.send(contents)
+    })
+    .catch(function(err){
+      console.log("get: content call err: ", err)
+    })
+  })
   app.get('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
     let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
@@ -261,9 +376,11 @@ module.exports = () => {
           request(options,function(err1,resn1,body1){
             console.log("resn1.statusCode", resn1.statusCode)
             //console.log("resn1", resn1)
-            if(!err1 && resn1.statusCode == 200 || resn1.statusCode == 202){
+            if(!err1 && resn1.statusCode == 200 || resn1.statusCode == 201){
               console.log("resn1.statusCode", resn1.statusCode)
               createFileInRepo(url,term_info,fileName,user)
+            }else if(resn1.statusCode == 202){
+              setTimeout(createFileInRepo,3000,url,term_info,fileName,user)
             }
             //console.log("resn: ", resn1)
             console.log("post: fork: ", JSON.parse(body1).full_name)
