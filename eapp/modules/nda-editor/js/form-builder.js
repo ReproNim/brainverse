@@ -467,30 +467,6 @@ var setup = function(){
         });
     };
 
-    /*var refreshPreview = function(callback)
-    {
-        if (mainPreviewField)
-        {
-            mainPreviewField.getFieldEl().replaceWith("<div id='previewDiv'></div>");
-            mainPreviewField.destroy();
-            mainPreviewField = null;
-        }
-
-        doRefresh($("#previewDiv"), false, false, function(err, form) {
-
-            if (!err)
-            {
-                mainPreviewField = form;
-            }
-
-            if (callback)
-            {
-                callback();
-            }
-
-        });
-    };*/
-
     var refreshDesigner = function(callback)
     {
         $(".dropzone").remove();
@@ -519,67 +495,11 @@ var setup = function(){
         });
     };
 
-    /*var refreshCode = function(callback)
-    {
-        var json = {
-            "schema": schema
-        };
-        if (options) {
-            json.options = options;
-        }
-        if (data) {
-            json.data = data;
-        }
-        var code = "$('#div').alpaca(" + JSON.stringify(json, null, "    ") + ");";
-
-        editor4.setValue(code);
-        editor4.clearSelection();
-        editor4.gotoLine(0,0);
-
-        if (callback)
-        {
-            callback();
-        }
-    };*/
-
     var refresh = function(callback)
     {
         var current = $("UL.nav.nav-tabs LI.active A.tab-item");
         $(current).click();
     };
-
-    /*var rtChange = false;
-
-    // background "thread" to detect changes and update the preview div
-    var rtProcessing = false;
-    var rtFunction = function() {
-
-        if (rtChange && !rtProcessing)
-        {
-            rtProcessing = true;
-            console.log("rt Function():rtProcessing set to true")
-            if (mainPreviewField)
-            {
-                mainPreviewField.getFieldEl().replaceWith("<div id='previewDiv'></div>");
-                mainPreviewField.destroy();
-                mainPreviewField = null;
-            }
-            doRefresh($("#previewDiv"), false, true, function(err, form) {
-
-                if (!err)
-                {
-                    mainPreviewField = form;
-                }
-
-                rtChange = false;
-                rtProcessing = false;
-            });
-        }
-
-        setTimeout(rtFunction, 1000);
-
-    };
-    rtFunction();*/
 
     var isCoreField = function(type)
     {
@@ -884,44 +804,6 @@ var setup = function(){
 
     //$(".tab-item-source").click();
 
-
-    // load button
-    /*$(".load-button").off().click(function() {
-
-        if (!localStorage)
-        {
-            alert("Your browser must support HTML5 local storage in order to use this feature");
-            return;
-        }
-
-        var configString = localStorage.getItem("alpacaDesignerConfig");
-        if (!configString)
-        {
-            return;
-        }
-
-        try
-        {
-            var config = JSON.parse(configString);
-            if (!config.schema) {
-                config.schema = {};
-            }
-            if (!config.options) {
-                config.options = {};
-            }
-            if (!config.data) {
-                config.data = {};
-            }
-            console.log("load button clicked")
-            //alert("Your form was loaded from HTML5 local storage");
-        }
-        catch (e)
-        {
-            // bad value
-        }
-
-    });*/
-
     // save button
     $(".save-button").off().click(function(e) {
         e.preventDefault()
@@ -947,7 +829,6 @@ var setup = function(){
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
         //convertAlpacaToNDA(schema,options)
-        //alert("Your form was saved in HTML5 local storage")
         saveCuratedForm(schema,options,'local')
     })
     $(".git-push-button").off().click(function(e) {
@@ -975,7 +856,5 @@ var setup = function(){
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
         saveCuratedForm(schema,options,'github')
-        //alert("Your form was saved in HTML5 local storage")
     })
-
 }

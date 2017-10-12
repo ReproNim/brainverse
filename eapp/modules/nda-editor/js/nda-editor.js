@@ -25,79 +25,39 @@ $("#ndar-dd").select2()
 /*
 * Data Dictionaries
 */
+let sourceUrl = ''
 $("#nda-src").change(function(){
   if($("#nda-src").val() === "NDA"){
-    getDataDictionaryListNDA()
+    sourceUrl = serverUrl + "/ndar-terms/forms"
+    getDataDictionaryList(sourceUrl)
   }else if($("#nda-src").val() === "Local"){
-    getDataDictionaryListLocal()
+    sourceUrl = serverUrl + "/nda/dictionaries/local"
+    getDataDictionaryList(sourceUrl)
   }else if($("#nda-src").val() === "Repronim") {
-    getDataDictionaryListGitHubRepronim()
+    sourceUrl = serverUrl + "/nda/dictionaries/github_repronim"
+    getDataDictionaryList(sourceUrl)
   }else{
-    getDataDictionaryListGitHub()
+    sourceUrl = serverUrl + "/nda/dictionaries/github"
+    getDataDictionaryList(sourceUrl)
   }
 })
 
-function getDataDictionaryListNDA(){
+function getDataDictionaryList(sourceUrl){
   $.ajax({
     type: "GET",
-    url: serverUrl + "/ndar-terms/forms",
+    url: sourceUrl,
     accept: "application/json",
     success: function(data){
-      console.log('get NDA forms:success')
-      let dE = JSON.parse(data)
-      console.log(dE)
-      $("#ndar-dd").empty()
-      for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
-      }
-    }
-  })
-}
-
-function getDataDictionaryListGitHub(){
-  $.ajax({
-    type: "GET",
-    url: serverUrl + "/nda/dictionaries/github",
-    accept: "application/json",
-    success: function(data){
-      console.log('get forms: github:success')
+      console.log('get data dictionary list :success')
       console.log("data:  ",data)
       let dE = data.list
       $("#ndar-dd").empty()
       for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
-      }
-    }
-  })
-}
-function getDataDictionaryListGitHubRepronim(){
-  $.ajax({
-    type: "GET",
-    url: serverUrl + "/nda/dictionaries/github_repronim",
-    accept: "application/json",
-    success: function(data){
-      console.log('get forms: github-repronim:success')
-      console.log("data:  ",data)
-      let dE = data.list
-      $("#ndar-dd").empty()
-      for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
-      }
-    }
-  })
-}
-function getDataDictionaryListLocal(){
-  $.ajax({
-    type: "GET",
-    url: serverUrl + "/nda/dictionaries/local",
-    accept: "application/json",
-    success: function(data){
-      console.log('get forms: local:success')
-      console.log("data:  ",data)
-      let dE = data.list
-      $("#ndar-dd").empty()
-      for (let i=0;i<dE.length;i++){
-        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+'/'+dE[i].title +'</option>')
+        if($("#nda-src").val() === "NDA"){
+          $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].title +'</option>')
+        }else{
+        $("#ndar-dd").append('<option value="'+ dE[i].shortName+'">'+ dE[i].author+':'+dE[i].title +'</option>')
+        }
       }
     }
   })
@@ -147,6 +107,7 @@ function getDDcallbk(data){
   let dE = {}
   //if($("#nda-src").val() !== "Local"){
   console.log("typeof-->", typeof(data))
+  console.log("data in call bk:", data)
   if(typeof(data)=='string'){
     dE = JSON.parse(data)
   }else{
@@ -317,14 +278,12 @@ function add_term_to_form(selectedField){
     if(selectedField.valueRange == null){
       /* Case1: No Value Range */
       if (selectedField.type == "Integer") {
-        //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "number", undefined, fieldValueRange, true)
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
       }
       else if (selectedField.type == "Date") {
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
       }
       else {
-        //form.inputForm(fieldName, fieldDescription, 'preview'+idnum, "string", undefined, fieldValueRange, true)
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
       }
     }

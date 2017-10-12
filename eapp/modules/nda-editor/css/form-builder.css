@@ -1,6 +1,6 @@
 body
 {
-    padding-top: 70px;
+    padding-top: -70px;
 }
 
 .row
@@ -90,4 +90,3 @@ body
     border: 1px #ccc dashed;
     padding: 10px;
 }
-
