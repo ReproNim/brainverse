@@ -358,7 +358,7 @@ function saveProjInfo(e){
 }
 
 function projectListPage(){
-  window.location.href = serverUrl + "/acquistionForm.html"
+  window.location.href = serverUrl + "/nda/html/acquistionForm.html"
 }
 
 /*function mainpage(){

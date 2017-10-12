@@ -135,19 +135,11 @@ module.exports = () => {
     next();
   });
 
-  app.use(express.static(path.join(__dirname, 'public/css')))
-  app.use(express.static(path.join(__dirname, 'public/html')))
-  app.use(express.static(path.join(__dirname, 'public/js')))
-  app.use(express.static(path.join(__dirname, 'public/terms')))
-  app.use(express.static(path.join(__dirname, 'public/lib')))
-  app.use(express.static(path.join(__dirname, 'public/images')))
-  app.use(express.static(path.join(__dirname,'public/experiment-planner/')))
+  app.use(express.static(path.join(__dirname, 'public/')))
+  app.use(express.static(path.join(__dirname, 'modules/')))
 
-  app.locals.setup = rdfHelper.rdfStoreSetup()
-  app.locals.store = app.locals.setup.store
-  //app.locals.rgraph = app.locals.setup.graph
-  //console.log("app.locals:", app.locals.store, app.locals.rgraph)
-
+  app.locals.setup = {}
+  app.locals.store = {}
   // Setup Globally Included Routes
   fs.readdirSync(path.join(__dirname, 'routes')).forEach(function(filename) {
     console.log('reading routes file')
@@ -158,40 +150,21 @@ module.exports = () => {
  /**
  ** TODO Create a directory structure specified on a default configuration file
  **/
-  fs.mkdir(path.join(__dirname,'/../uploads/'),function(err){
-    if(err){
-      console.log('directory exists. No need to create it')
-    }
-    fs.mkdir(path.join(__dirname,'/../uploads/dataDictionary'),function(err1){
-      if(err1){
-        console.log('sub-directory:dataDictionary exists. No need to create it')
-      }
-    })
-    fs.mkdir(path.join(__dirname,'/../uploads/termforms'),function(err2){
-      if(err2){
-        console.log('sub-directory:termforms exists. No need to create it')
-      }
-    })
-    fs.mkdir(path.join(__dirname,'/../uploads/acquisition'),function(err3){
-      if(err3){
-        console.log('sub-directory:acquistion exists. No need to create it')
-      }
-      fs.mkdir(path.join(__dirname,'/../uploads/acquisition/experiments'),function(err5){
-        if(err5){
-          console.log('sub-directory:acquistion/experiments exists. No need to create it')
+ const dirPaths = config.dirPaths
+  new Promise(function(resolve){
+    console.log("paths: ",dirPaths[0])
+    fs.stat(path.join(__dirname,dirPaths[0]), function(err,stat){
+      if(err){
+        for(let i=0;i<config.dirPaths.length;i++){
+          console.log("paths: ",dirPaths[i])
+          fs.mkdirSync(path.join(__dirname,dirPaths[i]))
         }
-      })
-      fs.mkdir(path.join(__dirname,'/../uploads/acquisition/plans'),function(err6){
-        if(err6){
-          console.log('sub-directory:acquistion/plans exists. No need to create it')
-        }
-      })
-    })
-    fs.mkdir(path.join(__dirname,'/../uploads/plansdocs'),function(err4){
-      if(err4){
-        console.log('sub-directory:plansdocs exists. No need to create it')
       }
+    resolve()
     })
+  }).then(function(){
+    setup = rdfHelper.rdfStoreSetup()
+    store = setup.store
   })
 
   app.listen(3000, function(){

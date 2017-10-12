@@ -67,7 +67,7 @@ $("#pforms").change(function(){
   $("#kanban-space").append('<div id ="kanban1"></div>')
   getPlanJson($("#pforms").val())
   $("#kanban-form-display").append('<button id= "btn-kanbanSave" type="submit" class="btn btn-primary">Save</button>')
-  $("#kanban-form-display").append('<a href="/history.html" id= "btn-kanbanHistory" class="btn btn-primary">History</button>')
+  $("#kanban-form-display").append('<a href="/audit-trail/html/history.html" id= "btn-kanbanHistory" class="btn btn-primary">History</button>')
 })
 
 /**
