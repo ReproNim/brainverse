@@ -1,6 +1,6 @@
 extends main-layout
 block content
-  .row
+  //-.row
     .col-md-4.col-sm-6.col-xs-12
       +panel("NIMH Data Archive Data Dictionary", "default") 
         ul
@@ -21,6 +21,10 @@ block content
           
   .row
     .col-md-4.col-sm-6.col-xs-12
-      +panel("Experiment Planer", "default")
+    +panel("Experiment Planer", "default")
         a(href='/html/plan-mgm.html') Create a Experiment plan  »
+    
+    +panel("NDA Editor","default")
+        a(href='/nda-editor/html/nda-editor.html') Curate NDA Form  »
+
           
