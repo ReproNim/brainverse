@@ -18,6 +18,7 @@ module.exports = () => {
   const rdfHelper = require('./util/nidme-graph.js')
 
   global.uid = {}
+  global.github_token = ""
 
   const GITHUB_CLIENT_ID = config.clientId
   const GITHUB_CLIENT_SECRET = config.clientSecret
@@ -47,7 +48,9 @@ module.exports = () => {
         // represent the logged-in user.  In a typical application, you would want
         // to associate the GitHub account with a user record in your database,
         // and return that user instead.
-        console.log("profile:", profile)
+        console.log("accessToken: ", accessToken)
+        github_token = accessToken
+        console.log("profile: ", profile)
         return done(null, profile)
       })
     }
@@ -93,7 +96,7 @@ module.exports = () => {
   })
 
   app.get('/auth/github',
-  passport.authenticate('github', { scope: [ 'user:email' ] }),
+  passport.authenticate('github', { scope: [ 'user:email','repo'] }),
   function(req, res){
     // The request will be redirected to GitHub for authentication, so this
     // function will not be called.
