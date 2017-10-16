@@ -18,6 +18,6 @@ function sAction(){
   console.log("planObj: ", planObj)
   localStorage.setItem("newPlanObj", JSON.stringify(planObj))
   form.alpacaDestroy()
-  window.location.href = serverURL+"/html/plan-board.html"
+  window.location.href = serverURL+"/experiment-planner/html/plan-board.html"
 }
 $('#btn-newPlan').click(createPlan)
