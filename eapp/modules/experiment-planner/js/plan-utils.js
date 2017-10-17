@@ -29,7 +29,7 @@ function addSessionColumn(){
   </div>'
   return htmlStr
 }
-function updateSessionColumn(){
+function updateSessionColumnHeader(sessionColumnTitle){
   let htmlStr = '\
         <div id="updateSessionModal" class="modal fade" role="dialog">\
         <div class="modal-dialog">\
@@ -37,13 +37,13 @@ function updateSessionColumn(){
           <div class="modal-content">\
           <div class="modal-header">\
             <button type="button" class="close" data-dismiss="modal">&times;</button>\
-            <h4 class="modal-title" style="text-align-last: center">Update Session</h4>\
+            <h4 class="modal-title" style="text-align-last: center">Update Session Name</h4>\
           </div>\
           <div class="modal-body">\
             <form>\
               <div class="form-group">\
-                <label for="sessionName">Session Name</label>\
-                <input type="text" class="form-control" id="sessionName" placeholder="Session Name">\
+                <label for="updateSessionName">Session Title</label>\
+                <input type="text" class="form-control" id="updateSessionName" placeholder="'+sessionColumnTitle+'">\
               </div>\
             </form>\
           </div>\
@@ -91,7 +91,7 @@ function sAction(){
   console.log("planObj: ", planObj)
   localStorage.setItem("newPlanObj", JSON.stringify(planObj))
   form.alpacaDestroy()
-  window.location.href = serverURL+"/html/plan-board.html"
+  window.location.href = serverURL+"/experiment-planner/html/plan-board.html"
 }
 
 var getIconClassName = function () {
@@ -104,6 +104,7 @@ function addToColumnArray(name){
     cObj["text"] = name
     cObj["dataField"] = name
     cObj["iconClassName"] = getIconClassName()
+    cObj["collapsible"] = false
     columnArray.push(cObj)
 }
 
@@ -133,13 +134,13 @@ function setSources(sname,slabel){
     dataType: "array",
     dataFields: defItemFields()
   }
-  console.log("sources: ", source)
+  //console.log("sources: ", source)
   return source
 }
 
 function setResources(){
   let resourcesSource = {
-    localData:[{ id: 0, name: "No name", image:"/sp.jpg", common: true},
+    localData:[{ id: 0, name: "No name", image:"/experiment-planner/img/sp.jpg", common: true},
     ],
     dataType: "array",
     dataFields: [
@@ -149,7 +150,7 @@ function setResources(){
          { name: "common", type: "boolean" }
     ]
   }
-  console.log("resourcesSource: ", resourcesSource)
+  //console.log("resourcesSource: ", resourcesSource)
   return resourcesSource
 }
 
