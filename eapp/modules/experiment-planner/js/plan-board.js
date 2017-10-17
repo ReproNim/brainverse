@@ -4,6 +4,7 @@ let newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
 var columnArray = []
 var sessions = []
 var resArray = []
+var sessionColumnTitle=''
 
 console.log("newPlanObj: ", newPlanObj)
 
@@ -36,7 +37,7 @@ $(document).on('hidden.bs.modal','#newSessionModal', function(e){
     sessions.push({'Label': sname})
     //console.log("ColumnArray:-->  ", columnArray)
     newPlanObj["Sessions"] = sessions
-    //console.log("newPlanObj:  ", newPlanObj)
+    console.log("newPlanObj:  ", newPlanObj)
     localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
     $('#div-kanban').jqxKanban('destroy')
     $('#div-addColumn').empty()
@@ -60,21 +61,10 @@ function createKanbanBoard(name,label){
     }
   kCO["columns"]= columnArray
   kCO["columnRenderer"] = function (element, collapsedElement, column) {
-    var columnItems = $("#div-kanban").jqxKanban('getColumnItems', column.dataField).length;
-
+    var columnItems = $("#div-kanban").jqxKanban('getColumnItems', column.dataField).length
     // update header's status.
-    element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")");
+    element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")")
     element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
-    //$("#div-kanban").append(updateSessionColumnHeader(column.dataField))
-    //element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><div data-toggle="modal" data-target="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></div></div>')
-    //element.find(<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>)
-    //$("#div-kanban").append(updateSessionColumn())
-
-    //console.log("element:-->",element)
-    // update collapsed header's status.
-    //collapsedElement.find(".jqx-kanban-column-header-status").html(" (" + columnItems +  ")");
-    //collapsedElement.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><div style="width: 100%; height: 100%;top:-15px" class="fa-edit-icon"></div></div>')
-    //$('.fa-edit-icon').not(':last').remove();
   }
   kCO["width"] = '80%'
   //kCO["height"] = '100%'
@@ -88,19 +78,17 @@ $(document).on('columnAttrClicked', '#div-kanban', function (event) {
   console.log("Argument: ",args)
   //console.log("Event: ", event)
   if(args.attribute == "title"){
-      console.log("edit button clicked")
-      //$("#div-kanban").append(updateSessionColumn())
-      let sessionColumnTitle = args.column.dataField
+      console.log("edit column header button clicked")
+      sessionColumnTitle = args.column.dataField
       console.log("sessionColumnTitle", sessionColumnTitle)
       if($("#updateSessionModal").length){
         console.log("updating the session title placeholder")
         $("#updateSessionName").attr("placeholder",sessionColumnTitle)
-        //$("#updateSessionModal").remove()
       }else{
         console.log("No update session modal found..so adding one ...")
         $("#div-kanban").append(updateSessionColumnHeader(sessionColumnTitle))
       }
-      //$('#test1').append(updateSessionColumn())
+
   }
   if (args.attribute == "button") {
     args.cancelToggle = true;
@@ -111,9 +99,32 @@ $(document).on('show.bs.modal','#updateSessionModal', function(e){
   console.log('update Modal shown')
   $('#updateSessionName').focus()
 })
+$(document).on('hidden.bs.modal','#updateSessionModal', function(e){
+  let sname = $('#updateSessionName').val()
+  console.log("updated session name:", sname)
+  if(sname!==''){
+    checkandUpdateColumnArray(sessionColumnTitle, sname)
+    checkandUpdateSessionsArray(sessionColumnTitle, sname)
+    console.log("ColumnArray:-->  ", columnArray)
+    newPlanObj["Sessions"] = sessions
+    console.log("newPlanObj:  ", newPlanObj)
+    localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+    $('#div-kanban').jqxKanban('destroy')
+    $('#div-addColumn').empty()
+    $('#div-addColumn').remove()
+    $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
+    $('#div-addColumn').append(addSessionColumn())
+    $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+    createKanbanBoard(sname,sname)
+ }else{
 
-$()
-
-/*$('.fa-edit-icon').click(function(){
-  console.log("fa -edit edit button clicked")
-})*/
+ }
+})
+function checkandUpdateSessionsArray(oldSessionName, newSessionName){
+  for(let i=0;i< sessions.length;i++){
+    if(sessions[i].Label === oldSessionName){
+      sessions[i].Label = newSessionName
+      break;
+    }
+  }
+}

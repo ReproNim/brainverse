@@ -108,6 +108,16 @@ function addToColumnArray(name){
     columnArray.push(cObj)
 }
 
+function checkandUpdateColumnArray(olddataField, newdataField){
+  for(let i=0;i<columnArray.length;i++){
+    if(columnArray[i].dataField === olddataField){
+      columnArray[i].dataField = newdataField
+      columnArray[i].text = newdataField
+      break;
+    }
+  }
+}
+
 
 
 /**
