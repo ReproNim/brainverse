@@ -64,7 +64,16 @@ function createKanbanBoard(name,label){
     var columnItems = $("#div-kanban").jqxKanban('getColumnItems', column.dataField).length
     // update header's status.
     element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")")
-    element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
+    //if($('div#test1.fa-edit-icon').length < 3){
+      element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
+      console.log("href attr: ",$('div.jqx-icon-plus-alt'))
+    //}
+    //$('div.jqx-icon-plus-alt').append('<a data-toggle="modal" href="#itemModal">test</a>')
+    //if($('div.jqx-icon-plus-alt').length < 2){
+      $('div.jqx-icon-plus-alt').attr("data-toggle","modal")
+      $('div.jqx-icon-plus-alt').attr("data-target","#itemModal")
+      console.log ("jqx-icon-plus-alt::: ",$('div.jqx-icon-plus-alt'))
+    //}
   }
   kCO["width"] = '80%'
   //kCO["height"] = '100%'
@@ -88,18 +97,30 @@ $(document).on('columnAttrClicked', '#div-kanban', function (event) {
         console.log("No update session modal found..so adding one ...")
         $("#div-kanban").append(updateSessionColumnHeader(sessionColumnTitle))
       }
-
-  }
-  if (args.attribute == "button") {
-    args.cancelToggle = true;
-    console.log("Add button")
+  }else{
+    if (args.attribute == "button") {
+      //args.cancelToggle = true;
+      console.log("Add button clicked")
+      console.log("showing add item modal")
+      if($("#updateSessionModal").length){
+        let itemForm = new AlpacaForm('#body-itemModal')
+        createItemForm(itemForm,"itemModal")
+      }else{
+        $('#div-kanban').append(createModal('itemModal', 'Add Item', 'Add'))
+        let itemForm = new AlpacaForm('#body-itemModal')
+        createItemForm(itemForm,"itemModal")
+      }
+      $('#itemModal').modal('show')
+    }
   }
 })
 $(document).on('show.bs.modal','#updateSessionModal', function(e){
+  //e.preventDefault()
   console.log('update Modal shown')
   $('#updateSessionName').focus()
 })
 $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
+  e.preventDefault()
   let sname = $('#updateSessionName').val()
   console.log("updated session name:", sname)
   if(sname!==''){
@@ -117,8 +138,13 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
     createKanbanBoard(sname,sname)
  }else{
-
+    console.log("removing update SessionModal---")
+    $('#updateSessionModal').remove()
  }
+})
+$(document).on('hidden.bs.modal','#itemModal', function(e){
+  e.preventDefault()
+  $('#body-itemModal').alpaca("destroy")
 })
 function checkandUpdateSessionsArray(oldSessionName, newSessionName){
   for(let i=0;i< sessions.length;i++){

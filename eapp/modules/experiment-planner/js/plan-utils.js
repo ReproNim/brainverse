@@ -84,6 +84,22 @@ function createPlanInfoForm(form, modalID, name, desc){
   //form.submitBtnForm('Update Plan',sAction)
   form.alpacaGen()
 }
+
+function createItemForm(form,modalID){
+  /* Fields for an item card
+  * Task Name
+  * Task Description
+  * select NDA Form to be used
+  * Assignee
+  * estimate Time
+  */
+
+  form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', false,"Type Task name", false)
+  form.textAreaForm('Description', 'Description', modalID+"-desc",'string', undefined, "Description here", false)
+  form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', false, "Time estimate for the task", false)
+  form.alpacaGen()
+}
+
 function sAction(){
   console.log("Action performed")
   planObj["Name"] = $("#planName").val()
@@ -170,6 +186,7 @@ function setTemplate(){
                 + "<div style='display: none;' class='jqx-kanban-item-avatar'></div>"
                 + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
                 + "<div class='jqx-kanban-item-text'></div>"
+                + "<div class='jqx-kanban-item-content'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
         + "</div>"
     return template
