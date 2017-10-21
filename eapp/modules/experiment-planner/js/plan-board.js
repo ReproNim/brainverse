@@ -5,6 +5,7 @@ var columnArray = []
 var sessions = []
 var resArray = []
 var sessionColumnTitle=''
+var personnelArray = []
 
 console.log("newPlanObj: ", newPlanObj)
 
@@ -100,6 +101,7 @@ $(document).on('columnAttrClicked', '#div-kanban', function (event) {
   }else{
     if (args.attribute == "button") {
       //args.cancelToggle = true;
+
       console.log("Add button clicked")
       console.log("showing add item modal")
       if($("#updateSessionModal").length){
@@ -110,6 +112,8 @@ $(document).on('columnAttrClicked', '#div-kanban', function (event) {
         let itemForm = new AlpacaForm('#body-itemModal')
         createItemForm(itemForm,"itemModal")
       }
+      console.log("Adding Item to Column: ", args.column.dataField)
+      localStorage.setItem("addItemToColumn", args.column.dataField)
       $('#itemModal').modal('show')
     }
   }
@@ -144,6 +148,15 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
 })
 $(document).on('hidden.bs.modal','#itemModal', function(e){
   e.preventDefault()
+  let userLogin = $('#itemModal-per').select2('data')[0]
+  let personnelItem = {}
+  personnelItem['user'] = userLogin.login
+  personnelItem['uid'] = userLogin.id
+  personnelItem['url'] = userLogin.url
+  personnelItem['avatar_url'] = userLogin.avatar_url
+  personnelArray.push(personnelItem)
+  let columnName = localStorage.getItem("addItemToColumn")
+  console.log("columnName To which Item needs to be added :  ", columnName)
   $('#body-itemModal').alpaca("destroy")
 })
 function checkandUpdateSessionsArray(oldSessionName, newSessionName){

@@ -1,3 +1,5 @@
+$.fn.select2.defaults.set( "theme", "bootstrap" )
+
 function addSessionColumn(){
   let htmlStr = '\
   <div class="add-column">\
@@ -93,13 +95,99 @@ function createItemForm(form,modalID){
   * Assignee
   * estimate Time
   */
+  getNDAFormNames().then(function(ndaFormsList){
+    let nTitle=[]
+    let nFileName=[]
+    console.log("NDAFormsList",ndaFormsList )
+    let htmlStr = ""
+    if(ndaFormsList.length !== 0){
+      for(let i=0;i<ndaFormsList.length;i++){
+        nTitle.push(ndaFormsList[i].title)
+        nFileName.push(ndaFormsList[i].filename)
+        htmlStr = htmlStr + '<option value="'+ ndaFormsList[i].filename+'">'+ ndaFormsList[i].title +'</option>"'
+      }
+    }
+    form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', false,"Type Task name", false)
+    form.textAreaForm('Description', 'Description', modalID+"-desc",'string', undefined, "Description here", false)
+    form.selectFormGeneral('Instruments','Instruments',[],[],modalID+'-inst',false,false)
+    form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', false, "Time estimate for the task", false)
+    //form.selectFormGeneral('Assignee','Assignee',[],[],modalID+'-per',false,false)
+    //form.inputFormTypeAhead('Assignee','Assignee',modalID+'-per')
 
-  form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', false,"Type Task name", false)
-  form.textAreaForm('Description', 'Description', modalID+"-desc",'string', undefined, "Description here", false)
-  form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', false, "Time estimate for the task", false)
-  form.alpacaGen()
+    form.baseForm["postRender"] = function(control){
+      console.log("...Inside postRender ... ")
+      console.log("control ... :",control.childrenByPropertyId["assignee"])
+      var propInst = control.childrenByPropertyId["instruments"]
+      //var propAssignee = control.childrenByPropertyId["assignee"]
+      control.getFieldEl().append('<div><p><h5><b>Assignee</b></h5></p><select id = "'+ modalID+'-per"></select></div>')
+      console.log("control ... :",propInst.id)
+
+      $('#'+modalID+'-inst').select2({width:'100%'})
+      propInst.schema.enum = nFileName
+      propInst.options.optionLabels =  nTitle
+      propInst.refresh()
+      $('#'+modalID+'-per').select2({
+        width:'100%',
+        ajax: {
+          url: "https://api.github.com/search/users",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, params) {
+            params.page = params.page || 1;
+
+            return {
+              results: data.items,
+              pagination: {
+                more: (params.page * 30) < data.total_count
+              }
+            };
+          },
+          cache: true
+        },
+        escapeMarkup: function (markup) {return markup}, // let our custom formatter work
+        minimumInputLength: 3,
+        templateResult: formatRepo,
+        templateSelection: formatRepoSelection,
+      })
+    }
+    form.alpacaGen()
+  })
+}
+function formatRepo (user) {
+  if (user.loading) return user.login;
+    var markup = "<div class='select2-result-repository clearfix'>" +
+    "<div class='select2-result-repository__avatar'><img src='" + user.avatar_url + "' /></div>" +
+    "<div class='select2-result-repository__meta'>" +
+    "<div class='select2-result-repository__title'>" + user.login + "</div>"+
+    "<div class='select2-result-repository__url'>" + user.url + "</div>"+
+    "</div></div>"
+    return markup;
 }
 
+function formatRepoSelection (user) {
+  //console.log("user:", user)
+  return user.login;
+}
+function getNDAFormNames(){
+  return new Promise(function(resolve){
+    $.ajax({
+    type: "GET",
+    url: serverURL+"/acquisitions/nda_forms",
+    accept: "application/json",
+    success: function(data){
+      console.log('acquistions forms:success', data)
+      //let dE = JSON.parse(data)
+      resolve(data.list)
+    }
+  })
+})
+}
 function sAction(){
   console.log("Action performed")
   planObj["Name"] = $("#planName").val()

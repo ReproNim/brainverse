@@ -12,7 +12,7 @@ module.exports = () => {
   const rdfHelper = require('./../util/nidme-graph.js')
 
   global.store = app.locals.store
-  
+
   /**
   New acquisition data
   **/
@@ -61,6 +61,33 @@ module.exports = () => {
     })
   })
 
+  app.get('/acquisitions/nda_forms', ensureAuthenticated, function(req, res){
+    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    var listOfFiles = new Promise(function(resolve){
+      fs.readdir(termDirPath, function(err,list){
+        if(err) throw err
+        //console.log("lists:---> ", list)
+        resolve(list)
+      })
+    })
+    listOfFiles.then(function(list){
+      console.log("lists: then---> ", list)
+      let namesArr = list.map(function(fname){
+        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+      })
+      return Promise.all(namesArr)
+    }).then(function(obs){
+      let nameList = []
+      console.log("obs:-->", obs)
+      for(let i = 0; i< obs.length;i++){
+        let title = obs[i].Name.split(' ')[0]
+        let fileName = 'terms-'+obs[i].shortName+'-'+title+".json"
+        nameList.push({"shortName":obs[i].shortName,"title": obs[i].Name, "filename": fileName})
+      }
+      console.log("nameList:--> ", nameList)
+      res.json({"list":nameList})
+    })
+  })
   function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
     res.redirect('/')
