@@ -152,6 +152,7 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
   if(sname!==''){
     checkandUpdateColumnArray(sessionColumnTitle, sname)
     checkandUpdateSessionsArray(sessionColumnTitle, sname)
+    checkandUpdatePlanArray(sessionColumnTitle, sname)
     console.log("ColumnArray:-->  ", columnArray)
     newPlanObj["Sessions"] = sessions
     console.log("newPlanObj:  ", newPlanObj)
@@ -168,6 +169,37 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
     $('#updateSessionModal').remove()
  }
 })
+
+$(document).on('click','#btn-delete-column',function(e){
+  e.preventDefault()
+  console.log("deleting session column title:::", sessionColumnTitle)
+  updatePlansArray(sessionColumnTitle)
+  updateColumnArray(sessionColumnTitle)
+  console.log("plan Array after delete: ", plansArray)
+  console.log("column Array after delete: ", columnArray)
+  $('#div-kanban').jqxKanban('destroy')
+  $('#div-addColumn').empty()
+  $('#div-addColumn').remove()
+  $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
+  $('#div-addColumn').append(addSessionColumn())
+  $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+  let plength = plansArray.length
+  let clength = columnArray.length
+  if(plength === 0 && clength !==0){
+    addToSourcelocalData(columnArray[0].dataField,"task0", "","","")
+    createKanbanBoard(columnArray[0].dataField,columnArray[0].dataField)
+    console.log("PlansArray Adding 0th task, delete Action::: ", plansArray)
+  }else if(plength !== 0 && clength !==0){
+    console.log("else if: creating kanban")
+    createKanbanBoard(columnArray[0].dataField,columnArray[0].dataField)
+  }else{
+    console.log("do not create kanban")
+  }
+  $('#updateSessionModal').modal('hide')
+  $('body').removeClass('modal-open')
+  $('.modal-backdrop').remove()
+})
+
 $(document).on('hidden.bs.modal','#itemModal', function(e){
   e.preventDefault()
   let taskName = $('#itemModal-task').val()
@@ -197,9 +229,10 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
 
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   var args = event.args;
-  console.log("item event args: ", args)
+  console.log("item event args: ", event)
   if (args.attribute == "template") {
       $('#div-kanban').jqxKanban('removeItem', args.item.id);
+      deleteItemPlanArray(args.item.id)
   }
 })
 function checkandUpdateSessionsArray(oldSessionName, newSessionName){

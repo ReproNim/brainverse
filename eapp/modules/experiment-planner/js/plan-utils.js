@@ -45,18 +45,19 @@ function updateSessionColumnHeader(sessionColumnTitle){
           <div class="modal-content">\
           <div class="modal-header">\
             <button type="button" class="close" data-dismiss="modal">&times;</button>\
-            <h4 class="modal-title" style="text-align-last: center">Update Session Name</h4>\
+            <h4 class="modal-title" style="text-align-last: center">Edit</h4>\
           </div>\
           <div class="modal-body">\
             <form>\
               <div class="form-group">\
-                <label for="updateSessionName">Session Title</label>\
+                <label for="updateSessionName">Session Name</label>\
                 <input type="text" class="form-control" id="updateSessionName" placeholder="'+sessionColumnTitle+'">\
               </div>\
             </form>\
           </div>\
-          <div class="modal-footer" style="text-align:center">\
-            <button type="button" class="btn btn-default" data-dismiss="modal">Update</button>\
+          <div class="modal-footer">\
+            <button id="btn-update-column" type="button" class="btn btn-success" data-dismiss="modal">Update Session</button>\
+            <button id="btn-delete-column" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>\
           </div>\
         </div>\
       </div>\
@@ -228,8 +229,22 @@ function checkandUpdateColumnArray(olddataField, newdataField){
     }
   }
 }
+function checkandUpdatePlanArray(oldColumnTitle, newColumnTitle){
+  for(let i=plansArray.length-1;i>=0;i--){
+    if(plansArray[i].state === oldColumnTitle){
+      plansArray[i].state = newColumnTitle
+    }
+  }
+}
 
-
+function deleteItemPlanArray(itemId){
+  for(let i=plansArray.length-1;i>=0;i--){
+    if(plansArray[i].id === itemId){
+      plansArray.splice(i,1)
+      break;
+    }
+  }
+}
 
 /**
 Field  for Data Fields for Item of Kanban Board
@@ -382,6 +397,20 @@ function addToResourcelocalData(id,userName,aUrl){
   console.log("resArray:", resArray)
 }
 
+function updatePlansArray(columnTitle){
+  for(let i=plansArray.length-1;i>=0;i--){
+    if(plansArray[i].state === columnTitle){
+      plansArray.splice(i,1)
+    }
+  }
+}
+function updateColumnArray(columnTitle){
+  for(let i=columnArray.length-1;i>=0;i--){
+    if(columnArray[i].dataField === columnTitle){
+      columnArray.splice(i,1)
+    }
+  }
+}
 
 function setTemplate(){
   var template = "<div class='jqx-kanban-item' id=''>"
