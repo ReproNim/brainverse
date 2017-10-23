@@ -1,3 +1,9 @@
+var personnelArray = []
+let resources = {}
+var inv_resources = []
+var resArray = []
+var plansArray = []
+var columnArray = []
 $.fn.select2.defaults.set( "theme", "bootstrap" )
 
 function addSessionColumn(){
@@ -232,7 +238,7 @@ function defItemFields(){
                   { name: "id", type: "string" },
                   { name: "status", map: "state", type: "string" },
                   { name: "text", map: "label", type: "string" },
-                  //{ name:"content", map: "content", type:"object"},
+                  { name:"content", map: "content", type:"object"},
                   { name: "tags", type: "string" },
                   { name: "color", map: "hex", type: "string" },
                   { name: "resourceId", type: "number" }
@@ -240,19 +246,58 @@ function defItemFields(){
   return fields
 }
 
+/*function setSources(sname,slabel){
+  var source = {
+    localData: [{id: 0, state:sname, label:slabel, content: {"a":"b"}, tags:"test", hex: "#5dc3f0", resourceId: 0},
+               ],
+    dataType: "json",
+    //dataType: "array",
+    dataFields: defItemFields()
+  }
+  //console.log("sources: ", source)
+  return source
+}*/
 function setSources(sname,slabel){
   var source = {
-    localData: [{id: 0, state:sname, label:slabel, tags:"test", hex: "#5dc3f0", resourceId: 0},
-               ],
-    //dataType: "json",
-    dataType: "array",
+    localData: plansArray,
+    dataType: "json",
     dataFields: defItemFields()
   }
   //console.log("sources: ", source)
   return source
 }
 
-function setResources(){
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+}
+
+function addToSourcelocalData(state,taskName, instrumentName,estimateTime,user){
+  let planObj = {}
+  label = taskName
+  columnName = localStorage.getItem("addItemToColumn")
+  console.log("Column Name representing state of item: ", columnName)
+  let tobj = {"instrumentName":instrumentName,"estimateTime": estimateTime}
+  //planObj["id"] = uuid()
+  planObj["id"] = getRandomIntInclusive(1, 100)
+  planObj["state"] = state
+  planObj["label"] = label
+  planObj["content"] = tobj
+  planObj["tags"] = "test"
+  planObj["hex"] = "#5dc3f0"
+  if(taskName == "task0" && user==""){
+    planObj["id"] = "0"
+    planObj["resourceId"] = '0'
+  } else{
+    planObj["resourceId"] = resources[user]
+  }
+  plansArray.push(planObj)
+  console.log("addToSourcelocalData:::PlansArray::: ", plansArray)
+}
+
+
+/*function setResources(){
   let resourcesSource = {
     localData:[{ id: 0, name: "No name", image:"/experiment-planner/img/sp.jpg", common: true},
     ],
@@ -266,7 +311,76 @@ function setResources(){
   }
   //console.log("resourcesSource: ", resourcesSource)
   return resourcesSource
+}*/
+/*** Set Ressources for Data in Kanban ***/
+
+function setResources(){
+  let resourcesSource = {
+    localData: resArray,
+    /*[{ id: 0, name: "No name", image:"/experiment-planner/img/sp.jpg", common: true},
+  ],*/
+    dataType: "array",
+    dataFields: [
+         { name: "id", type: "number" },
+         { name: "name", type: "string" },
+         { name: "image", type: "string" },
+         { name: "common", type: "boolean" }
+    ]
+  }
+  //console.log("resourcesSource: ", resourcesSource)
+  return resourcesSource
 }
+
+/*function setResourcelocalData(){
+  let resObj = {}
+  let numOfResources = personnelArray.length
+  for(let j = 0; j <= numOfResources; j++){
+    if(j==0){
+      resObj["id"] = 0
+      resObj["name"] = "No name"
+      //resObj["image"] = "/sp.jpg"
+      resObj["common"] = true
+      resources["No name"] = 0 //this resource id needs to change
+      inv_resources["0"] = "No name"
+    }else{
+      resObj["id"] = j
+      resObj["name"] = personnelArray[j-1]["user"]
+      resObj["image"] = personnelArray[j-1]["avatar_url"]
+      resources[personnelArray[j-1]["user"]] = j
+      inv_resources[j] = personnelArray[j-1]["user"]
+    }
+    resArray.push(resObj)
+    resObj = {}
+  }
+  console.log("resources created with resource id: ", resArray)
+  return resArray
+}*/
+
+function addToResourcelocalData(id,userName,aUrl){
+  let resObj = {}
+  let flag = false
+  if(id=="0"){
+    resObj["id"] = "0"
+  }else{
+    resObj["id"] = personnelArray.length
+  }
+  resObj["name"] = userName
+  resObj["image"] = aUrl
+
+  for(let i=0;i<resArray.length;i++){
+    if(resArray[i].name === userName){
+      flag = true
+      break;
+    }
+  }
+  if(!flag){
+    resArray.push(resObj)
+    resources[userName] = resObj["id"]
+    inv_resources[resObj["id"]] = userName
+  }
+  console.log("resArray:", resArray)
+}
+
 
 function setTemplate(){
   var template = "<div class='jqx-kanban-item' id=''>"

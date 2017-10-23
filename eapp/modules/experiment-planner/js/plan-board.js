@@ -46,6 +46,9 @@ $(document).on('hidden.bs.modal','#newSessionModal', function(e){
     $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
     $('#div-addColumn').append(addSessionColumn())
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+    addToSourcelocalData(sname,"task0", "","","")
+    console.log("PlansArray Adding 0th task::: ", plansArray)
+    addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
  }
 })
@@ -80,7 +83,15 @@ function createKanbanBoard(name,label){
   //kCO["height"] = '100%'
   kCO["headerHeight"] = 50
   $('#div-kanban').jqxKanban(kCO)
-  $('#div-kanban').jqxKanban('removeItem', "0");
+  for(let i=0;i<plansArray.length; i++){
+    if(plansArray[i].state == name && plansArray[i].id == "0" ){
+      $('#div-kanban').jqxKanban('removeItem', "0");
+      plansArray.splice(i,1)
+      break;
+    }
+  }
+
+
 }
 $(document).on('columnAttrClicked', '#div-kanban', function (event) {
   event.preventDefault()
@@ -148,6 +159,9 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
 })
 $(document).on('hidden.bs.modal','#itemModal', function(e){
   e.preventDefault()
+  let taskName = $('#itemModal-task').val()
+  let instrumentName = $('#itemModal-inst').val()
+  let estimateTime = $('#itemModal-time').val()
   let userLogin = $('#itemModal-per').select2('data')[0]
   let personnelItem = {}
   personnelItem['user'] = userLogin.login
@@ -157,7 +171,17 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   personnelArray.push(personnelItem)
   let columnName = localStorage.getItem("addItemToColumn")
   console.log("columnName To which Item needs to be added :  ", columnName)
+  console.log("new item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", userLogin.login )
+  addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
+  addToSourcelocalData(columnName,taskName, instrumentName,estimateTime,userLogin.login)
   $('#body-itemModal').alpaca("destroy")
+  $('#div-kanban').jqxKanban('destroy')
+  $('#div-addColumn').empty()
+  $('#div-addColumn').remove()
+  $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
+  $('#div-addColumn').append(addSessionColumn())
+  $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+  createKanbanBoard(columnName,columnName)
 })
 function checkandUpdateSessionsArray(oldSessionName, newSessionName){
   for(let i=0;i< sessions.length;i++){
