@@ -28,7 +28,7 @@ function addSessionColumn(){
             </form>\
           </div>\
           <div class="modal-footer" style="text-align:center">\
-            <button type="button" class="btn btn-default" data-dismiss="modal">Add</button>\
+            <button id="btn-add-session" type="button" class="btn btn-default" data-dismiss="modal">Add</button>\
           </div>\
         </div>\
       </div>\
@@ -109,7 +109,7 @@ function createItemForm(form,modalID){
     if(ndaFormsList.length !== 0){
       for(let i=0;i<ndaFormsList.length;i++){
         nTitle.push(ndaFormsList[i].title)
-        nFileName.push(ndaFormsList[i].filename)
+        nFileName.push(ndaFormsList[i].filename.split(".")[0])
         htmlStr = htmlStr + '<option value="'+ ndaFormsList[i].filename+'">'+ ndaFormsList[i].title +'</option>"'
       }
     }
@@ -130,6 +130,7 @@ function createItemForm(form,modalID){
 
       $('#'+modalID+'-inst').select2({width:'100%'})
       propInst.schema.enum = nFileName
+      //propInst.schema.enum =  nTitle
       propInst.options.optionLabels =  nTitle
       propInst.refresh()
       $('#'+modalID+'-per').select2({
@@ -389,6 +390,7 @@ function setTemplate(){
                 + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
                 + "<div class='jqx-kanban-item-text'></div>"
                 + "<div class='jqx-kanban-item-content'></div>"
+                + "<div class='jqx-kanban-item-time'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
         + "</div>"
     return template

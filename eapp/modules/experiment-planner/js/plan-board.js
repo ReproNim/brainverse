@@ -30,7 +30,9 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
 })
 
 $('#div-addColumn').append(addSessionColumn())
-$(document).on('hidden.bs.modal','#newSessionModal', function(e){
+
+//$(document).on('hidden.bs.modal','#newSessionModal', function(e){
+$(document).on('click','#btn-add-session',function(e){
   let sname = $('#sessionName').val()
   console.log("session name:", sname)
   if(sname!==''){
@@ -51,6 +53,9 @@ $(document).on('hidden.bs.modal','#newSessionModal', function(e){
     addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
  }
+ $('#newSessionModal').modal('hide')
+ $('body').removeClass('modal-open')
+ $('.modal-backdrop').remove()
 })
 
 function createKanbanBoard(name,label){
@@ -59,9 +64,15 @@ function createKanbanBoard(name,label){
   kCO["template"] = setTemplate()
   kCO["resources"] = new $.jqx.dataAdapter(setResources())
   kCO["source"] = new $.jqx.dataAdapter(setSources(name,label))
-  kCO["itemRenderer"] = function(element, item, resource)
-    {
+  kCO["itemRenderer"] = function(element, item, resource){
+      console.log("element: ", element)
+      console.log("item: ", item)
+      console.log("resource", resource)
       $(element).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px; color:white;'>" + resource.name + "</span>");
+      //$(element).find(".jqx-kanban-item-text").css('background', item.color)
+      //$(element).find(".jqx-kanban-item-content").html("<div><p>Instrument:"+ item.content.instrumentName +"</p></div>")
+      $(element).find(".jqx-kanban-item-content").append('<div><p>Instrument: '+ item.content.instrumentName +'</p></div>')
+      $(element).find(".jqx-kanban-item-time").append('<div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
     }
   kCO["columns"]= columnArray
   kCO["columnRenderer"] = function (element, collapsedElement, column) {
@@ -182,6 +193,14 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   $('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(columnName,columnName)
+})
+
+$(document).on('itemAttrClicked', '#div-kanban', function (event) {
+  var args = event.args;
+  console.log("item event args: ", args)
+  if (args.attribute == "template") {
+      $('#div-kanban').jqxKanban('removeItem', args.item.id);
+  }
 })
 function checkandUpdateSessionsArray(oldSessionName, newSessionName){
   for(let i=0;i< sessions.length;i++){
