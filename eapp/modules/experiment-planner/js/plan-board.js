@@ -48,7 +48,8 @@ $(document).on('click','#btn-add-session',function(e){
     $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
     $('#div-addColumn').append(addSessionColumn())
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
-    addToSourcelocalData(sname,"task0", "","","")
+    //addToSourcelocalData(sname,"task0", "","","")
+    addToSourcelocalData(sname,"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
     addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
@@ -57,7 +58,9 @@ $(document).on('click','#btn-add-session',function(e){
  $('body').removeClass('modal-open')
  $('.modal-backdrop').remove()
 })
-
+//$(document).ready(function(){
+    $('[data-toggle="popover"]').popover();
+//})
 function createKanbanBoard(name,label){
 
   let kCO = {}
@@ -70,9 +73,10 @@ function createKanbanBoard(name,label){
       console.log("resource", resource)
       $(element).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px; color:white;'>" + resource.name + "</span>");
       //$(element).find(".jqx-kanban-item-text").css('background', item.color)
-      //$(element).find(".jqx-kanban-item-content").html("<div><p>Instrument:"+ item.content.instrumentName +"</p></div>")
+      $(element).find(".jqx-kanban-item-desc").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>')
       $(element).find(".jqx-kanban-item-content").append('<div><p>Instrument: '+ item.content.instrumentName +'</p></div>')
       $(element).find(".jqx-kanban-item-time").append('<div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
+
     }
   kCO["columns"]= columnArray
   kCO["columnRenderer"] = function (element, collapsedElement, column) {
@@ -186,7 +190,8 @@ $(document).on('click','#btn-delete-column',function(e){
   let plength = plansArray.length
   let clength = columnArray.length
   if(plength === 0 && clength !==0){
-    addToSourcelocalData(columnArray[0].dataField,"task0", "","","")
+    //addToSourcelocalData(columnArray[0].dataField,"task0", "","","")
+    addToSourcelocalData(columnArray[0].dataField,"task0", "","","","")
     createKanbanBoard(columnArray[0].dataField,columnArray[0].dataField)
     console.log("PlansArray Adding 0th task, delete Action::: ", plansArray)
   }else if(plength !== 0 && clength !==0){
@@ -203,6 +208,7 @@ $(document).on('click','#btn-delete-column',function(e){
 $(document).on('hidden.bs.modal','#itemModal', function(e){
   e.preventDefault()
   let taskName = $('#itemModal-task').val()
+  let desc = $('#itemModal-desc').val()
   let instrumentName = $('#itemModal-inst').val()
   let estimateTime = $('#itemModal-time').val()
   let userLogin = $('#itemModal-per').select2('data')[0]
@@ -216,7 +222,7 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   console.log("columnName To which Item needs to be added :  ", columnName)
   console.log("new item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", userLogin.login )
   addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
-  addToSourcelocalData(columnName,taskName, instrumentName,estimateTime,userLogin.login)
+  addToSourcelocalData(columnName,taskName, instrumentName,estimateTime,userLogin.login,desc)
   $('#body-itemModal').alpaca("destroy")
   $('#div-kanban').jqxKanban('destroy')
   $('#div-addColumn').empty()
@@ -225,6 +231,7 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   $('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(columnName,columnName)
+  $('[data-toggle="popover"]').popover()
 })
 
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {

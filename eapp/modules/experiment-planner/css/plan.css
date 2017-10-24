@@ -1,0 +1,71 @@
+.jqx-kanban-item-color-status {
+    width: 100%;
+    height: 25px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    position:relative;
+    margin-top:0px;
+    overflow:hidden;
+    top: 0px;
+}
+.jqx-kanban-item {
+    padding-top: 0px;
+    padding-bottom:0px;
+    height: 175px;
+}
+.jqx-kanban-item-text {
+    /*padding-top: 0px;*/
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.jqx-kanban-item-desc {
+    /*padding-top: 0px;*/
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left:6px;
+}
+.jqx-kanban-item-content {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left:6px;
+}
+.jqx-kanban-item-time {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left:6px;
+}
+.jqx-kanban-item-avatar {
+    top: 9px;
+}
+.jqx-kanban-template-icon {
+    position: absolute;
+    right: 3px;
+    top:12px;
+}
+.item-footer {
+  width: 100%;
+  height: 30px;
+  /*padding-top: 30px;*/
+}
+
+.wrap{width: 500px;margin: 2em auto;}
+
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+
+.select2-result-repository { padding-top: 4px; padding-bottom: 3px; }
+.select2-result-repository__avatar { float: left; width: 60px; margin-right: 10px; }
+.select2-result-repository__avatar img { width: 100%; height: auto; border-radius: 2px; }
+.select2-result-repository__meta { margin-left: 70px; }
+.select2-result-repository__title { color: black; font-weight: bold; word-wrap: break-word; line-height: 1.1; margin-bottom: 4px; }
+.select2-result-repository__forks, .select2-result-repository__stargazers { margin-right: 1em; }
+.select2-result-repository__forks, .select2-result-repository__stargazers, .select2-result-repository__watchers { display: inline-block; color: #aaa; font-size: 11px; }
+.select2-result-repository__description { font-size: 13px; color: #777; margin-top: 4px; }
+.select-results-repositiry__url {font-size: 13px; color: #777; margin-top: 4px;}
+.select2-results__option--highlighted .select2-result-repository__title { color: white; }
+.select2-results__option--highlighted .select2-result-repository__forks, .select2-results__option--highlighted .select2-result-repository__stargazers, .select2-results__option--highlighted .select2-result-repository__description, .select2-results__option--highlighted .select2-result-repository__watchers { color: #c6dcef; }
+
+.select2-container--adwitt .select2-results > .select2-results__options {
+  max-height: 300px;
+}
+.select2-results__options {overflow-y: auto;}

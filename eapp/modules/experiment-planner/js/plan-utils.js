@@ -289,12 +289,12 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
 }
 
-function addToSourcelocalData(state,taskName, instrumentName,estimateTime,user){
+function addToSourcelocalData(state,taskName, instrumentName,estimateTime,user,desc){
   let planObj = {}
   label = taskName
   columnName = localStorage.getItem("addItemToColumn")
   console.log("Column Name representing state of item: ", columnName)
-  let tobj = {"instrumentName":instrumentName,"estimateTime": estimateTime}
+  let tobj = {"desc":desc,"instrumentName":instrumentName,"estimateTime": estimateTime}
   //planObj["id"] = uuid()
   planObj["id"] = getRandomIntInclusive(1, 100)
   planObj["state"] = state
@@ -418,6 +418,7 @@ function setTemplate(){
                 + "<div style='display: none;' class='jqx-kanban-item-avatar'></div>"
                 + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
                 + "<div class='jqx-kanban-item-text'></div>"
+                + "<div class='jqx-kanban-item-desc'></div>"
                 + "<div class='jqx-kanban-item-content'></div>"
                 + "<div class='jqx-kanban-item-time'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
