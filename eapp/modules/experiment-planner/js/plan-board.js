@@ -73,9 +73,13 @@ function createKanbanBoard(name,label){
       console.log("resource", resource)
       $(element).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px; color:white;'>" + resource.name + "</span>");
       //$(element).find(".jqx-kanban-item-text").css('background', item.color)
-      $(element).find(".jqx-kanban-item-desc").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>')
-      $(element).find(".jqx-kanban-item-content").append('<div><p>Instrument: '+ item.content.instrumentName +'</p></div>')
-      $(element).find(".jqx-kanban-item-time").append('<div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
+      //$(element).find(".jqx-kanban-item-desc").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>')
+      //$(element).find(".jqx-kanban-item-content").append('<div><p>Instrument: '+ item.content.instrumentName +'</p></div>')
+      $(element).find(".jqx-kanban-item-content").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>\
+      <br>\
+      <div><p>Instrument: '+ item.content.instrumentName +'</p></div>\
+      <div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
+      //$(element).find(".jqx-kanban-item-time").append('<div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
 
     }
   kCO["columns"]= columnArray
@@ -105,10 +109,8 @@ function createKanbanBoard(name,label){
       break;
     }
   }
-
-
 }
-$(document).on('columnAttrClicked', '#div-kanban', function (event) {
+$(document).on('columnAttrClicked', '#div-kanban', function(event){
   event.preventDefault()
   var args = event.args;
   console.log("Argument: ",args)
@@ -149,14 +151,18 @@ $(document).on('show.bs.modal','#updateSessionModal', function(e){
   console.log('update Modal shown')
   $('#updateSessionName').focus()
 })
-$(document).on('hidden.bs.modal','#updateSessionModal', function(e){
+
+//$(document).on('hidden.bs.modal','#updateSessionModal', function(e){
+$(document).on('click','#btn-update-column', function(e){
   e.preventDefault()
   let sname = $('#updateSessionName').val()
-  console.log("updated session name:", sname)
+  console.log("New Session Name Entered:", sname)
   if(sname!==''){
     checkandUpdateColumnArray(sessionColumnTitle, sname)
     checkandUpdateSessionsArray(sessionColumnTitle, sname)
-    checkandUpdatePlanArray(sessionColumnTitle, sname)
+    if(plansArray.length > 0){
+      checkandUpdatePlanArray(sessionColumnTitle, sname)
+    }
     console.log("ColumnArray:-->  ", columnArray)
     newPlanObj["Sessions"] = sessions
     console.log("newPlanObj:  ", newPlanObj)
@@ -167,11 +173,17 @@ $(document).on('hidden.bs.modal','#updateSessionModal', function(e){
     $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
     $('#div-addColumn').append(addSessionColumn())
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+    addToSourcelocalData(sname,"task0", "","","","")
+    console.log("PlansArray Adding 0th task::: ", plansArray)
+    addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
  }else{
     console.log("removing update SessionModal---")
     $('#updateSessionModal').remove()
  }
+ $('#updateSessionModal').modal('hide')
+ $('body').removeClass('modal-open')
+ $('.modal-backdrop').remove()
 })
 
 $(document).on('click','#btn-delete-column',function(e){
@@ -235,18 +247,24 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
 })
 
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {
+  event.preventDefault()
   var args = event.args;
   console.log("item event args: ", event)
   if (args.attribute == "template") {
-      $('#div-kanban').jqxKanban('removeItem', args.item.id);
-      deleteItemPlanArray(args.item.id)
+    $('#div-kanban').jqxKanban('removeItem', args.item.id)
+    deleteItemPlanArray(args.item.id)
+  }else if(args.attribute == "content"){
+    console.log("content clicked: ", args)
+    $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
+    let itemEditForm = new AlpacaForm('#body-itemEditModal')
+    createItemForm(itemEditForm,"itemEditModal")
+    //$('#itemEditModal').modal('show')
+  }else{
+    console.log("other attribute:", args)
   }
 })
-function checkandUpdateSessionsArray(oldSessionName, newSessionName){
-  for(let i=0;i< sessions.length;i++){
-    if(sessions[i].Label === oldSessionName){
-      sessions[i].Label = newSessionName
-      break;
-    }
-  }
-}
+$(document).on('show.bs.modal','#itemEditModal', function(e){
+  //e.preventDefault()
+  console.log('update Modal shown')
+  $('#itemEditModal-task').focus()
+})

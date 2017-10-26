@@ -30,3 +30,27 @@
   padding-right: 10px;*/
   content: "\f040";
   }
+  .fa-pencil-square-o-icon {
+      position:relative;
+      /*font-family: FontAwesome;
+      content: "\f040";*/
+    }
+  .fa-pencil-square-o-icon:before {
+    font-family: FontAwesome;
+    /*top: 0;
+    left: -5px;
+    padding-right: 10px;*/
+    content: "\f044";
+    }
+  .fa-bars-icon {
+      position:relative;
+      /*font-family: FontAwesome;
+      content: "\f040";*/
+    }
+  .fa-bars-icon:before {
+    font-family: FontAwesome;
+    /*top: 0;
+    left: -5px;
+    padding-right: 10px;*/
+    content: "\f0c9";
+    }

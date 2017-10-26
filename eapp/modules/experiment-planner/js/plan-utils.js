@@ -57,7 +57,7 @@ function updateSessionColumnHeader(sessionColumnTitle){
           </div>\
           <div class="modal-footer">\
             <button id="btn-update-column" type="button" class="btn btn-success" data-dismiss="modal">Update Session</button>\
-            <button id="btn-delete-column" type="button" class="btn btn-danger" data-dismiss="modal">Delete</button>\
+            <button id="btn-delete-column" type="button" class="btn btn-danger" >Delete</button>\
           </div>\
         </div>\
       </div>\
@@ -220,22 +220,7 @@ function addToColumnArray(name){
     columnArray.push(cObj)
 }
 
-function checkandUpdateColumnArray(olddataField, newdataField){
-  for(let i=0;i<columnArray.length;i++){
-    if(columnArray[i].dataField === olddataField){
-      columnArray[i].dataField = newdataField
-      columnArray[i].text = newdataField
-      break;
-    }
-  }
-}
-function checkandUpdatePlanArray(oldColumnTitle, newColumnTitle){
-  for(let i=plansArray.length-1;i>=0;i--){
-    if(plansArray[i].state === oldColumnTitle){
-      plansArray[i].state = newColumnTitle
-    }
-  }
-}
+
 
 function deleteItemPlanArray(itemId){
   for(let i=plansArray.length-1;i>=0;i--){
@@ -412,15 +397,41 @@ function updateColumnArray(columnTitle){
   }
 }
 
+function checkandUpdateSessionsArray(oldSessionName, newSessionName){
+  for(let i=0;i< sessions.length;i++){
+    if(sessions[i].Label === oldSessionName){
+      sessions[i].Label = newSessionName
+      break;
+    }
+  }
+}
+function checkandUpdateColumnArray(olddataField, newdataField){
+  for(let i=0;i<columnArray.length;i++){
+    if(columnArray[i].dataField === olddataField){
+      columnArray[i].dataField = newdataField
+      columnArray[i].text = newdataField
+      break;
+    }
+  }
+}
+function checkandUpdatePlanArray(oldColumnTitle, newColumnTitle){
+  for(let i=0;i<plansArray.length;i++){
+    if(plansArray[i].state === oldColumnTitle){
+      plansArray[i].state = newColumnTitle
+    }
+  }
+}
 function setTemplate(){
   var template = "<div class='jqx-kanban-item' id=''>"
                 + "<div class='jqx-kanban-item-color-status'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-avatar'></div>"
-                + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
+                  + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
+                //+ "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
+              //  +"<div><a data-toggle='modal' href='#itemSettingsModal'><div id = 'test2'  class='jqx-icon fa-pencil-square-o-icon jqx-kanban-item-template-content jqx-kanban-template-icon'></div></a><div>"
                 + "<div class='jqx-kanban-item-text'></div>"
-                + "<div class='jqx-kanban-item-desc'></div>"
-                + "<div class='jqx-kanban-item-content'></div>"
-                + "<div class='jqx-kanban-item-time'></div>"
+              //  + "<div class='jqx-kanban-item-desc'></div>"
+                + "<div class='jqx-kanban-item-content'><span class='pull-xs-right'><a data-toggle='modal' href='#itemEditModal'><i class='fa fa-pencil show-on-hover'></i></a></span></div>"
+              //  + "<div class='jqx-kanban-item-time'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
         + "</div>"
     return template

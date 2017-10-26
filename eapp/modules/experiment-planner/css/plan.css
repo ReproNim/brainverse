@@ -28,7 +28,51 @@
   padding-top: 6px;
   padding-bottom: 6px;
   padding-left:6px;
+  position: relative;
+	display: inline-block;
 }
+.jqx-kanban-item-content:hover {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left:6px;
+  position: relative;
+	display: inline-block;
+  background-color: #F5F5F5;
+  display: inline-block;
+}
+/*.toolbar {
+  width: 200px;
+  height: 100px;
+  background: #000;
+  color: #fff;
+  padding: 10px;
+}*/
+
+.jqx-kanban-item-content .show-on-hover {
+  display: none;
+  float: right;
+  margin: 5px;
+}
+
+.jqx-kanban-item-content:hover .show-on-hover {
+  display: inline;
+}
+
+
+
+.edit {
+	padding-top: 7px;
+	padding-right: 7px;
+	position: absolute;
+	right: 0;
+	top: 0;
+	display: none;
+}
+
+.edit a {
+	color: #000;
+}
+
 .jqx-kanban-item-time {
   padding-top: 6px;
   padding-bottom: 6px;
@@ -38,6 +82,11 @@
     top: 9px;
 }
 .jqx-kanban-template-icon {
+    position: absolute;
+    right: 3px;
+    top:12px;
+}
+.jqx-kanban-title-icon {
     position: absolute;
     right: 3px;
     top:12px;
