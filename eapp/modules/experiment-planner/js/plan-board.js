@@ -31,6 +31,21 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
 
 $('#div-addColumn').append(addSessionColumn())
 
+$(document).on('change','#sessionName', function(e){
+  e.preventDefault()
+  $('#alert-msg').empty()
+  
+  let sname = $('#sessionName').val()
+  if(existInColumnArray(sname)){
+    $('#alert-msg').append('<div class="alert alert-danger alert-dismissible" role="alert">\
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+  <strong>Warning!</strong> Session already exists! Choose another name</div>')
+    //alert("The session name already exist. Type another name!")
+  }else{
+    $('#btn-add-session').prop('disabled', false)
+    console.log("you can add the session")
+  }
+})
 //$(document).on('hidden.bs.modal','#newSessionModal', function(e){
 $(document).on('click','#btn-add-session',function(e){
   let sname = $('#sessionName').val()
@@ -264,7 +279,6 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   }
 })
 $(document).on('show.bs.modal','#itemEditModal', function(e){
-  //e.preventDefault()
-  console.log('update Modal shown')
+  console.log('Item Edit Modal shown')
   $('#itemEditModal-task').focus()
 })

@@ -28,7 +28,8 @@ function addSessionColumn(){
             </form>\
           </div>\
           <div class="modal-footer" style="text-align:center">\
-            <button id="btn-add-session" type="button" class="btn btn-default" data-dismiss="modal">Add</button>\
+            <div id="alert-msg"></div>\
+            <button id="btn-add-session" type="button" class="btn btn-default" data-dismiss="modal" disabled>Add</button>\
           </div>\
         </div>\
       </div>\
@@ -420,6 +421,16 @@ function checkandUpdatePlanArray(oldColumnTitle, newColumnTitle){
       plansArray[i].state = newColumnTitle
     }
   }
+}
+function existInColumnArray(sname){
+  let flag = false
+  for(let i=0;i<columnArray.length;i++){
+    if(columnArray[i].dataField === sname){
+      flag = true
+      break
+    }
+  }
+  return flag
 }
 function setTemplate(){
   var template = "<div class='jqx-kanban-item' id=''>"
