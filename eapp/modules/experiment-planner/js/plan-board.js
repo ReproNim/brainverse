@@ -31,10 +31,10 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
 
 $('#div-addColumn').append(addSessionColumn())
 
-$(document).on('change','#sessionName', function(e){
+$(document).on('blur','#sessionName', function(e){
   e.preventDefault()
   $('#alert-msg').empty()
-  
+
   let sname = $('#sessionName').val()
   if(existInColumnArray(sname)){
     $('#alert-msg').append('<div class="alert alert-danger alert-dismissible" role="alert">\
@@ -239,6 +239,7 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   let instrumentName = $('#itemModal-inst').val()
   let estimateTime = $('#itemModal-time').val()
   let userLogin = $('#itemModal-per').select2('data')[0]
+  console.log("itemselect2 data: ",$('#itemModal-per').select2('data'))
   let personnelItem = {}
   personnelItem['user'] = userLogin.login
   personnelItem['uid'] = userLogin.id
@@ -272,12 +273,12 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
     let itemEditForm = new AlpacaForm('#body-itemEditModal')
-    createItemForm(itemEditForm,"itemEditModal")
-    //$('#itemEditModal').modal('show')
+    editItemForm(itemEditForm,"itemEditModal", args.item.text,args.item.content,args.item.resourceId)
   }else{
     console.log("other attribute:", args)
   }
 })
+
 $(document).on('show.bs.modal','#itemEditModal', function(e){
   console.log('Item Edit Modal shown')
   $('#itemEditModal-task').focus()

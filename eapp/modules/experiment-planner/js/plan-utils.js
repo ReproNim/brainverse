@@ -168,6 +168,105 @@ function createItemForm(form,modalID){
     form.alpacaGen()
   })
 }
+
+//*** Edit Item Form ***//
+function editItemForm(form,modalID, task,content,resourceId){
+  /* Fields for an item card
+  * Task Name
+  * Task Description
+  * select NDA Form to be used
+  * Assignee
+  * estimate Time
+  */
+  getNDAFormNames().then(function(ndaFormsList){
+    let nTitle=[]
+    let nFileName=[]
+    console.log("NDAFormsList",ndaFormsList )
+    let htmlStr = ""
+    if(ndaFormsList.length !== 0){
+      for(let i=0;i<ndaFormsList.length;i++){
+        nTitle.push(ndaFormsList[i].title)
+        nFileName.push(ndaFormsList[i].filename.split(".")[0])
+        htmlStr = htmlStr + '<option value="'+ ndaFormsList[i].filename+'">'+ ndaFormsList[i].title +'</option>"'
+      }
+    }
+    form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', false,task, false)
+    form.textAreaForm('Description', 'Description', modalID+"-desc",'string', undefined, content.desc, false)
+    form.selectFormGeneral('Instruments','Instruments',[],[],modalID+'-inst',false,false)
+    form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', false, content.estimateTime, false)
+    //form.inputForm('Assignee','Assignee' , modalID+'-per', 'string', false,inv_resources[resourceId], false)
+
+    form.baseForm["postRender"] = function(control){
+      console.log("...Inside postRender ... ")
+      console.log("control ... :",control.childrenByPropertyId["assignee"])
+      var propInst = control.childrenByPropertyId["instruments"]
+      //var propAssignee = control.childrenByPropertyId["assignee"]
+      control.getFieldEl().append('<div><p><h5><b>Assignee</b></h5></p><select id = "'+ modalID+'-per"></select></div>')
+      //control.getFieldEl().append('<div><p><h5><b>Assignee</b></h5></p><select id = "'+ modalID+'-per"><option>'+inv_resources[resourceId]+'</option></select></div>')
+      console.log("control ... :",propInst.id)
+
+      $('#'+modalID+'-inst').select2({width:'100%'})
+      //propInst.schema.default = content.instrumentName
+      propInst.schema.enum = nFileName
+      //propInst.schema.enum =  nTitle
+      propInst.options.optionLabels =  nTitle
+      propInst.refresh()
+      console.log("selected user: ",inv_resources[resourceId] )
+      $('#itemEditModal-inst').val(content.instrumentName)
+      //$(document).on('mouseenter','#'+modalID+'-per',function(e){
+        console.log("assignee::::",control.getFieldEl())
+        $('#'+modalID+'-per').select2({
+          width:'100%',
+          ajax: {
+            url: "https://api.github.com/search/users",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, params) {
+              params.page = params.page || 1;
+
+              return {
+                results: data.items,
+                pagination: {
+                  more: (params.page * 30) < data.total_count
+                }
+              };
+            },
+            cache: true
+          },
+        /*initSelection: function(element, callback) {
+        // the input tag has a value attribute preloaded that points to a preselected repository's id
+        // this function resolves that id attribute to an object that select2 can render
+        // using its formatResult renderer - that way the repository name is shown preselected
+        //var id = $(element).val();
+        var id = inv_resources[resourceId]
+          if (id !== "") {
+              $.ajax("https://api.github.com/search/users?q="+ id+" in:login", {
+                  dataType: "json"
+              }).done(function(data) { callback(data); });
+          }
+        },*/
+          escapeMarkup: function (markup) {return markup}, // let our custom formatter work
+          minimumInputLength: 3,
+          templateResult: formatRepo,
+          templateSelection: formatRepoSelection,
+        })
+      //})
+
+      //$('#'+modalID+'-per').select2('data','satra')
+    }
+    form.alpacaGen()
+  })
+}
+
+
+
+
 function formatRepo (user) {
   if (user.loading) return user.login;
     var markup = "<div class='select2-result-repository clearfix'>" +
@@ -441,7 +540,7 @@ function setTemplate(){
               //  +"<div><a data-toggle='modal' href='#itemSettingsModal'><div id = 'test2'  class='jqx-icon fa-pencil-square-o-icon jqx-kanban-item-template-content jqx-kanban-template-icon'></div></a><div>"
                 + "<div class='jqx-kanban-item-text'></div>"
               //  + "<div class='jqx-kanban-item-desc'></div>"
-                + "<div class='jqx-kanban-item-content'><span class='pull-xs-right'><a data-toggle='modal' href='#itemEditModal'><i class='fa fa-pencil show-on-hover'></i></a></span></div>"
+                + "<div class='jqx-kanban-item-content'><span class='pull-xs-right'><a data-toggle='modal' href='#itemEditModal'><i class='fa fa-pencil-square-o-icon show-on-hover'></i></a></span></div>"
               //  + "<div class='jqx-kanban-item-time'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
         + "</div>"
