@@ -213,8 +213,7 @@ function editItemForm(form,modalID, task,content,resourceId){
       propInst.refresh()
       console.log("selected user: ",inv_resources[resourceId] )
       $('#itemEditModal-inst').val(content.instrumentName)
-      //$(document).on('mouseenter','#'+modalID+'-per',function(e){
-        console.log("assignee::::",control.getFieldEl())
+      console.log("assignee::::",control.getFieldEl())
         $('#'+modalID+'-per').select2({
           width:'100%',
           ajax: {
@@ -239,26 +238,11 @@ function editItemForm(form,modalID, task,content,resourceId){
             },
             cache: true
           },
-        /*initSelection: function(element, callback) {
-        // the input tag has a value attribute preloaded that points to a preselected repository's id
-        // this function resolves that id attribute to an object that select2 can render
-        // using its formatResult renderer - that way the repository name is shown preselected
-        //var id = $(element).val();
-        var id = inv_resources[resourceId]
-          if (id !== "") {
-              $.ajax("https://api.github.com/search/users?q="+ id+" in:login", {
-                  dataType: "json"
-              }).done(function(data) { callback(data); });
-          }
-        },*/
           escapeMarkup: function (markup) {return markup}, // let our custom formatter work
           minimumInputLength: 3,
           templateResult: formatRepo,
           templateSelection: formatRepoSelection,
         })
-      //})
-
-      //$('#'+modalID+'-per').select2('data','satra')
     }
     form.alpacaGen()
   })

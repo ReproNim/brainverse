@@ -31,7 +31,7 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
 
 $('#div-addColumn').append(addSessionColumn())
 
-$(document).on('blur','#sessionName', function(e){
+$(document).on('mouseout','#sessionName', function(e){
   e.preventDefault()
   $('#alert-msg').empty()
 
@@ -41,7 +41,10 @@ $(document).on('blur','#sessionName', function(e){
   <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
   <strong>Warning!</strong> Session already exists! Choose another name</div>')
     //alert("The session name already exist. Type another name!")
+  }else if(sname==''){
+    $('#btn-add-session').prop('disabled', true)
   }else{
+
     $('#btn-add-session').prop('disabled', false)
     console.log("you can add the session")
   }
