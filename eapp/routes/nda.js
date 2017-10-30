@@ -8,10 +8,6 @@ module.exports = () => {
   const fs = require('fs')
   const moment = require('moment')
   const request = require('request')
-  const rp = require('request-promise')
-  const b64 = require('node-b64')
-
-
   const jsonParser = bodyParser.json()
   const rdfHelper = require('./../util/nidme-graph.js')
 
