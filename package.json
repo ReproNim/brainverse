@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "Smruti Padhy",
-  "license": "MIT",
+  "license": "Apache 2",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
