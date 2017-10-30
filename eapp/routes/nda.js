@@ -122,6 +122,24 @@ module.exports = () => {
       console.log("get: content call err: ", err)
     })
   })
+
+  app.post('/nda/dictionaries/github/url', ensureAuthenticated, jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('[nda/dictionaries/github/url] Received at server side:')
+    console.log(req.body)
+    let download_url = req.body.durl
+    let urlParts =  download_url.split('/')
+    let fileName = urlParts[urlParts.length-1]
+    let repoName = urlParts[3]
+    let url = 'https://api.github.com/'
+    let rpath = url+'repos/'+repoName+'/ni-terms/contents/'+fileName
+    let options_download = setOptionsContents(rpath,'application/vnd.github.v3.raw',github_token)
+    promiseRequest(options_download).then(function(contents){
+      res.json(contents)
+    })
+    //res.json({"res","ok"})
+  })
+
   app.get('/nda/dictionaries/github_repronim', ensureAuthenticated, jsonParser, function(req,res){
 
     let url = 'https://api.github.com/'
@@ -197,7 +215,7 @@ module.exports = () => {
       })
     })
     listOfFiles.then(function(list){
-      console.log("lists: then---> ", list)
+      //console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
         return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
       })
@@ -208,11 +226,12 @@ module.exports = () => {
       for(let i = 0; i< obs.length;i++){
         nameList.push({"shortName":obs[i].shortName,"title": obs[i].Name, "author":obs[i].author})
       }
-      console.log("nameList:--> ", nameList)
+      //console.log("nameList:--> ", nameList)
       res.json({"list":nameList})
     })
   })
   app.get('/nda/dictionaries/local/:shortName', ensureAuthenticated,jsonParser, function(req,res){
+    console.log("shortName: ", req.params.shortName)
     let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
@@ -230,7 +249,9 @@ module.exports = () => {
     }).then(function(obs){
       let ob = {}
       for(let i = 0; i< obs.length;i++){
+
         if(obs[i].shortName === req.params.shortName){
+          console.log("shortName from list:", obs[i].shortName)
           ob = obs[i]
           break;
         }
