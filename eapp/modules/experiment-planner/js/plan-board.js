@@ -277,12 +277,65 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
     let itemEditForm = new AlpacaForm('#body-itemEditModal')
     editItemForm(itemEditForm,"itemEditModal", args.item.text,args.item.content,args.item.resourceId)
+    localStorage.setItem('itemBeingUpdated', JSON.stringify(args.item) )
   }else{
     console.log("other attribute:", args)
   }
 })
 
+
 $(document).on('show.bs.modal','#itemEditModal', function(e){
   console.log('Item Edit Modal shown')
   $('#itemEditModal-task').focus()
+})
+
+$(document).on('click','#btn-close-itemEditModal',function(e){
+  //e.preventDefault()
+  let item = JSON.parse(localStorage.getItem('itemBeingUpdated'))
+  console.log("Update: Item:", item)
+  let taskName = $('#itemEditModal-task').val()
+  let desc = $('#itemEditModal-desc').val()
+  let instrumentName = $('#itemEditModal-inst').val()
+  let estimateTime = $('#itemEditModal-time').val()
+  let userLogin = $('#itemEditModal-per').select2('data')[0]
+  console.log("itemselect2 data: ",$('#itemEditModal-per').select2('data'))
+  let personnelItem = {}
+  personnelItem['user'] = userLogin.login
+  personnelItem['uid'] = userLogin.id
+  personnelItem['url'] = userLogin.url
+  personnelItem['avatar_url'] = userLogin.avatar_url
+  personnelArray.push(personnelItem)
+
+  // check if the item content values already existed
+  if(taskName === ''){
+    console.log("taskName did not change. keeping the original value")
+    taskName = item.text
+  }
+  if(desc === ''){
+    console.log("desc did not change ")
+    desc = item.content.desc
+  }
+  if(estimateTime === ''){
+    console.log("Time did not change")
+    estimateTime = item.content.estimateTime
+  }
+  console.log("updated item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", userLogin.login )
+  console.log("column to which the item belongs: ", item.status)
+  let columnName = item.status
+  addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
+  updateSourcelocalData(columnName,item.id,taskName, instrumentName,estimateTime,userLogin.login,desc)
+  let tobj = {"desc":desc,"instrumentName":instrumentName,"estimateTime": estimateTime}
+  //$('#div-kanban').jqxKanban('updateItem', item.id, {status:item.status,text:taskName,content:tobj,tags:"test",color:"#5dc3f0", resourceId:inv_resources[userLogin.login]})
+  $('#body-itemEditModal').alpaca("destroy")
+  $('#div-kanban').jqxKanban('destroy')
+  $('#div-addColumn').empty()
+  $('#div-addColumn').remove()
+  $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
+  $('#div-addColumn').append(addSessionColumn())
+  $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+  createKanbanBoard(columnName,columnName)
+  $('[data-toggle="popover"]').popover()
+  $('#itemEditModal').modal('hide')
+  $('body').removeClass('modal-open')
+  $('.modal-backdrop').remove()
 })

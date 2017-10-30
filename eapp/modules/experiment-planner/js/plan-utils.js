@@ -381,22 +381,18 @@ function addToSourcelocalData(state,taskName, instrumentName,estimateTime,user,d
   console.log("addToSourcelocalData:::PlansArray::: ", plansArray)
 }
 
-
-/*function setResources(){
-  let resourcesSource = {
-    localData:[{ id: 0, name: "No name", image:"/experiment-planner/img/sp.jpg", common: true},
-    ],
-    dataType: "array",
-    dataFields: [
-         { name: "id", type: "number" },
-         { name: "name", type: "string" },
-         { name: "image", type: "string" },
-         { name: "common", type: "boolean" }
-    ]
+function updateSourcelocalData(state,id,taskName, instrumentName,estimateTime,user,desc){
+  let tobj = {"desc":desc,"instrumentName":instrumentName,"estimateTime": estimateTime}
+  for(let i=0;i<plansArray.length;i++){
+    if(plansArray[i].id === id){
+      plansArray[i].label = taskName
+      plansArray[i].content = tobj
+      console.log("item updated")
+      break;
+    }
   }
-  //console.log("resourcesSource: ", resourcesSource)
-  return resourcesSource
-}*/
+}
+
 /*** Set Ressources for Data in Kanban ***/
 
 function setResources(){
