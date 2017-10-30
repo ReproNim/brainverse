@@ -6,6 +6,9 @@ var plansArray = []
 var columnArray = []
 $.fn.select2.defaults.set( "theme", "bootstrap" )
 
+/*
+* Modal to add a new Column/Session
+*/
 function addSessionColumn(){
   let htmlStr = '\
   <div class="add-column">\
@@ -38,6 +41,10 @@ function addSessionColumn(){
   </div>'
   return htmlStr
 }
+
+/*
+* Modal to Update Column/Session Name
+*/
 function updateSessionColumnHeader(sessionColumnTitle){
   let htmlStr = '\
         <div id="updateSessionModal" class="modal fade" role="dialog">\
@@ -65,6 +72,10 @@ function updateSessionColumnHeader(sessionColumnTitle){
     </div>'
   return htmlStr
 }
+
+/*
+* A generic modal where Modal body is an new alpaca form
+*/
 function createModal(modalID, title,modalFooter){
   let htmlStr = '\
         <div id="'+modalID+'" class="modal fade" role="dialog">\
@@ -84,10 +95,16 @@ function createModal(modalID, title,modalFooter){
     </div>'
   return htmlStr
 }
+/*
+* Alpaca form with Name field only
+*/
 function createForm(form, modalID,name){
   form.inputForm('Name', 'Name', modalID-'name', 'string', undefined, name, false)
   form.alpacaGen()
 }
+/*
+* Alpaca form for Plan Information
+*/
 function createPlanInfoForm(form, modalID, name, desc){
   form.inputForm('Name', 'Name', modalID+'-name', 'string', false, name, false)
   form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, desc, false)
@@ -95,6 +112,9 @@ function createPlanInfoForm(form, modalID, name, desc){
   form.alpacaGen()
 }
 
+/*
+* AlpacaForm for Item Add
+*/
 function createItemForm(form,modalID){
   /* Fields for an item card
   * Task Name
@@ -169,7 +189,9 @@ function createItemForm(form,modalID){
   })
 }
 
-//*** Edit Item Form ***//
+/*
+* Alpaca Form for Item Edit Item
+*/
 function editItemForm(form,modalID, task,content,resourceId){
   /* Fields for an item card
   * Task Name
@@ -331,17 +353,6 @@ function defItemFields(){
   return fields
 }
 
-/*function setSources(sname,slabel){
-  var source = {
-    localData: [{id: 0, state:sname, label:slabel, content: {"a":"b"}, tags:"test", hex: "#5dc3f0", resourceId: 0},
-               ],
-    dataType: "json",
-    //dataType: "array",
-    dataFields: defItemFields()
-  }
-  //console.log("sources: ", source)
-  return source
-}*/
 function setSources(sname,slabel){
   var source = {
     localData: plansArray,
@@ -411,31 +422,6 @@ function setResources(){
   //console.log("resourcesSource: ", resourcesSource)
   return resourcesSource
 }
-
-/*function setResourcelocalData(){
-  let resObj = {}
-  let numOfResources = personnelArray.length
-  for(let j = 0; j <= numOfResources; j++){
-    if(j==0){
-      resObj["id"] = 0
-      resObj["name"] = "No name"
-      //resObj["image"] = "/sp.jpg"
-      resObj["common"] = true
-      resources["No name"] = 0 //this resource id needs to change
-      inv_resources["0"] = "No name"
-    }else{
-      resObj["id"] = j
-      resObj["name"] = personnelArray[j-1]["user"]
-      resObj["image"] = personnelArray[j-1]["avatar_url"]
-      resources[personnelArray[j-1]["user"]] = j
-      inv_resources[j] = personnelArray[j-1]["user"]
-    }
-    resArray.push(resObj)
-    resObj = {}
-  }
-  console.log("resources created with resource id: ", resArray)
-  return resArray
-}*/
 
 function addToResourcelocalData(id,userName,aUrl){
   let resObj = {}
