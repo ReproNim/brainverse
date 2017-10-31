@@ -28,7 +28,9 @@ var _rdfStoreSetup = function(){
   _addToStoreNamespace("xsd","http://www.w3.org/2001/XMLSchema#")
   _addToStoreNamespace("dc","http://purl.org/dc/terms/")
   console.log("Namespaces:---->", namespaces)
-  let cpath = path.join(__dirname, '/../../uploads/acquisition/')
+  //let cpath = path.join(__dirname, '/../../../uploads/acquisition/')
+  console.log("userData path:-- ", userData)
+  let cpath = path.join(userData, '/uploads/acquisition/')
   loadFilesToRDFStore(cpath+"plans/")
   loadFilesToRDFStore(cpath+"experiments/")
   return {store:rstore}
@@ -350,7 +352,8 @@ function getPrefixKeyForm(sobj){
 **/
 var _saveToRDFstore = function(nidmGraph, graphId, fileName,callback_tstring){
   let tstring = ""
-  let cpath = path.join(__dirname,'/../../uploads/acquisition/')
+  //let cpath = path.join(__dirname,'/../../../uploads/acquisition/')
+  let cpath = path.join(userData,'/uploads/acquisition/')
 
   fs.stat(cpath+fileName, function(err, stat) {
     console.log(cpath+fileName)

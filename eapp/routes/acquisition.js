@@ -12,7 +12,7 @@ module.exports = () => {
   const rdfHelper = require('./../util/nidme-graph.js')
 
   global.store = app.locals.store
-  
+
   /**
   New acquisition data
   **/
@@ -32,7 +32,8 @@ module.exports = () => {
     **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("callback fn: tstring: ", tstring)
-      let cpath = path.join(__dirname, '/../../uploads/acquisition/'+fName)
+      //let cpath = path.join(__dirname, '/../../../uploads/acquisition/'+fName)
+      let cpath = path.join(userData, '/uploads/acquisition/'+fName)
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
@@ -44,7 +45,8 @@ module.exports = () => {
   })
 
   app.get('/acquisitions/forms/:name', ensureAuthenticated, function(req,res){
-    var cpath = path.join(__dirname, '/../../uploads/termforms/')
+    //var cpath = path.join(__dirname, '/../../../uploads/termforms/')
+    var cpath = path.join(userData, '/uploads/termforms/')
     console.log('loading terms file')
     loadJsonFile(cpath + req.params.name).then(ob => {
       console.log("ob:==>", ob)
@@ -54,7 +56,8 @@ module.exports = () => {
 
   app.get('/acquisitions/forms', ensureAuthenticated, function(req, res){
     var files = []
-    var cpath = path.join(__dirname, '/../../uploads/termforms')
+    //var cpath = path.join(__dirname, '/../../../uploads/termforms')
+    var cpath = path.join(userData, '/uploads/termforms')
     fs.readdir(cpath, function(err,list){
       if(err) throw err;
       res.json({'list':list})

@@ -10,6 +10,10 @@ const fs = require('fs')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+//global.userData = app.getPath('userData')
+//global.userData = app.getPath('home')
+global.userData = app.getPath('documents')
+console.log("userData:  ", userData)
 
 function createWindow () {
   app.server = require(__dirname + '/eapp/app')();
@@ -17,7 +21,7 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1200, height: 800})
 
-  
+
   // and load the index.html of the app.
   /*mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
@@ -25,7 +29,7 @@ function createWindow () {
     slashes: true
   }))*/
 
-  mainWindow.loadURL('http://localhost:3000')
+  mainWindow.loadURL('http://127.0.0.1:3000')
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 

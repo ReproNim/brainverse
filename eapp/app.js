@@ -17,6 +17,8 @@ module.exports = () => {
   const config = require('./config/app-config.js')
   const rdfHelper = require('./util/nidme-graph.js')
 
+
+
   global.uid = {}
   global.github_token = ""
 
@@ -155,12 +157,14 @@ module.exports = () => {
  **/
  const dirPaths = config.dirPaths
   new Promise(function(resolve){
-    console.log("paths: ",dirPaths[0])
-    fs.stat(path.join(__dirname,dirPaths[0]), function(err,stat){
+    console.log("paths list: ",dirPaths[0])
+    console.log("userData path: ", userData)
+    console.log("full path: ", path.join(userData,dirPaths[0]))
+    fs.stat(path.join(userData,dirPaths[0]), function(err,stat){
       if(err){
         for(let i=0;i<config.dirPaths.length;i++){
           console.log("paths: ",dirPaths[i])
-          fs.mkdirSync(path.join(__dirname,dirPaths[i]))
+          fs.mkdirSync(path.join(userData,dirPaths[i]))
         }
       }
     resolve()
