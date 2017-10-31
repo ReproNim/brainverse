@@ -134,6 +134,7 @@ module.exports = () => {
   app.use('/dist/alpacalib',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/lib')))
   app.use('/dist/alpaca',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/alpaca')))
   app.use('/dist/uuid',express.static(path.join(__dirname,'/../node_modules/uuid-random')))
+  app.use(express.static(path.join(__dirname, 'public/images/')))
 
   app.use(function (req, res, next) {
     if (!req.isAuthenticated()) { return res.redirect('/') }
