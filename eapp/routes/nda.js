@@ -8,10 +8,6 @@ module.exports = () => {
   const fs = require('fs')
   const moment = require('moment')
   const request = require('request')
-  const rp = require('request-promise')
-  const b64 = require('node-b64')
-
-
   const jsonParser = bodyParser.json()
   const rdfHelper = require('./../util/nidme-graph.js')
 
@@ -49,7 +45,8 @@ module.exports = () => {
       let psname = dataD[i].shortName.split(' ')
       let pname = dataD[i].Name.split(' ')
       nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
-      let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+      //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+      let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
       writeJsonFile(cpath,dataD[i]).then(() => {
         console.log('data dictionary saved: ', cpath)
       })
@@ -206,7 +203,8 @@ module.exports = () => {
     })
   })
   app.get('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    //let termDirPath = path.join(__dirname, '/../../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
@@ -217,7 +215,8 @@ module.exports = () => {
     listOfFiles.then(function(list){
       //console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        //return loadJsonFile(path.join(__dirname, '/../../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
@@ -232,7 +231,8 @@ module.exports = () => {
   })
   app.get('/nda/dictionaries/local/:shortName', ensureAuthenticated,jsonParser, function(req,res){
     console.log("shortName: ", req.params.shortName)
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    //let termDirPath = path.join(__dirname, '/../../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
@@ -243,7 +243,8 @@ module.exports = () => {
     listOfFiles.then(function(list){
       console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        //return loadJsonFile(path.join(__dirname, '/../../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
@@ -273,7 +274,8 @@ module.exports = () => {
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
 
-    let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
@@ -296,7 +298,8 @@ module.exports = () => {
     let fileName = psname[0]+'-'+ pname[0] +'.json'
     //let termsJson = JSON.parse(req.body)
     //Local save
-    let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
     writeJsonFile(cpath, term_info).then(() => {
       console.log('done')
       //res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})

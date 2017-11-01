@@ -55,7 +55,8 @@ module.exports = () => {
     let url = ndarUrl + "/" + req.params.shortName
     console.log(url)
     request.get({url:url,headers:{'accept':'application/json'}}, function(err, resn, body){
-      let cpath = 'uploads/dataDictionary/' + req.params.shortName +'.json'
+      //let cpath = 'uploads/dataDictionary/' + req.params.shortName +'.json'
+      let cpath = path.join(userData,'/uploads/dataDictionary/' + req.params.shortName +'.json')
       writeJsonFile(cpath,JSON.parse(body)).then(()=>{
         console.log('data dictionary saved!')
       })

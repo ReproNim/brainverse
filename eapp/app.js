@@ -17,6 +17,8 @@ module.exports = () => {
   const config = require('./config/app-config.js')
   const rdfHelper = require('./util/nidme-graph.js')
 
+
+
   global.uid = {}
   global.github_token = ""
 
@@ -132,6 +134,7 @@ module.exports = () => {
   app.use('/dist/alpacalib',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/lib')))
   app.use('/dist/alpaca',express.static(path.join(__dirname,'/../node_modules/alpaca/dist/alpaca')))
   app.use('/dist/uuid',express.static(path.join(__dirname,'/../node_modules/uuid-random')))
+  app.use(express.static(path.join(__dirname, 'public/images/')))
 
   app.use(function (req, res, next) {
     if (!req.isAuthenticated()) { return res.redirect('/') }
@@ -155,12 +158,14 @@ module.exports = () => {
  **/
  const dirPaths = config.dirPaths
   new Promise(function(resolve){
-    console.log("paths: ",dirPaths[0])
-    fs.stat(path.join(__dirname,dirPaths[0]), function(err,stat){
+    console.log("paths list: ",dirPaths[0])
+    console.log("userData path: ", userData)
+    console.log("full path: ", path.join(userData,dirPaths[0]))
+    fs.stat(path.join(userData,dirPaths[0]), function(err,stat){
       if(err){
         for(let i=0;i<config.dirPaths.length;i++){
           console.log("paths: ",dirPaths[i])
-          fs.mkdirSync(path.join(__dirname,dirPaths[i]))
+          fs.mkdirSync(path.join(userData,dirPaths[i]))
         }
       }
     resolve()
