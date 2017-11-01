@@ -19,7 +19,8 @@ html(lang='en')
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(href='/main') Brainverse
+          a.navbar-brand(href='http://www.reproducibleimaging.org/', target='_blank')
+            img(src='/repronim.png', height='30', width='30', alt='')
         #navbar.navbar-collapse.collapse
           //-ul.nav.navbar-nav
             li
@@ -28,6 +29,11 @@ html(lang='en')
               a(href='#') Profile
             li
               a(href='#') Help
+          ul.nav.navbar-nav.navbar-left
+            li.active
+              a(href='/main') BrainVerse
+            li
+              a(href='http://github.com/ReproNim/brainverse', target='_blank') About     
           ul.nav.navbar-nav.navbar-right
             li
               if user
@@ -55,3 +61,4 @@ html(lang='en')
       $ = jQuery = module.exports
       }catch(e){}
     script(src='/dist/bootstrap/bootstrap.min.js', type='text/javascript')
+    

@@ -8,10 +8,6 @@ module.exports = () => {
   const fs = require('fs')
   const moment = require('moment')
   const request = require('request')
-  const rp = require('request-promise')
-  const b64 = require('node-b64')
-
-
   const jsonParser = bodyParser.json()
   const rdfHelper = require('./../util/nidme-graph.js')
 
@@ -49,7 +45,8 @@ module.exports = () => {
       let psname = dataD[i].shortName.split(' ')
       let pname = dataD[i].Name.split(' ')
       nameList.push({"shortName":dataD[i].shortName,"title":dataD[i].Name, "author":dataD[i].author})
-      let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+      //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+      let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
       writeJsonFile(cpath,dataD[i]).then(() => {
         console.log('data dictionary saved: ', cpath)
       })
@@ -122,6 +119,24 @@ module.exports = () => {
       console.log("get: content call err: ", err)
     })
   })
+
+  app.post('/nda/dictionaries/github/url', ensureAuthenticated, jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('[nda/dictionaries/github/url] Received at server side:')
+    console.log(req.body)
+    let download_url = req.body.durl
+    let urlParts =  download_url.split('/')
+    let fileName = urlParts[urlParts.length-1]
+    let repoName = urlParts[3]
+    let url = 'https://api.github.com/'
+    let rpath = url+'repos/'+repoName+'/ni-terms/contents/'+fileName
+    let options_download = setOptionsContents(rpath,'application/vnd.github.v3.raw',github_token)
+    promiseRequest(options_download).then(function(contents){
+      res.json(contents)
+    })
+    //res.json({"res","ok"})
+  })
+
   app.get('/nda/dictionaries/github_repronim', ensureAuthenticated, jsonParser, function(req,res){
 
     let url = 'https://api.github.com/'
@@ -188,7 +203,8 @@ module.exports = () => {
     })
   })
   app.get('/nda/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    //let termDirPath = path.join(__dirname, '/../../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
@@ -197,9 +213,10 @@ module.exports = () => {
       })
     })
     listOfFiles.then(function(list){
-      console.log("lists: then---> ", list)
+      //console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        //return loadJsonFile(path.join(__dirname, '/../../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
@@ -208,12 +225,14 @@ module.exports = () => {
       for(let i = 0; i< obs.length;i++){
         nameList.push({"shortName":obs[i].shortName,"title": obs[i].Name, "author":obs[i].author})
       }
-      console.log("nameList:--> ", nameList)
+      //console.log("nameList:--> ", nameList)
       res.json({"list":nameList})
     })
   })
   app.get('/nda/dictionaries/local/:shortName', ensureAuthenticated,jsonParser, function(req,res){
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    console.log("shortName: ", req.params.shortName)
+    //let termDirPath = path.join(__dirname, '/../../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
@@ -224,13 +243,16 @@ module.exports = () => {
     listOfFiles.then(function(list){
       console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        //return loadJsonFile(path.join(__dirname, '/../../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
       let ob = {}
       for(let i = 0; i< obs.length;i++){
+
         if(obs[i].shortName === req.params.shortName){
+          console.log("shortName from list:", obs[i].shortName)
           ob = obs[i]
           break;
         }
@@ -252,7 +274,8 @@ module.exports = () => {
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
 
-    let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
@@ -275,7 +298,8 @@ module.exports = () => {
     let fileName = psname[0]+'-'+ pname[0] +'.json'
     //let termsJson = JSON.parse(req.body)
     //Local save
-    let cpath = path.join(__dirname, '/../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
     writeJsonFile(cpath, term_info).then(() => {
       console.log('done')
       //res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})

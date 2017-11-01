@@ -30,7 +30,8 @@ module.exports = () => {
     console.log(pj_info)
     pid = pj_info['ProjectID'].split('-')
     pname = pj_info['Name'].split(' ')
-    let cpath = 'uploads/proj-info-'+ pname[0]+'-'+ pid[0] +'.json'
+    //let cpath = 'uploads/proj-info-'+ pname[0]+'-'+ pid[0] +'.json'
+    let cpath = path.join(userData,'/uploads/proj-info-'+ pname[0]+'-'+ pid[0] +'.json')
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
       res.json({'status':'success'})
@@ -63,7 +64,7 @@ module.exports = () => {
       let sampleFile = req.files.sampleFile;
 
       // Use the mv() method to place the file somewhere on your server
-      sampleFile.mv(path.join(__dirname,'/../../uploads/',req.files.sampleFile.name), function(err) {
+      sampleFile.mv(path.join(__dirname,'/../../../uploads/',req.files.sampleFile.name), function(err) {
         if (err)
           return res.status(500).send(err)
         res.json({'status': 'success'})
@@ -114,7 +115,8 @@ module.exports = () => {
 
     let pname = pj_plan_info['Project Name'].split(' ')
     let jsonFile = 'plan-'+ pname[0]+'-'+ pj_plan_info['ProjectPlanID'] +'.json'
-    let cpath = path.join(__dirname, '/../../uploads/plansdocs/'+ jsonFile)
+    //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/'+ jsonFile)
+    let cpath = path.join(userData, '/uploads/plansdocs/'+ jsonFile)
     /**
     ** Writing plan to JSON document
     **/
@@ -131,7 +133,8 @@ module.exports = () => {
     **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("savetTRDF callback fn: tstring: ", tstring)
-      let cpath = path.join(__dirname, '/../../uploads/acquisition/'+fName)
+      //let cpath = path.join(__dirname, '/../../../uploads/acquisition/'+fName)
+      let cpath = path.join(userData, '/uploads/acquisition/'+fName)
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
@@ -156,7 +159,8 @@ module.exports = () => {
     console.log("pj_plan_info: ", pj_plan_info)
 
     let pname = pj_plan_info['Project Name'].split(' ')
-    let cpath = path.join(__dirname, '/../../uploads/plansdocs/plan-'+ pname[0]+'-'+pj_plan_info['ProjectPlanID'] +'.json')
+    //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/plan-'+ pname[0]+'-'+pj_plan_info['ProjectPlanID'] +'.json')
+    let cpath = path.join(userData, '/uploads/plansdocs/plan-'+ pname[0]+'-'+pj_plan_info['ProjectPlanID'] +'.json')
     console.log("cpath for file update: ", cpath)
     /**
     ** Writing plan to JSON document
@@ -174,7 +178,8 @@ module.exports = () => {
     **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("[saveToRDF callback fn: tstring] : ", tstring)
-      let cpath = path.join(__dirname, '/../../uploads/acquisition/' + fName)
+      //let cpath = path.join(__dirname, '/../../../uploads/acquisition/' + fName)
+      let cpath = path.join(userData, '/uploads/acquisition/' + fName)
       fs.appendFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
@@ -187,7 +192,8 @@ module.exports = () => {
 
   app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file:',req.params.name )
-    loadJsonFile(path.join(__dirname, '/../../uploads/plansdocs/'+req.params.name)).then(ob => {
+    //loadJsonFile(path.join(__dirname, '/../../../uploads/plansdocs/'+req.params.name)).then(ob => {
+      loadJsonFile(path.join(userData, '/uploads/plansdocs/'+req.params.name)).then(ob => {
       console.log("ob:==>", ob)
       res.json(ob)
     })

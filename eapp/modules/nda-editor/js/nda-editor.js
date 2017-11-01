@@ -82,13 +82,39 @@ function getDataDictionary(e3){
   let nUrl = ""
   if($("#nda-src").val() === "NDA"){
     nUrl = serverUrl + "/ndar-terms/"+ shortName
+    ajaxCallSrc(nUrl)
   }else if($("#nda-src").val() === "Local"){
+    console.log("local chosen")
     nUrl = serverUrl + "/nda/dictionaries/local/"+ shortName
+    ajaxCallSrc(nUrl)
   }else if($("#nda-src").val() === "Repronim"){
     nUrl = serverUrl + "/nda/dictionaries/github_repronim/" + shortName
-  }else{
-    nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
+    ajaxCallSrc(nUrl)
+  }else {
+    if($("#nda-src").val() === "fork"){
+      nUrl = serverUrl + "/nda/dictionaries/github/"+ shortName
+      ajaxCallSrc(nUrl)
+    }else{
+      if($("#dd-url").val() !==""){
+        nUrl = serverUrl + "/nda/dictionaries/github/url"
+        ajaxCallPost(nUrl,$("#dd-url").val())
+      }
+    }
   }
+}
+function ajaxCallPost(nUrl,urlVal){
+  $.ajax({
+    type: "POST",
+    url: nUrl,
+    contentType: "application/json",
+    data: JSON.stringify({"durl": urlVal}),
+    success: function(data){
+      console.log('getDataDictionary from URL: success')
+      getDDcallbk(data)
+    }
+  })
+}
+function ajaxCallSrc(nUrl){
   $.ajax({
     type: "GET",
     url: nUrl ,
@@ -274,9 +300,11 @@ function add_term_to_form(selectedField){
           return notes[key]
           })
     }
+    console.log("selectField valueRange:",selectedField.valueRange)
 
     if(selectedField.valueRange == null){
       /* Case1: No Value Range */
+      console.log("Case 1: valueRange == null ")
       if (selectedField.type == "Integer") {
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
       }
@@ -287,16 +315,21 @@ function add_term_to_form(selectedField){
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
       }
     }
-    else if (selectedField.valueRange.indexOf(';')> -1){
+    else if (selectedField.valueRange.indexOf(';')> -1 || $.isArray(selectedField.valueRange)){
       /*  Case 2:
       if valueRange specified with ';' separator
       check notes if values with its meaning specified in the notes
       if notes is empty then parse valueRange field
       otherwise parse notes field and obtain values representation, e.g (1 = "xyz"; 2 = "utty")
       */
+      console.log("~~Case 2: valueRange specified by ;~~~ ")
       let sub_options2 = []
       let optionList = []
-      options = selectedField.valueRange.split(';')
+      if(!$.isArray(selectedField.valueRange)){
+        options = selectedField.valueRange.split(';')
+      }else{
+        options = selectedField.valueRange
+      }
       console.log("c2::options::", options)
       console.log("c2::options.length::", options.length)
 
@@ -351,6 +384,7 @@ function add_term_to_form(selectedField){
       * Case3: valueRange of the form - 0::3
       * check notes - parse notes
       */
+      console.log("Case 3: valueRange specified by :: ")
       flag = false
       if(notes === null){
         sub_options1 = selectedField.valueRange.trim().split("::")
@@ -402,6 +436,7 @@ function add_term_to_form(selectedField){
       }
     }
     else{
+      console.log("Case 4: other options ")
       if (selectedField.type == "Integer") {
         form.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
       }
@@ -466,17 +501,26 @@ $(document).on('click', '#btn-preview', function() {
     previewForm()
 
   })
+  function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
+  }
 
   function setCommonFields(){
     let version = ''
     console.log("version number : ", version)
     saveObj2['DictionaryID'] = ''
+
+    //TODO: Need to have scheme to uniquely name the file
     if(shortName.indexOf('-m')==-1){
       version = shortName.substring((shortName.length-2),(shortName.length))
-      saveObj2['shortName'] = shortName + "-m" + (parseInt(version)+1)
+      //saveObj2['shortName'] = shortName + "-m" + (parseInt(version)+1)
+      saveObj2['shortName'] = shortName + "-m" + getRandomIntInclusive(10,99)
     }else{
       version = shortName.substring((shortName.length-1),(shortName.length))
-      saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + "m" + (parseInt(version)+1)
+      //saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + "m" + (parseInt(version)+1)
+      saveObj2['shortName'] = shortName.substring(0,shortName.length-2) + getRandomIntInclusive(10,99)
     }
     saveObj2["Name"] = document.getElementById("nda-form-name").value
     saveObj2["Description"] = document.getElementById("nda-form-desc").value
@@ -484,14 +528,22 @@ $(document).on('click', '#btn-preview', function() {
     saveObj2["DerivedFrom"] = orgTermForm["shortName"]
     saveObj2["author"]=''
   }
+
+ //TODO: Need to check the fields whose values do not change and whose changes
+ // for example, if valueRange value changed then we need to assign the new value schema.properties[key].enum
+ // rather than termsIndex[ndaId].valueRange
   function setNDATerm(schema, key, field,position){
     let ndaTerm = {}
     if(field.hasOwnProperty('id')){
       /** fields already in the form**/
       let ndaId = field.id.split('-')[1]
       console.log("ndaId: ", ndaId)
-      ndaTerm['id'] = ndaId
-      ndaTerm['required'] = schema.properties[key].required
+      ndaTerm['id'] = parseInt(ndaId)
+      if(schema.properties[key].required){
+        ndaTerm['required'] = "Required"
+      } else{
+        ndaTerm['required'] = "Recommended"
+      }
       ndaTerm['condition'] = termsIndex[ndaId].condition
       ndaTerm['aliases'] = termsIndex[ndaId].aliases
       ndaTerm['filterElement'] = termsIndex[ndaId].filterElement
@@ -501,7 +553,13 @@ $(document).on('click', '#btn-preview', function() {
       ndaTerm['type'] = termsIndex[ndaId].type
       ndaTerm['size'] = termsIndex[ndaId].size
       ndaTerm['description'] = field.label
-      ndaTerm['valueRange'] = schema.properties[key].enum
+      if(schema.properties[key].enum === undefined){
+        ndaTerm['valueRange'] = null
+      }else{
+        //ndaTerm['valueRange'] = schema.properties[key].enum
+        ndaTerm['valueRange'] = termsIndex[ndaId].valueRange
+      }
+      //ndaTerm['valueRange'] = schema.properties[key].enum.join(';')
       ndaTerm['notes'] = termsIndex[ndaId].notes
       ndaTerm['translation'] = termsIndex[ndaId].translations
     }else{
@@ -509,13 +567,23 @@ $(document).on('click', '#btn-preview', function() {
       let ndaId = key
       console.log("ndaId: ", ndaId)
       ndaTerm['id'] = ndaId
-      ndaTerm['required'] = schema.properties[key].required
+      if(schema.properties[key].required){
+        ndaTerm['required'] = "Required"
+      } else{
+        ndaTerm['required'] = "Recommended"
+      }
       ndaTerm['condition'] = null
       ndaTerm['aliases'] = null
       ndaTerm['filterElement'] = null
       ndaTerm['name'] = field.name
       ndaTerm['description'] = field.label
-      ndaTerm['valueRange'] = schema.properties[key].enum
+      if(schema.properties[key].enum === undefined){
+        ndaTerm['valueRange'] = null
+      }else{
+        ndaTerm['valueRange'] = schema.properties[key].enum
+      }
+
+      //ndaTerm['valueRange'] = schema.properties[key].enum.join(';')
       ndaTerm['type'] = schema.properties[key].type
       ndaTerm['size'] = null
       ndaTerm['position'] = position
@@ -524,6 +592,7 @@ $(document).on('click', '#btn-preview', function() {
       ndaTerm['translation'] = []
     }
     return ndaTerm
+    console.log("ndaTerm:", ndaTerm)
   }
 
   function saveCuratedForm(schema,options,storageType){

@@ -7,17 +7,24 @@ const path = require('path')
 const url = require('url')
 const fs = require('fs')
 
+const {Menu} = require("electron")
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+//global.userData = app.getPath('userData')
+//global.userData = app.getPath('home')
+global.userData = app.getPath('documents')
+console.log("userData:  ", userData)
 
 function createWindow () {
   app.server = require(__dirname + '/eapp/app')();
 
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 1200, height: 800})
+  //mainWindow = new BrowserWindow({width: 1200, height: 800,titleBarStyle: 'hidden'})
+  //mainWindow = new BrowserWindow({width: 1200, height: 800,frame: false})
 
-  
+
   // and load the index.html of the app.
   /*mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
@@ -25,7 +32,11 @@ function createWindow () {
     slashes: true
   }))*/
 
-  mainWindow.loadURL('http://localhost:3000')
+  mainWindow.loadURL('http://127.0.0.1:3000')
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    electron.shell.openExternal(url);
+  });
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 
@@ -36,6 +47,26 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  var template = [{
+        label: "Application",
+        submenu: [
+            { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+            { type: "separator" },
+            { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+        ]}, {
+        label: "Edit",
+        submenu: [
+            { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+            { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+            { type: "separator" },
+            { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+            { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+            { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+            { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+        ]}
+    ];
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 // This method will be called when Electron has finished
