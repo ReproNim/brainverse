@@ -4,7 +4,21 @@ var inv_resources = []
 var resArray = []
 var plansArray = []
 var columnArray = []
+var newPlanObj = {}
+/**
+** Array that keep track of logging
+**/
+let logsArray = []
+let prevState = {}
+
 $.fn.select2.defaults.set( "theme", "bootstrap" )
+
+function addToLogsArray(action){
+  let pArray = plansArray.slice()
+  let cArray = columnArray.slice()
+  let rArray = resArray.slice()
+  logsArray.push({'time': moment().format(), 'name':newPlanObj['Name'],'action':action,'plansArray': pArray, 'columnArray': cArray, 'resArray': rArray })
+}
 
 /*
 * Modal to add a new Column/Session
@@ -398,7 +412,8 @@ function updateSourcelocalData(state,id,taskName, instrumentName,estimateTime,us
     if(plansArray[i].id === id){
       plansArray[i].label = taskName
       plansArray[i].content = tobj
-      console.log("item updated")
+      plansArray[i].resourceId = resources[user]
+      console.log("item updated: ", plansArray)
       break;
     }
   }
@@ -419,7 +434,7 @@ function setResources(){
          { name: "common", type: "boolean" }
     ]
   }
-  //console.log("resourcesSource: ", resourcesSource)
+  console.log("resourcesSource: ", resourcesSource)
   return resourcesSource
 }
 
@@ -446,6 +461,7 @@ function addToResourcelocalData(id,userName,aUrl){
     inv_resources[resObj["id"]] = userName
   }
   console.log("resArray:", resArray)
+  console.log("inv_resources: ", inv_resources)
 }
 
 function updatePlansArray(columnTitle){
@@ -511,4 +527,115 @@ function setTemplate(){
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
         + "</div>"
     return template
+}
+
+function getAllTasks(columnName){
+  let tasksArray = []
+  let task = {}
+  console.log("columnName: ", columnName)
+  for(let i = 0; i < plansArray.length;i++){
+    if(plansArray[i].state === columnName){
+      task['Task Name'] = plansArray[i].label
+      task['Description'] = plansArray[i].content.desc
+      task['EstimateTime'] = plansArray[i].content.estimateTime
+      task['InstrumentName'] = plansArray[i].content.instrumentName
+      task['Assignee'] = inv_resources[plansArray[i].resourceId]
+      tasksArray.push(task)
+    }
+  }
+  console.log("plansArray : ", plansArray)
+  console.log("tasksArray: ", tasksArray)
+  return tasksArray
+}
+
+/**
+Saving project plan information
+**/
+function savePlanInfo(){
+  let sessions = []
+  let session = {}
+  projPlanObj = {}
+  projPlanObj["Project Name"] = newPlanObj["Name"]
+  projPlanObj["Description"] = newPlanObj["Description"]
+  projPlanObj["Number Of Sessions"] = columnArray.length
+  let numOfSessions = columnArray.length
+
+  for(let j=0; j<numOfSessions; j++){
+    session = {}
+    session['Session Number'] = j+1
+    session['Session Name'] = columnArray[j].dataField
+    console.log("columnName: ",columnArray[j].dataField)
+    let tasks = getAllTasks(columnArray[j].dataField)
+    session['Instruments'] = tasks
+    sessions.push(session)
+  }
+  projPlanObj["Personnel"] = personnelArray
+  projPlanObj["Sessions"] = sessions
+  projPlanObj["created"] = moment().format()
+  projPlanObj["wasDerivedFrom"] = "None"
+  projPlanObj["version"] = 0
+  console.log("new projPlan Obj Being Saved: ~~~~", projPlanObj)
+  return new Promise(function(resolve){
+      $.ajax({
+        type: "POST",
+        url: serverURL+"/project-plans/new",
+        contentType: "application/json",
+        data: JSON.stringify(projPlanObj),
+        success: function(data){
+          console.log('success: response:', data)
+          newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+          newPlanObj['ProjectPlanID'] = data.pid
+          console.log("newPlanObj: ----->", newPlanObj)
+          localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+          resolve()
+
+        }
+      })
+  })
+  //console.log('done')
+}
+
+function updatePlanInfo(){
+  let sessions = []
+  let session = {}
+  projPlanObj = {}
+  projPlanObj["ProjectPlanID"] = newPlanObj["ProjectPlanID"]
+  projPlanObj["Project Name"] = newPlanObj["Name"]
+  projPlanObj["Description"] = newPlanObj["Description"]
+  projPlanObj["Number Of Sessions"] = columnArray.length
+  let numOfSessions = columnArray.length
+
+  for(let j=0; j<numOfSessions; j++){
+    session = {}
+    session['Session Number'] = j+1
+    session['Session Name'] = columnArray[j].dataField
+    console.log("columnName: ",columnArray[j].dataField)
+    let tasks = getAllTasks(columnArray[j].dataField)
+    session['Instruments'] = tasks
+    sessions.push(session)
+  }
+  projPlanObj["Personnel"] = personnelArray
+  projPlanObj["Sessions"] = sessions
+  projPlanObj["created"] = moment().format()
+  projPlanObj["wasDerivedFrom"] = newPlanObj["ProjectPlanID"]
+  projPlanObj["version"] = newPlanObj["version"]
+  console.log("new projPlan Obj Being Updated: ~~~~", projPlanObj)
+  return new Promise(function(resolve){
+      $.ajax({
+        type: "PUT",
+        url: serverURL+"/project-plans/"+ newPlanObj["ProjectPlanID"],
+        contentType: "application/json",
+        data: JSON.stringify(projPlanObj),
+        success: function(data){
+          console.log('success: response:', data)
+          newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+          newPlanObj['ProjectPlanID'] = data.pid
+          newPlanObj['version'] = newPlanObj["version"] + 1
+          console.log("updating PUT: newPlanObj: ----->", projPlanObj)
+          localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
+          resolve()
+
+        }
+      })
+  })
 }

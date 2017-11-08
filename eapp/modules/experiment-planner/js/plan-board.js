@@ -1,13 +1,13 @@
 let serverURL = "http://127.0.0.1:3000"
-let newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
 
-var columnArray = []
-var sessions = []
-var resArray = []
+//var columnArray = []
+//var sessions = []
+//var resArray = []
 var sessionColumnTitle=''
-var personnelArray = []
+//var personnelArray = []
 
-console.log("newPlanObj: ", newPlanObj)
+console.log("newPlanObj:--- ", newPlanObj)
 
 $('#planInfo').append('<h4 id="pname">'+ newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 $('#planInfo').append(createModal('updatePlanInfoModal', 'Update Plan Info', 'Update'))
@@ -55,9 +55,9 @@ $(document).on('click','#btn-add-session',function(e){
   console.log("session name:", sname)
   if(sname!==''){
     addToColumnArray(sname)
-    sessions.push({'Label': sname})
+    //sessions.push({'Label': sname})
     //console.log("ColumnArray:-->  ", columnArray)
-    newPlanObj["Sessions"] = sessions
+    //newPlanObj["Sessions"] = sessions
     console.log("newPlanObj:  ", newPlanObj)
     localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
     $('#div-kanban').jqxKanban('destroy')
@@ -71,6 +71,8 @@ $(document).on('click','#btn-add-session',function(e){
     console.log("PlansArray Adding 0th task::: ", plansArray)
     addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
+    addToLogsArray('Added Session Column')
+    console.log("LogsArray: ", logsArray)
  }
  $('#newSessionModal').modal('hide')
  $('body').removeClass('modal-open')
@@ -127,6 +129,9 @@ function createKanbanBoard(name,label){
       break;
     }
   }
+  updatePlanInfo().then(function(){
+    console.log("updatePlanObj after create Kanban:~~~",newPlanObj)
+  })
 }
 $(document).on('columnAttrClicked', '#div-kanban', function(event){
   event.preventDefault()
@@ -177,12 +182,12 @@ $(document).on('click','#btn-update-column', function(e){
   console.log("New Session Name Entered:", sname)
   if(sname!==''){
     checkandUpdateColumnArray(sessionColumnTitle, sname)
-    checkandUpdateSessionsArray(sessionColumnTitle, sname)
+    //checkandUpdateSessionsArray(sessionColumnTitle, sname)
     if(plansArray.length > 0){
       checkandUpdatePlanArray(sessionColumnTitle, sname)
     }
     console.log("ColumnArray:-->  ", columnArray)
-    newPlanObj["Sessions"] = sessions
+    //newPlanObj["Sessions"] = sessions
     console.log("newPlanObj:  ", newPlanObj)
     localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
     $('#div-kanban').jqxKanban('destroy')
@@ -195,6 +200,8 @@ $(document).on('click','#btn-update-column', function(e){
     console.log("PlansArray Adding 0th task::: ", plansArray)
     addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
+    addToLogsArray('Updated Session Name')
+    console.log("LogsArray: ", logsArray)
  }else{
     console.log("removing update SessionModal---")
     $('#updateSessionModal').remove()
@@ -230,6 +237,8 @@ $(document).on('click','#btn-delete-column',function(e){
   }else{
     console.log("do not create kanban")
   }
+  addToLogsArray('Deleted Session Column')
+  console.log("LogsArray: ", logsArray)
   $('#updateSessionModal').modal('hide')
   $('body').removeClass('modal-open')
   $('.modal-backdrop').remove()
@@ -262,6 +271,8 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   $('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(columnName,columnName)
+  addToLogsArray('Added New Task')
+  console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
 })
 
@@ -272,6 +283,8 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   if (args.attribute == "template") {
     $('#div-kanban').jqxKanban('removeItem', args.item.id)
     deleteItemPlanArray(args.item.id)
+    addToLogsArray('Deleted a task')
+    console.log("LogsArray: ", logsArray)
   }else if(args.attribute == "content"){
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
@@ -305,7 +318,7 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
   personnelItem['url'] = userLogin.url
   personnelItem['avatar_url'] = userLogin.avatar_url
   personnelArray.push(personnelItem)
-
+  console.log("updated PersonnelArray: ", personnelArray)
   // check if the item content values already existed
   if(taskName === ''){
     console.log("taskName did not change. keeping the original value")
@@ -334,6 +347,8 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
   $('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(columnName,columnName)
+  addToLogsArray('Edited Task Information')
+  console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
   $('#itemEditModal').modal('hide')
   $('body').removeClass('modal-open')
