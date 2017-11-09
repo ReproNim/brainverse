@@ -111,6 +111,26 @@ function createModal(modalID, title,modalFooter){
     </div>'
   return htmlStr
 }
+function createModal2(modalID, title,modalFooter1, modalFooter2){
+  let htmlStr = '\
+        <div id="'+modalID+'" class="modal fade" role="dialog">\
+        <div class="modal-dialog">\
+        <!-- Modal content-->\
+          <div class="modal-content">\
+          <div class="modal-header">\
+            <button type="button" class="close" data-dismiss="modal">&times;</button>\
+            <h4 class="modal-title" style="text-align-last: center">'+title+'</h4>\
+          </div>\
+          <div class="modal-body"><div id=body-'+modalID+'></div></div>\
+          <div class="modal-footer" style="text-align:center">\
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-save-'+ modalID+'">'+modalFooter1+'</button>\
+            <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close-'+ modalID+'">'+modalFooter2+'</button>\
+          </div>\
+        </div>\
+      </div>\
+    </div>'
+  return htmlStr
+}
 /*
 * Alpaca form with Name field only
 */

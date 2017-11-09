@@ -174,6 +174,11 @@ $(document).on('columnAttrClicked', '#div-kanban', function(event){
       }else{
         console.log("No update session modal found..so adding one ...")
         $("#div-kanban").append(updateSessionColumnHeader(sessionColumnTitle))
+        $('#div-kanban').append(createModal2('confirmDelete','Delete','Yes', 'No'))
+        $('#body-confirmDelete').append('Do you want to delete '+ sessionColumnTitle + '?')
+        $('#btn-delete-column').attr("data-toggle","modal")
+        $('#btn-delete-column').attr("data-target","#confirmDelete")
+
       }
   }else{
     if (args.attribute == "button") {
@@ -239,7 +244,8 @@ $(document).on('click','#btn-update-column', function(e){
  $('.modal-backdrop').remove()
 })
 
-$(document).on('click','#btn-delete-column',function(e){
+//$(document).on('click','#btn-delete-column',function(e){
+$(document).on('click','#btn-save-confirmDelete',function(e){
   e.preventDefault()
   console.log("deleting session column title:::", sessionColumnTitle)
   updatePlansArray(sessionColumnTitle)
@@ -281,7 +287,13 @@ $(document).on('click','#btn-delete-column',function(e){
   $('body').removeClass('modal-open')
   $('.modal-backdrop').remove()
 })
-
+$(document).on('click','#btn-close-confirmDelete',function(e){
+  e.preventDefault()
+  console.log("Not Deleted---")
+  $('#updateSessionModal').modal('hide')
+  $('body').removeClass('modal-open')
+  $('.modal-backdrop').remove()
+})
 $(document).on('hidden.bs.modal','#itemModal', function(e){
   e.preventDefault()
   let taskName = $('#itemModal-task').val()
