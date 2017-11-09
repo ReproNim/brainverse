@@ -5,6 +5,7 @@ var resArray = []
 var plansArray = []
 var columnArray = []
 var newPlanObj = {}
+var projPlanObj = {}
 /**
 ** Array that keep track of logging
 **/
@@ -434,7 +435,8 @@ function setResources(){
          { name: "common", type: "boolean" }
     ]
   }
-  console.log("resourcesSource: ", resourcesSource)
+  console.log("[setResources] resourcesSource: ", resourcesSource)
+
   return resourcesSource
 }
 
@@ -444,7 +446,8 @@ function addToResourcelocalData(id,userName,aUrl){
   if(id=="0"){
     resObj["id"] = "0"
   }else{
-    resObj["id"] = personnelArray.length
+    //resObj["id"] = personnelArray.length
+    resObj["id"] = resArray.length
   }
   resObj["name"] = userName
   resObj["image"] = aUrl
@@ -532,7 +535,7 @@ function setTemplate(){
 function getAllTasks(columnName){
   let tasksArray = []
   let task = {}
-  console.log("columnName: ", columnName)
+  //console.log("columnName: ", columnName)
   for(let i = 0; i < plansArray.length;i++){
     if(plansArray[i].state === columnName){
       task['Task Name'] = plansArray[i].label
@@ -555,6 +558,10 @@ function savePlanInfo(){
   let sessions = []
   let session = {}
   projPlanObj = {}
+
+  newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+  console.log("[savePlanInfo] newPlanObj:~~~",newPlanObj)
+
   projPlanObj["Project Name"] = newPlanObj["Name"]
   projPlanObj["Description"] = newPlanObj["Description"]
   projPlanObj["Number Of Sessions"] = columnArray.length
@@ -583,10 +590,13 @@ function savePlanInfo(){
         data: JSON.stringify(projPlanObj),
         success: function(data){
           console.log('success: response:', data)
-          newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
-          newPlanObj['ProjectPlanID'] = data.pid
-          console.log("newPlanObj: ----->", newPlanObj)
-          localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+          //newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+          //newPlanObj['ProjectPlanID'] = data.pid
+          projPlanObj['ProjectPlanID'] = data.pid
+          console.log("projPlanObj: ----->", projPlanObj)
+          //localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+          localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
+          localStorage.setItem("projectPlanObj",JSON.stringify(projPlanObj))
           resolve()
 
         }
@@ -600,7 +610,11 @@ function updatePlanInfo(){
   let session = {}
   projPlanObj = {}
   projPlanObj["ProjectPlanID"] = newPlanObj["ProjectPlanID"]
-  projPlanObj["Project Name"] = newPlanObj["Name"]
+  if(newPlanObj["Name"] !== undefined){
+    projPlanObj["Project Name"] = newPlanObj["Name"]
+  } else{
+    projPlanObj["Project Name"] = newPlanObj["Project Name"]
+  }
   projPlanObj["Description"] = newPlanObj["Description"]
   projPlanObj["Number Of Sessions"] = columnArray.length
   let numOfSessions = columnArray.length
@@ -609,7 +623,7 @@ function updatePlanInfo(){
     session = {}
     session['Session Number'] = j+1
     session['Session Name'] = columnArray[j].dataField
-    console.log("columnName: ",columnArray[j].dataField)
+    //console.log("columnName: ",columnArray[j].dataField)
     let tasks = getAllTasks(columnArray[j].dataField)
     session['Instruments'] = tasks
     sessions.push(session)
@@ -619,8 +633,13 @@ function updatePlanInfo(){
   projPlanObj["created"] = moment().format()
   projPlanObj["wasDerivedFrom"] = newPlanObj["ProjectPlanID"]
   projPlanObj["version"] = newPlanObj["version"]
-  console.log("new projPlan Obj Being Updated: ~~~~", projPlanObj)
+  console.log("projPlanObj being updated: ~~~~", projPlanObj)
+  localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
+
+}
+function submitPlan(){
   return new Promise(function(resolve){
+    newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
       $.ajax({
         type: "PUT",
         url: serverURL+"/project-plans/"+ newPlanObj["ProjectPlanID"],
@@ -631,11 +650,39 @@ function updatePlanInfo(){
           newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
           newPlanObj['ProjectPlanID'] = data.pid
           newPlanObj['version'] = newPlanObj["version"] + 1
-          console.log("updating PUT: newPlanObj: ----->", projPlanObj)
-          localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
+          console.log("[submitPlan Success]updating projPlanObj: ----->", projPlanObj)
+          console.log("[submitPlan Success]updating newPlanObj: ----->", newPlanObj)
+          //localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
+          localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
           resolve()
 
         }
       })
   })
+}
+
+function projPlanObj2KanbanObj(){
+  newPlanObj["Name"] = projPlanObj["Project Name"]
+  newPlanObj["Description"] = projPlanObj["Description"]
+  newPlanObj["ProjectPlanID"] = projPlanObj["ProjectPlanID"]
+  newPlanObj["version"] = projPlanObj["version"]
+  if(projPlanObj["Number Of Sessions"] !== 0){
+    personnelArray = projPlanObj["Personnel"].slice()
+    personnel2ResArray()
+    let sessions = projPlanObj["Sessions"]
+    for(i=0;i<sessions.length;i++){
+      addToColumnArray(sessions[i]["Session Name"])
+      let instruments = sessions[i]["Instruments"]
+      for(j=0;j<instruments.length;j++){
+        addToSourcelocalData(sessions[i]["Session Name"],instruments[j]["Task Name"], instruments[j]["InstrumentName"],instruments[j]["EstimateTime"],instruments[j]["Assignee"],instruments[j]["Description"])
+      }
+    }
+  }
+  localStorage.setItem('newPlanObj',JSON.stringify(newPlanObj))
+}
+
+function personnel2ResArray(){
+  for(let i = 0; i< personnelArray.length;i++){
+    addToResourcelocalData("id",personnelArray[i].user,personnelArray[i].avatar_url)
+  }
 }

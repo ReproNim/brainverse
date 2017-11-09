@@ -1,4 +1,9 @@
 let serverURL = "http://127.0.0.1:3000"
+
+projPlanObj = JSON.parse(localStorage.getItem("projectPlanObj"))
+console.log("project plan Obj:", projPlanObj)
+
+projPlanObj2KanbanObj()
 newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
 
 //var columnArray = []
@@ -14,6 +19,24 @@ $('#planInfo').append(createModal('updatePlanInfoModal', 'Update Plan Info', 'Up
 let expInfoForm = new AlpacaForm('#body-updatePlanInfoModal')
 createPlanInfoForm(expInfoForm,"updatePlanInfoModal", newPlanObj["Name"],newPlanObj["Description"])
 
+if(projPlanObj["Number Of Sessions"]!==0){
+  console.log("displaying Kanban ---")
+
+  let sessions = projPlanObj["Sessions"]
+  if(sessions[0]["Instruments"].length ===0){
+    addToSourcelocalData(sessions[0]["Session Name"],"task0", "","","","")
+    console.log("PlansArray Adding 0th task::: ", plansArray)
+    addToResourcelocalData("0","","")
+  }
+  $('#div-kanban').jqxKanban('destroy')
+  $('#div-addColumn').empty()
+  $('#div-addColumn').remove()
+  $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
+  //$('#div-addColumn').append(addSessionColumn())
+  $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
+  createKanbanBoard(sessions[0]["Session Name"],sessions[0]["Session Name"])
+}
+
 $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
   console.log("plan name",  $("#updatePlanInfoModal-name").val())
   console.log("desc: ", $("#planDescription").val())
@@ -27,6 +50,10 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
   }
   localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
   $('#pname').html(newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
+  updatePlanInfo()
+  submitPlan().then(function(){
+    console.log("Plan Submited and Saved!")
+  })
 })
 
 $('#div-addColumn').append(addSessionColumn())
@@ -55,9 +82,6 @@ $(document).on('click','#btn-add-session',function(e){
   console.log("session name:", sname)
   if(sname!==''){
     addToColumnArray(sname)
-    //sessions.push({'Label': sname})
-    //console.log("ColumnArray:-->  ", columnArray)
-    //newPlanObj["Sessions"] = sessions
     console.log("newPlanObj:  ", newPlanObj)
     localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
     $('#div-kanban').jqxKanban('destroy')
@@ -66,13 +90,15 @@ $(document).on('click','#btn-add-session',function(e){
     $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
     $('#div-addColumn').append(addSessionColumn())
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
-    //addToSourcelocalData(sname,"task0", "","","")
     addToSourcelocalData(sname,"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
     addToResourcelocalData("0","","")
     createKanbanBoard(sname,sname)
     addToLogsArray('Added Session Column')
     console.log("LogsArray: ", logsArray)
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
  }
  $('#newSessionModal').modal('hide')
  $('body').removeClass('modal-open')
@@ -83,12 +109,13 @@ $(document).on('click','#btn-add-session',function(e){
 //})
 function createKanbanBoard(name,label){
 
+  console.log("columnArray:::", columnArray)
   let kCO = {}
   kCO["template"] = setTemplate()
   kCO["resources"] = new $.jqx.dataAdapter(setResources())
   kCO["source"] = new $.jqx.dataAdapter(setSources(name,label))
   kCO["itemRenderer"] = function(element, item, resource){
-      console.log("element: ", element)
+      //console.log("element: ", element)
       console.log("item: ", item)
       console.log("resource", resource)
       $(element).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px; color:white;'>" + resource.name + "</span>");
@@ -109,13 +136,13 @@ function createKanbanBoard(name,label){
     element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")")
     //if($('div#test1.fa-edit-icon').length < 3){
       element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
-      console.log("href attr: ",$('div.jqx-icon-plus-alt'))
+      //console.log("href attr: ",$('div.jqx-icon-plus-alt'))
     //}
     //$('div.jqx-icon-plus-alt').append('<a data-toggle="modal" href="#itemModal">test</a>')
     //if($('div.jqx-icon-plus-alt').length < 2){
       $('div.jqx-icon-plus-alt').attr("data-toggle","modal")
       $('div.jqx-icon-plus-alt').attr("data-target","#itemModal")
-      console.log ("jqx-icon-plus-alt::: ",$('div.jqx-icon-plus-alt'))
+      //console.log ("jqx-icon-plus-alt::: ",$('div.jqx-icon-plus-alt'))
     //}
   }
   kCO["width"] = '80%'
@@ -129,9 +156,10 @@ function createKanbanBoard(name,label){
       break;
     }
   }
-  updatePlanInfo().then(function(){
+  updatePlanInfo()
+  /*.then(function(){
     console.log("updatePlanObj after create Kanban:~~~",newPlanObj)
-  })
+  })*/
 }
 $(document).on('columnAttrClicked', '#div-kanban', function(event){
   event.preventDefault()
@@ -202,6 +230,9 @@ $(document).on('click','#btn-update-column', function(e){
     createKanbanBoard(sname,sname)
     addToLogsArray('Updated Session Name')
     console.log("LogsArray: ", logsArray)
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
  }else{
     console.log("removing update SessionModal---")
     $('#updateSessionModal').remove()
@@ -231,9 +262,15 @@ $(document).on('click','#btn-delete-column',function(e){
     addToSourcelocalData(columnArray[0].dataField,"task0", "","","","")
     createKanbanBoard(columnArray[0].dataField,columnArray[0].dataField)
     console.log("PlansArray Adding 0th task, delete Action::: ", plansArray)
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
   }else if(plength !== 0 && clength !==0){
     console.log("else if: creating kanban")
     createKanbanBoard(columnArray[0].dataField,columnArray[0].dataField)
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
   }else{
     console.log("do not create kanban")
   }
@@ -274,6 +311,9 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   addToLogsArray('Added New Task')
   console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
+  submitPlan().then(function(){
+    console.log("Plan Submited and Saved!")
+  })
 })
 
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {
@@ -285,6 +325,10 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
     deleteItemPlanArray(args.item.id)
     addToLogsArray('Deleted a task')
     console.log("LogsArray: ", logsArray)
+    updatePlanInfo()
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
   }else if(args.attribute == "content"){
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
@@ -349,6 +393,9 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
   createKanbanBoard(columnName,columnName)
   addToLogsArray('Edited Task Information')
   console.log("LogsArray: ", logsArray)
+  submitPlan().then(function(){
+    console.log("Plan Submited and Saved!")
+  })
   $('[data-toggle="popover"]').popover()
   $('#itemEditModal').modal('hide')
   $('body').removeClass('modal-open')

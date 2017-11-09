@@ -12,14 +12,15 @@ function createPlan(){
 }
 
 function sAction(){
-  console.log("Action performed")
+  console.log("New Plan  Being Added Action performed")
   planObj["Name"] = $("#planName").val()
   planObj["Description"] = $("#planDescription").val()
   planObj["version"]=0
-  console.log("planObj: ", planObj)
+  console.log("[sAction] planObj: ", planObj)
   localStorage.setItem("newPlanObj", JSON.stringify(planObj))
-  newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
+  //localStorage.setItem("projectPlanObj",JSON.stringify(planObj))
   savePlanInfo().then(function(){
+    newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
     console.log("newPlanObj:~~~",newPlanObj)
     form.alpacaDestroy()
     window.location.href = serverURL+"/experiment-planner/html/plan-board.html"
@@ -63,86 +64,47 @@ displayPlanList().then(function(planList){
   return Promise.all(values)
 }).then(function(planObjs){
   console.log("all plan obj: ", planObjs)
-  $('#div-planList').append('<table class="table table-striped" id="tab1"></table>')
-  let planTable = document.getElementById("tab1")
-  var header = planTable.createTHead()
-  var rowH = header.insertRow(0)
-  var cellH = rowH.insertCell(0)
-  var cellD = rowH.insertCell(1)
-  cellH.innerHTML = "<b>Project Plan Name</b>";
-  cellD.innerHTML = "<b>Description</b>"
-  for (let i=0;i<planObjs.length;i++){
-    let row = planTable.insertRow(i+1)
-    if(planObjs[i] != ".DS_Store"){
-      let cell0 = row.insertCell(0)
-      let cell1 = row.insertCell(1)
-      //cell.innerHTML = '<a href="#">'+pforms[i]+'</a>'
-      cell0.innerHTML = planObjs[i]["Project Name"]
-      cell1.innerHTML = planObjs[i]["Description"]
-      row.addEventListener("click",function(e){
-        //console.log("getting the plan Info", this)
-        var target = e.target;
-        if ( target.nodeName != 'TD' )
-          return;
+  if(planObjs.length !== 0){
+    $('#div-planList').append('<table class="table table-striped" id="tab1"></table>')
+    let planTable = document.getElementById("tab1")
+    var header = planTable.createTHead()
+    var rowH = header.insertRow(0)
+    var cellH = rowH.insertCell(0)
+    var cellD = rowH.insertCell(1)
+    cellH.innerHTML = "<b>Project Plan Name</b>";
+    cellD.innerHTML = "<b>Description</b>"
+    for (let i=0;i<planObjs.length;i++){
+      let row = planTable.insertRow(i+1)
+      if(planObjs[i] != ".DS_Store"){
+        let cell0 = row.insertCell(0)
+        let cell1 = row.insertCell(1)
+        //cell.innerHTML = '<a href="#">'+pforms[i]+'</a>'
+        cell0.innerHTML = planObjs[i]["Project Name"]
+        cell1.innerHTML = planObjs[i]["Description"]
+        row.addEventListener("click",function(e){
+          //console.log("getting the plan Info", this)
+          var target = e.target;
+          if ( target.nodeName != 'TD' )
+            return;
 
-        var columns = target.parentNode.getElementsByTagName( 'td' );
-        console.log("target:", target)
+          var columns = target.parentNode.getElementsByTagName( 'td' );
+          console.log("target:", target)
 
-        for ( var i = columns.length; i-- ; ){
-          console.log("some value:", columns[ i ].innerHTML)
+          for ( var i = columns.length; i-- ; ){
+            console.log("some value:", columns[ i ].innerHTML)
+            let name = localStorage.getItem(columns[ i ].innerHTML)
+            console.log("name: ", name)
+            if(name != null){
+              localStorage.setItem("projectPlanObj",name)
+              window.location.href = serverURL+"/experiment-planner/html/plan-board.html"
+            }
 
-        }
-      })
+          }
+        })
+        localStorage.setItem(planObjs[i]["Project Name"], JSON.stringify(planObjs[i]))
+      }
     }
   }
 })
 
-function displayPlanList1(){
-  $.ajax({
-    type: "GET",
-    url: serverURL +"/project-plans",
-    accept: "application/json",
-    success: function(data){
-      console.log('acquistions forms:success', data)
-      let pforms = data.list
-      if(pforms.length == 0){
-        console.log("no forms")
-        //$("#plan-form").empty()
-      }else{
-        $('#div-planList').append('<table class="table table-bordered" id="tab1"></table>')
-        let planTable = document.getElementById("tab1")
-        var header = planTable.createTHead();
-        var rowH = header.insertRow(0);
-        var cellH = rowH.insertCell(0);
-        cellH.innerHTML = "<b>Name</b>";
-        for (let i=0;i<pforms.length;i++){
-          let row = planTable.insertRow(i+1)
-          if(pforms[i] != ".DS_Store"){
-            let cell = row.insertCell(0)
-            //cell.innerHTML = '<a href="#">'+pforms[i]+'</a>'
-            cell.innerHTML = pforms[i]
-            cell.addEventListener("click",function(e){
-              console.log("getting the plan Info", this.innerHTML)
-              exploreFile(this.innerHTML)
-            })
-            //$("#tab1").append('<tr><td>'+pforms[i]+'</td></tr>')
-          }
-        }
-      }
-    }
-  })
-
-}
-
-function exploreFile(name){
-  let url = serverURL+"/project-plans/" + name
-    $.ajax({
-      type: "GET",
-      url: url,
-      accept: "application/json",
-      success: function(data){
-        console.log('acquisitions term forms:success', data)
-      }//data
-    })
-}
 $('#btn-newPlan').click(createPlan)
