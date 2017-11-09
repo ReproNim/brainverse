@@ -209,10 +209,9 @@ $(document).on('click','#btn-update-column', function(e){
   let sname = $('#updateSessionName').val()
   console.log("New Session Name Entered:", sname)
   if(sname!==''){
-    checkandUpdateColumnArray(sessionColumnTitle, sname)
-    //checkandUpdateSessionsArray(sessionColumnTitle, sname)
+    checkAndUpdateColumnArray(sessionColumnTitle, sname)
     if(plansArray.length > 0){
-      checkandUpdatePlanArray(sessionColumnTitle, sname)
+      checkAndUpdatePlanArray(sessionColumnTitle, sname)
     }
     console.log("ColumnArray:-->  ", columnArray)
     //newPlanObj["Sessions"] = sessions

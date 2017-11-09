@@ -1,3 +1,4 @@
+/** Global variables **/
 var personnelArray = []
 let resources = {}
 var inv_resources = []
@@ -317,8 +318,13 @@ function getNDAFormNames(){
   })
 })
 }
+
+/**
+This is duplicate to sAction in plan-mgm.js
+**/
 function sAction(){
   console.log("Action performed")
+  planObj = {}
   planObj["Name"] = $("#planName").val()
   planObj["Description"] = $("#planDescription").val()
   console.log("planObj: ", planObj)
@@ -327,6 +333,9 @@ function sAction(){
   window.location.href = serverURL+"/experiment-planner/html/plan-board.html"
 }
 
+/**
+************ Kanban Board Methods ************
+**/
 var getIconClassName = function () {
   return "jqx-icon-plus-alt"
   //return "fa-edit-icon"
@@ -334,22 +343,22 @@ var getIconClassName = function () {
 
 function addToColumnArray(name){
   let cObj={}
-    cObj["text"] = name
-    cObj["dataField"] = name
-    cObj["iconClassName"] = getIconClassName()
-    cObj["collapsible"] = false
-    columnArray.push(cObj)
+  cObj["text"] = name
+  cObj["dataField"] = name
+  cObj["iconClassName"] = getIconClassName()
+  cObj["collapsible"] = false
+  columnArray.push(cObj)
+  console.log("[addToColumnArray] Current ColumnArray:", columnArray)
 }
 
-
-
-function deleteItemPlanArray(itemId){
+function deleteItemFromPlanArray(itemId){
   for(let i=plansArray.length-1;i>=0;i--){
     if(plansArray[i].id === itemId){
       plansArray.splice(i,1)
       break;
     }
   }
+  console.log('[deleteItemFromPlanArray] plansArray: ',plansArray)
 }
 
 /**
@@ -374,7 +383,6 @@ function setSources(sname,slabel){
     dataType: "json",
     dataFields: defItemFields()
   }
-  //console.log("sources: ", source)
   return source
 }
 
@@ -386,25 +394,22 @@ function getRandomIntInclusive(min, max) {
 
 function addToSourcelocalData(state,taskName, instrumentName,estimateTime,user,desc){
   let planObj = {}
-  label = taskName
-  columnName = localStorage.getItem("addItemToColumn")
-  console.log("Column Name representing state of item: ", columnName)
+  let label = taskName
   let tobj = {"desc":desc,"instrumentName":instrumentName,"estimateTime": estimateTime}
-  //planObj["id"] = uuid()
-  planObj["id"] = getRandomIntInclusive(1, 100)
+  planObj["id"] = getRandomIntInclusive(1, 100).toString()
   planObj["state"] = state
   planObj["label"] = label
   planObj["content"] = tobj
   planObj["tags"] = "test"
   planObj["hex"] = "#5dc3f0"
-  if(taskName == "task0" && user==""){
+  if(taskName === "task0" && user===""){
     planObj["id"] = "0"
-    planObj["resourceId"] = '0'
+    planObj["resourceId"] = 0
   } else{
     planObj["resourceId"] = resources[user]
   }
   plansArray.push(planObj)
-  console.log("addToSourcelocalData:::PlansArray::: ", plansArray)
+  console.log("[addToSourcelocalData]PlansArray::: ", plansArray)
 }
 
 function updateSourcelocalData(state,id,taskName, instrumentName,estimateTime,user,desc){
@@ -420,7 +425,7 @@ function updateSourcelocalData(state,id,taskName, instrumentName,estimateTime,us
   }
 }
 
-/*** Set Ressources for Data in Kanban ***/
+/*** Set Resources for Data in Kanban ***/
 
 function setResources(){
   let resourcesSource = {
@@ -435,16 +440,14 @@ function setResources(){
          { name: "common", type: "boolean" }
     ]
   }
-  console.log("[setResources] resourcesSource: ", resourcesSource)
-
   return resourcesSource
 }
 
 function addToResourcelocalData(id,userName,aUrl){
   let resObj = {}
   let flag = false
-  if(id=="0"){
-    resObj["id"] = "0"
+  if(id === 0){
+    resObj["id"] = 0
   }else{
     //resObj["id"] = personnelArray.length
     resObj["id"] = resArray.length
@@ -463,10 +466,13 @@ function addToResourcelocalData(id,userName,aUrl){
     resources[userName] = resObj["id"]
     inv_resources[resObj["id"]] = userName
   }
-  console.log("resArray:", resArray)
-  console.log("inv_resources: ", inv_resources)
+  console.log("[addToResourcelocalData] resArray:", resArray)
+  console.log("[addToResourcelocalData] inv_resources: ", inv_resources)
 }
 
+/*
+* Delete all Item cards from plansArray corresponding to a column in columnArray
+*/
 function updatePlansArray(columnTitle){
   for(let i=plansArray.length-1;i>=0;i--){
     if(plansArray[i].state === columnTitle){
@@ -474,6 +480,9 @@ function updatePlansArray(columnTitle){
     }
   }
 }
+/*
+* Delete a Column from columnArray
+*/
 function updateColumnArray(columnTitle){
   for(let i=columnArray.length-1;i>=0;i--){
     if(columnArray[i].dataField === columnTitle){
@@ -481,16 +490,10 @@ function updateColumnArray(columnTitle){
     }
   }
 }
-
-function checkandUpdateSessionsArray(oldSessionName, newSessionName){
-  for(let i=0;i< sessions.length;i++){
-    if(sessions[i].Label === oldSessionName){
-      sessions[i].Label = newSessionName
-      break;
-    }
-  }
-}
-function checkandUpdateColumnArray(olddataField, newdataField){
+/*
+* Update a Column's name with a new value
+*/
+function checkAndUpdateColumnArray(olddataField, newdataField){
   for(let i=0;i<columnArray.length;i++){
     if(columnArray[i].dataField === olddataField){
       columnArray[i].dataField = newdataField
@@ -499,13 +502,21 @@ function checkandUpdateColumnArray(olddataField, newdataField){
     }
   }
 }
-function checkandUpdatePlanArray(oldColumnTitle, newColumnTitle){
+
+/*
+* Update all item cards state (status) when the column name changes
+*/
+function checkAndUpdatePlanArray(oldColumnTitle, newColumnTitle){
   for(let i=0;i<plansArray.length;i++){
     if(plansArray[i].state === oldColumnTitle){
       plansArray[i].state = newColumnTitle
     }
   }
 }
+
+/*
+* check if a column exists
+*/
 function existInColumnArray(sname){
   let flag = false
   for(let i=0;i<columnArray.length;i++){
@@ -516,27 +527,30 @@ function existInColumnArray(sname){
   }
   return flag
 }
+
+/*
+* Setting Template for Item
+*/
 function setTemplate(){
   var template = "<div class='jqx-kanban-item' id=''>"
                 + "<div class='jqx-kanban-item-color-status'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-avatar'></div>"
-                  + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
-                //+ "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
-              //  +"<div><a data-toggle='modal' href='#itemSettingsModal'><div id = 'test2'  class='jqx-icon fa-pencil-square-o-icon jqx-kanban-item-template-content jqx-kanban-template-icon'></div></a><div>"
+                + "<div class='jqx-icon jqx-icon-close-white jqx-kanban-item-template-content jqx-kanban-template-icon'></div>"
                 + "<div class='jqx-kanban-item-text'></div>"
-              //  + "<div class='jqx-kanban-item-desc'></div>"
                 + "<div class='jqx-kanban-item-content'><span class='pull-xs-right'><a data-toggle='modal' href='#itemEditModal'><i class='fa fa-pencil-square-o-icon show-on-hover'></i></a></span></div>"
-              //  + "<div class='jqx-kanban-item-time'></div>"
                 + "<div style='display: none;' class='jqx-kanban-item-footer'></div>"
-        + "</div>"
+                + "</div>"
     return template
 }
 
+/**
+** Convert All Item cards of a Column to Tasks Array of a Session
+**/
 function getAllTasks(columnName){
   let tasksArray = []
   let task = {}
-  //console.log("columnName: ", columnName)
   for(let i = 0; i < plansArray.length;i++){
+    task = {}
     if(plansArray[i].state === columnName){
       task['Task Name'] = plansArray[i].label
       task['Description'] = plansArray[i].content.desc
@@ -546,13 +560,14 @@ function getAllTasks(columnName){
       tasksArray.push(task)
     }
   }
-  console.log("plansArray : ", plansArray)
-  console.log("tasksArray: ", tasksArray)
+  console.log("[getAllTasks] plansArray : ", plansArray)
+  console.log("[getAllTasks] tasksArray : ", tasksArray)
   return tasksArray
 }
 
 /**
-Saving project plan information
+* Saving new project plan information
+* Converting Kanban Objects to the format for rdf serilialization
 **/
 function savePlanInfo(){
   let sessions = []
@@ -560,7 +575,7 @@ function savePlanInfo(){
   projPlanObj = {}
 
   newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
-  console.log("[savePlanInfo] newPlanObj:~~~",newPlanObj)
+  console.log("[savePlanInfo] newPlanObj:~~~>",newPlanObj)
 
   projPlanObj["Project Name"] = newPlanObj["Name"]
   projPlanObj["Description"] = newPlanObj["Description"]
@@ -581,7 +596,7 @@ function savePlanInfo(){
   projPlanObj["created"] = moment().format()
   projPlanObj["wasDerivedFrom"] = "None"
   projPlanObj["version"] = 0
-  console.log("new projPlan Obj Being Saved: ~~~~", projPlanObj)
+  console.log("[savePlanInfo] projPlanObj being submitted: ~~~~>", projPlanObj)
   return new Promise(function(resolve){
       $.ajax({
         type: "POST",
@@ -589,22 +604,20 @@ function savePlanInfo(){
         contentType: "application/json",
         data: JSON.stringify(projPlanObj),
         success: function(data){
-          console.log('success: response:', data)
-          //newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
-          //newPlanObj['ProjectPlanID'] = data.pid
+          //console.log('success: response:', data)
           projPlanObj['ProjectPlanID'] = data.pid
-          console.log("projPlanObj: ----->", projPlanObj)
-          //localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+          console.log("[savePlanInfo] success: projPlanObj: ----->", projPlanObj)
           localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
           localStorage.setItem("projectPlanObj",JSON.stringify(projPlanObj))
           resolve()
-
         }
       })
   })
-  //console.log('done')
 }
 
+/**
+** Updating and Saving the updated plan info into the format for rdf serialization
+**/
 function updatePlanInfo(){
   let sessions = []
   let session = {}
@@ -623,7 +636,6 @@ function updatePlanInfo(){
     session = {}
     session['Session Number'] = j+1
     session['Session Name'] = columnArray[j].dataField
-    //console.log("columnName: ",columnArray[j].dataField)
     let tasks = getAllTasks(columnArray[j].dataField)
     session['Instruments'] = tasks
     sessions.push(session)
@@ -635,8 +647,12 @@ function updatePlanInfo(){
   projPlanObj["version"] = newPlanObj["version"]
   console.log("projPlanObj being updated: ~~~~", projPlanObj)
   localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
-
+  localStorage.setItem("projectPlanObj",JSON.stringify(projPlanObj))
 }
+
+/**
+** Submit the Plan
+**/
 function submitPlan(){
   return new Promise(function(resolve){
     newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
@@ -650,7 +666,7 @@ function submitPlan(){
           newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
           newPlanObj['ProjectPlanID'] = data.pid
           newPlanObj['version'] = newPlanObj["version"] + 1
-          console.log("[submitPlan Success]updating projPlanObj: ----->", projPlanObj)
+          //console.log("[submitPlan Success]updating projPlanObj: ----->", projPlanObj)
           console.log("[submitPlan Success]updating newPlanObj: ----->", newPlanObj)
           //localStorage.setItem("newPlanObj", JSON.stringify(projPlanObj))
           localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
@@ -661,6 +677,9 @@ function submitPlan(){
   })
 }
 
+/**
+** Convert Project Plan Obj to Kanban object format
+**/
 function projPlanObj2KanbanObj(){
   newPlanObj["Name"] = projPlanObj["Project Name"]
   newPlanObj["Description"] = projPlanObj["Description"]
