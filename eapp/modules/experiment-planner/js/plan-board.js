@@ -333,15 +333,22 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   event.preventDefault()
   var args = event.args;
   //console.log("item event args: ", event)
+  $('#div-kanban').append(createModal2('itemDeleteModal','Delete','Yes', 'No'))
+  $('#body-itemDeleteModal').empty()
+  $('#body-itemDeleteModal').append('Do you want to delete '+ args.item.text + '?')
+  //$('#btn-delete-column').attr("data-toggle","modal")
+  //$('#btn-delete-column').attr("data-target","#itemDelete")
   if (args.attribute == "template") {
-    $('#div-kanban').jqxKanban('removeItem', args.item.id)
+    $('#itemDeleteModal').modal('show')
+    localStorage.setItem('itemDeleteId', args.item.id)
+    /*$('#div-kanban').jqxKanban('removeItem', args.item.id)
     deleteItemFromPlanArray(args.item.id)
     addToLogsArray('Deleted a task')
     console.log("LogsArray: ", logsArray)
     updatePlanInfo()
     submitPlan().then(function(){
       console.log("Plan Submited and Saved!")
-    })
+    })*/
   }else if(args.attribute == "content"){
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
@@ -352,7 +359,17 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
     console.log("other attribute:", args)
   }
 })
-
+$(document).on('click','#btn-save-itemDeleteModal',function(e){
+  let itemId = localStorage.getItem('itemDeleteId')
+  $('#div-kanban').jqxKanban('removeItem', itemId)
+  deleteItemFromPlanArray(itemId)
+  addToLogsArray('Deleted a task')
+  console.log("LogsArray: ", logsArray)
+  updatePlanInfo()
+  submitPlan().then(function(){
+    console.log("[itemDelete] Plan Submited and Saved!")
+  })
+})
 
 $(document).on('show.bs.modal','#itemEditModal', function(e){
   console.log('Item Edit Modal shown')
