@@ -6,13 +6,9 @@ console.log("project plan Obj:", projPlanObj)
 projPlanObj2KanbanObj()
 newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
 
-//var columnArray = []
-//var sessions = []
-//var resArray = []
 var sessionColumnTitle=''
-//var personnelArray = []
 
-console.log("newPlanObj:--- ", newPlanObj)
+console.log("[plan-board.js] newPlanObj:--- ", newPlanObj)
 
 $('#planInfo').append('<h4 id="pname">'+ newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 $('#planInfo').append(createModal('updatePlanInfoModal', 'Update Plan Info', 'Update'))
@@ -20,23 +16,24 @@ let expInfoForm = new AlpacaForm('#body-updatePlanInfoModal')
 createPlanInfoForm(expInfoForm,"updatePlanInfoModal", newPlanObj["Name"],newPlanObj["Description"])
 
 if(projPlanObj["Number Of Sessions"]!==0){
-  console.log("displaying Kanban ---")
-
+  console.log("--- displaying Kanban ---")
   let sessions = projPlanObj["Sessions"]
   if(sessions[0]["Instruments"].length ===0){
     addToSourcelocalData(sessions[0]["Session Name"],"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
-    addToResourcelocalData("0","","")
+    addToResourcelocalData(0,"","")
   }
   $('#div-kanban').jqxKanban('destroy')
   $('#div-addColumn').empty()
   $('#div-addColumn').remove()
   $('#div-planBoard').append('<div class="col-md-4" id="div-addColumn"></div>')
-  //$('#div-addColumn').append(addSessionColumn())
   $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
   createKanbanBoard(sessions[0]["Session Name"],sessions[0]["Session Name"])
 }
 
+/*
+* Update Plan Info - Name and Description
+*/
 $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
   console.log("plan name",  $("#updatePlanInfoModal-name").val())
   console.log("desc: ", $("#planDescription").val())
@@ -52,12 +49,15 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
   $('#pname').html(newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
   updatePlanInfo()
   submitPlan().then(function(){
-    console.log("Plan Submited and Saved!")
+    console.log("[update info - name, desc] Plan Submited and Saved!")
   })
 })
 
 $('#div-addColumn').append(addSessionColumn())
 
+/**
+** Check for unique session/column name
+**/
 $(document).on('mouseout','#sessionName', function(e){
   e.preventDefault()
   $('#alert-msg').empty()
@@ -67,7 +67,7 @@ $(document).on('mouseout','#sessionName', function(e){
     $('#alert-msg').append('<div class="alert alert-danger alert-dismissible" role="alert">\
   <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
   <strong>Warning!</strong> Session already exists! Choose another name</div>')
-    //alert("The session name already exist. Type another name!")
+
   }else if(sname==''){
     $('#btn-add-session').prop('disabled', true)
   }else{
@@ -76,7 +76,10 @@ $(document).on('mouseout','#sessionName', function(e){
     console.log("you can add the session")
   }
 })
-//$(document).on('hidden.bs.modal','#newSessionModal', function(e){
+
+/**
+** Add a new Session/Column
+**/
 $(document).on('click','#btn-add-session',function(e){
   let sname = $('#sessionName').val()
   console.log("session name:", sname)
@@ -97,19 +100,22 @@ $(document).on('click','#btn-add-session',function(e){
     addToLogsArray('Added Session Column')
     console.log("LogsArray: ", logsArray)
     submitPlan().then(function(){
-      console.log("Plan Submited and Saved!")
+      console.log("[Add New Session] Plan Submited and Saved!")
     })
  }
  $('#newSessionModal').modal('hide')
  $('body').removeClass('modal-open')
  $('.modal-backdrop').remove()
 })
-//$(document).ready(function(){
-    $('[data-toggle="popover"]').popover();
-//})
+
+$('[data-toggle="popover"]').popover();
+
+/**
+** Create Kanban board with new data
+**/
 function createKanbanBoard(name,label){
 
-  console.log("columnArray:::", columnArray)
+  console.log("[createKanbanBoard] columnArray:::", columnArray)
   let kCO = {}
   kCO["template"] = setTemplate()
   kCO["resources"] = new $.jqx.dataAdapter(setResources())
@@ -119,15 +125,10 @@ function createKanbanBoard(name,label){
       console.log("item: ", item)
       console.log("resource", resource)
       $(element).find(".jqx-kanban-item-color-status").html("<span style='line-height: 23px; margin-left: 5px; color:white;'>" + resource.name + "</span>");
-      //$(element).find(".jqx-kanban-item-text").css('background', item.color)
-      //$(element).find(".jqx-kanban-item-desc").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>')
-      //$(element).find(".jqx-kanban-item-content").append('<div><p>Instrument: '+ item.content.instrumentName +'</p></div>')
       $(element).find(".jqx-kanban-item-content").append('<div><a href="#" data-toggle="popover" title="'+item.text+'" data-placement="right" data-trigger="hover" data-content="'+item.content.desc+'">Description</a></div>\
       <br>\
       <div><p>Instrument: '+ item.content.instrumentName +'</p></div>\
       <div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
-      //$(element).find(".jqx-kanban-item-time").append('<div><p>Estimated Time:'+ item.content.estimateTime +'</p></div>')
-
     }
   kCO["columns"]= columnArray
   kCO["columnRenderer"] = function (element, collapsedElement, column) {
@@ -157,9 +158,6 @@ function createKanbanBoard(name,label){
     }
   }
   updatePlanInfo()
-  /*.then(function(){
-    console.log("updatePlanObj after create Kanban:~~~",newPlanObj)
-  })*/
 }
 $(document).on('columnAttrClicked', '#div-kanban', function(event){
   event.preventDefault()
@@ -246,8 +244,8 @@ $(document).on('click','#btn-delete-column',function(e){
   console.log("deleting session column title:::", sessionColumnTitle)
   updatePlansArray(sessionColumnTitle)
   updateColumnArray(sessionColumnTitle)
-  console.log("plan Array after delete: ", plansArray)
-  console.log("column Array after delete: ", columnArray)
+  console.log("[Delete-Column] plan Array after delete: ", plansArray)
+  console.log("[Delete-Column] column Array after delete: ", columnArray)
   $('#div-kanban').jqxKanban('destroy')
   $('#div-addColumn').empty()
   $('#div-addColumn').remove()
@@ -272,6 +270,10 @@ $(document).on('click','#btn-delete-column',function(e){
     })
   }else{
     console.log("do not create kanban")
+    updatePlanInfo()
+    submitPlan().then(function(){
+      console.log("Plan Submited and Saved!")
+    })
   }
   addToLogsArray('Deleted Session Column')
   console.log("LogsArray: ", logsArray)
@@ -318,10 +320,10 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   event.preventDefault()
   var args = event.args;
-  console.log("item event args: ", event)
+  //console.log("item event args: ", event)
   if (args.attribute == "template") {
     $('#div-kanban').jqxKanban('removeItem', args.item.id)
-    deleteItemPlanArray(args.item.id)
+    deleteItemFromPlanArray(args.item.id)
     addToLogsArray('Deleted a task')
     console.log("LogsArray: ", logsArray)
     updatePlanInfo()
