@@ -602,6 +602,46 @@ function convertItemsToPlanArray(items){
   }
 }
 
+function shufflePlanArray(oldC,newC,ocDF,newDF){
+  let prevPlanArray = plansArray.slice()
+  newPlansArray = []
+  if(oldC.toString() !== newC.toString()){
+    for(let i=0;i<oldC.length; i++){
+      let pObj = {}
+      pObj = getObjFromPlanArray(oldC[i])
+      newPlansArray.push(pObj)
+    }
+    console.log("plansArray c1: ", plansArray)
+    console.log("newPlansArray c1: ", newPlansArray)
+  }
+  for(let i=0;i<newC.length; i++){
+    let pObj = {}
+    pObj = getObjFromPlanArray(newC[i])
+    pObj["state"] = newDF
+    newPlansArray.push(pObj)
+  }
+  console.log("plansArray newC: ", plansArray)
+  console.log("newPlansArray newC: ", newPlansArray)
+  for(let i=0; i<plansArray.length;i++){
+    newPlansArray.push(plansArray[i])
+  }
+  plansArray = []
+  plansArray = newPlansArray.slice()
+}
+
+function getObjFromPlanArray(itemId){
+  let item = {}
+  for(let i=0;i<plansArray.length;i++){
+    if(plansArray[i].id === itemId){
+      item = plansArray[i]
+      plansArray.splice(i,1)
+      break
+    }
+  }
+  console.log("[getObjFromPlanArray] item found: ", item)
+  return item
+}
+
 function getListOrder(id) {
      var list = document.getElementById(id).childNodes
      var listLength = list.length
@@ -614,8 +654,8 @@ function getListOrder(id) {
           var index = table[1]
           res.push(index)
      }
-     var order = res.toString()
-     return order;
+     //var order = res.toString()
+     return res;
 }
 
 /**

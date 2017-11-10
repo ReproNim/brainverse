@@ -440,13 +440,15 @@ $(document).on('itemMoved', '#div-kanban', function (event) {
   var newColumnOrder = getListOrder(newCid)
   console.log("oldColumnOrder: ", oldColumnOrder)
   console.log("newColumnOrder: ", newColumnOrder)
+  shufflePlanArray(oldColumnOrder, newColumnOrder,args.oldColumn.dataField,args.newColumn.dataField)
   console.log("items after move:[plansArray]", plansArray)
+
   //addToLogsArray('Moved An Item')
   //console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
   updatePlanInfo()
-  /*submitPlan().then(function(){
+  submitPlan().then(function(){
     console.log("[Item Moved] Plan Submited and Saved!")
-  })*/
+  })
   //console.log("itemId, opid,npid,data,oc,nc: ", itemId,oldParentId,newParentId,itemData,oldColumn,newColumn)
 })
