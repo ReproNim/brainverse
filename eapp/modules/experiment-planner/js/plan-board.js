@@ -95,7 +95,8 @@ $(document).on('click','#btn-add-session',function(e){
     $('#div-planBoard').append('<div class="col-md-7" id="div-kanban"></div>')
     addToSourcelocalData(sname,"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
-    addToResourcelocalData("0","","")
+    //addToResourcelocalData("0","","")
+    addToResourcelocalData(0,"No Name","")
     createKanbanBoard(sname,sname)
     addToLogsArray('Added Session Column')
     console.log("LogsArray: ", logsArray)
@@ -135,16 +136,9 @@ function createKanbanBoard(name,label){
     var columnItems = $("#div-kanban").jqxKanban('getColumnItems', column.dataField).length
     // update header's status.
     element.find(".jqx-kanban-column-header-status").html(" (" + columnItems + ")")
-    //if($('div#test1.fa-edit-icon').length < 3){
-      element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
-      //console.log("href attr: ",$('div.jqx-icon-plus-alt'))
-    //}
-    //$('div.jqx-icon-plus-alt').append('<a data-toggle="modal" href="#itemModal">test</a>')
-    //if($('div.jqx-icon-plus-alt').length < 2){
-      $('div.jqx-icon-plus-alt').attr("data-toggle","modal")
-      $('div.jqx-icon-plus-alt').attr("data-target","#itemModal")
-      //console.log ("jqx-icon-plus-alt::: ",$('div.jqx-icon-plus-alt'))
-    //}
+    element.find("div.jqx-window-collapse-button-background.jqx-kanban-column-header-custom-button").after('<div class="jqx-window-collapse-button-background jqx-kanban-column-header-custom-button"><a data-toggle="modal" href="#updateSessionModal"><div id = "test1" style="width: 100%; height: 100%; left:-30px; top:-15px" class="fa-edit-icon"></div></a></div>')
+    $('div.jqx-icon-plus-alt').attr("data-toggle","modal")
+    $('div.jqx-icon-plus-alt').attr("data-target","#itemModal")
   }
   kCO["width"] = '80%'
   //kCO["height"] = '100%'
@@ -183,7 +177,6 @@ $(document).on('columnAttrClicked', '#div-kanban', function(event){
   }else{
     if (args.attribute == "button") {
       //args.cancelToggle = true;
-
       console.log("Add button clicked")
       console.log("showing add item modal")
       if($("#updateSessionModal").length){
@@ -301,18 +294,28 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   let instrumentName = $('#itemModal-inst').val()
   let estimateTime = $('#itemModal-time').val()
   let userLogin = $('#itemModal-per').select2('data')[0]
-  console.log("itemselect2 data: ",$('#itemModal-per').select2('data'))
-  let personnelItem = {}
-  personnelItem['user'] = userLogin.login
-  personnelItem['uid'] = userLogin.id
-  personnelItem['url'] = userLogin.url
-  personnelItem['avatar_url'] = userLogin.avatar_url
-  personnelArray.push(personnelItem)
+  let user = ''
+  console.log("itemselect2 data: ",$('#itemModal-per').select2('data').length)
+  let len = $('#itemModal-per').select2('data').length
+  if(len !== 0){
+    console.log("len is zero: ", len)
+    let personnelItem = {}
+    personnelItem['user'] = userLogin.login
+    personnelItem['uid'] = userLogin.id
+    personnelItem['url'] = userLogin.url
+    personnelItem['avatar_url'] = userLogin.avatar_url
+    personnelArray.push(personnelItem)
+    user = userLogin.login
+    addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
+  }else{
+    console.log("No User Selected")
+    addToResourcelocalData(0,"No Name","")
+  }
   let columnName = localStorage.getItem("addItemToColumn")
   console.log("columnName To which Item needs to be added :  ", columnName)
-  console.log("new item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", userLogin.login )
-  addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
-  addToSourcelocalData(columnName,taskName, instrumentName,estimateTime,userLogin.login,desc)
+  console.log("new item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", user )
+
+  addToSourcelocalData(columnName,taskName, instrumentName,estimateTime,user,desc)
   $('#body-itemModal').alpaca("destroy")
   $('#div-kanban').jqxKanban('destroy')
   $('#div-addColumn').empty()
@@ -375,14 +378,22 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
   let instrumentName = $('#itemEditModal-inst').val()
   let estimateTime = $('#itemEditModal-time').val()
   let userLogin = $('#itemEditModal-per').select2('data')[0]
+  let user=''
   console.log("itemselect2 data: ",$('#itemEditModal-per').select2('data'))
-  let personnelItem = {}
-  personnelItem['user'] = userLogin.login
-  personnelItem['uid'] = userLogin.id
-  personnelItem['url'] = userLogin.url
-  personnelItem['avatar_url'] = userLogin.avatar_url
-  personnelArray.push(personnelItem)
-  console.log("updated PersonnelArray: ", personnelArray)
+  console.log('userLogin: ', userLogin)
+  if($('#itemEditModal-per').select2('data').length !== 0){
+    let personnelItem = {}
+    personnelItem['user'] = userLogin.login
+    personnelItem['uid'] = userLogin.id
+    personnelItem['url'] = userLogin.url
+    personnelItem['avatar_url'] = userLogin.avatar_url
+    personnelArray.push(personnelItem)
+    console.log("updated PersonnelArray: ", personnelArray)
+    addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
+    user = userLogin.login
+  }else{
+    user = inv_resources[item.resourceId]
+  }
   // check if the item content values already existed
   if(taskName === ''){
     console.log("taskName did not change. keeping the original value")
@@ -396,11 +407,11 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
     console.log("Time did not change")
     estimateTime = item.content.estimateTime
   }
-  console.log("updated item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", userLogin.login )
+  console.log("updated item Value taskName: ", taskName, " instrumentName:", instrumentName, " estimateTime: ", estimateTime, "user: ", user )
   console.log("column to which the item belongs: ", item.status)
   let columnName = item.status
-  addToResourcelocalData("id",userLogin.login,userLogin.avatar_url)
-  updateSourcelocalData(columnName,item.id,taskName, instrumentName,estimateTime,userLogin.login,desc)
+  updateSourcelocalData(columnName,item.id,taskName, instrumentName,estimateTime,user,desc)
+  //updateSourcelocalData(columnName,item.id,taskName, instrumentName,estimateTime,userLogin.login,desc)
   let tobj = {"desc":desc,"instrumentName":instrumentName,"estimateTime": estimateTime}
   //$('#div-kanban').jqxKanban('updateItem', item.id, {status:item.status,text:taskName,content:tobj,tags:"test",color:"#5dc3f0", resourceId:inv_resources[userLogin.login]})
   $('#body-itemEditModal').alpaca("destroy")
@@ -427,11 +438,7 @@ $(document).on('itemMoved', '#div-kanban', function (event) {
   var args = event.args;
   var itemId = args.itemId;
   console.log("itemMoved is raised: ", args);
-  var items = $('#div-kanban').jqxKanban('getItems')
-  console.log("all items after move: ", items)
-  console.log("items before move:[plansArray]", plansArray)
-  //var idx = $('#div-kanban_' + itemId).index();
-  //alert(idx);
+  //console.log("items before move:[plansArray]", plansArray)
   let oldCid = args.oldColumn.headerElement[0].nextElementSibling.id
   let newCid = args.newColumn.headerElement[0].nextElementSibling.id
   console.log("oldCid, newCid:", oldCid, newCid)
@@ -441,14 +448,12 @@ $(document).on('itemMoved', '#div-kanban', function (event) {
   console.log("oldColumnOrder: ", oldColumnOrder)
   console.log("newColumnOrder: ", newColumnOrder)
   shufflePlanArray(oldColumnOrder, newColumnOrder,args.oldColumn.dataField,args.newColumn.dataField)
-  console.log("items after move:[plansArray]", plansArray)
-
-  //addToLogsArray('Moved An Item')
+  //console.log("items after move:[plansArray]", plansArray)
+  addToLogsArray('Moved An Item')
   //console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
   updatePlanInfo()
   submitPlan().then(function(){
     console.log("[Item Moved] Plan Submited and Saved!")
   })
-  //console.log("itemId, opid,npid,data,oc,nc: ", itemId,oldParentId,newParentId,itemData,oldColumn,newColumn)
 })

@@ -468,12 +468,17 @@ function addToResourcelocalData(id,userName,aUrl){
   let flag = false
   if(id === 0){
     resObj["id"] = 0
+    resObj["name"] = "No Name"
+    resObj["image"] = ""
+    resources["No Name"] = 0
+    inv_resources[0] = "No Name"
+
   }else{
     //resObj["id"] = personnelArray.length
     resObj["id"] = resArray.length
+    resObj["name"] = userName
+    resObj["image"] = aUrl
   }
-  resObj["name"] = userName
-  resObj["image"] = aUrl
 
   for(let i=0;i<resArray.length;i++){
     if(resArray[i].name === userName){
@@ -580,8 +585,8 @@ function getAllTasks(columnName){
       tasksArray.push(task)
     }
   }
-  console.log("[getAllTasks] plansArray : ", plansArray)
-  console.log("[getAllTasks] tasksArray : ", tasksArray)
+  //console.log("[getAllTasks] plansArray : ", plansArray)
+  //console.log("[getAllTasks] tasksArray : ", tasksArray)
   return tasksArray
 }
 
@@ -611,8 +616,6 @@ function shufflePlanArray(oldC,newC,ocDF,newDF){
       pObj = getObjFromPlanArray(oldC[i])
       newPlansArray.push(pObj)
     }
-    console.log("plansArray c1: ", plansArray)
-    console.log("newPlansArray c1: ", newPlansArray)
   }
   for(let i=0;i<newC.length; i++){
     let pObj = {}
