@@ -336,19 +336,9 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   $('#div-kanban').append(createModal2('itemDeleteModal','Delete','Yes', 'No'))
   $('#body-itemDeleteModal').empty()
   $('#body-itemDeleteModal').append('Do you want to delete '+ args.item.text + '?')
-  //$('#btn-delete-column').attr("data-toggle","modal")
-  //$('#btn-delete-column').attr("data-target","#itemDelete")
   if (args.attribute == "template") {
     $('#itemDeleteModal').modal('show')
     localStorage.setItem('itemDeleteId', args.item.id)
-    /*$('#div-kanban').jqxKanban('removeItem', args.item.id)
-    deleteItemFromPlanArray(args.item.id)
-    addToLogsArray('Deleted a task')
-    console.log("LogsArray: ", logsArray)
-    updatePlanInfo()
-    submitPlan().then(function(){
-      console.log("Plan Submited and Saved!")
-    })*/
   }else if(args.attribute == "content"){
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
@@ -430,4 +420,33 @@ $(document).on('click','#btn-close-itemEditModal',function(e){
   $('#itemEditModal').modal('hide')
   $('body').removeClass('modal-open')
   $('.modal-backdrop').remove()
+})
+
+$(document).on('itemMoved', '#div-kanban', function (event) {
+  event.preventDefault()
+  var args = event.args;
+  var itemId = args.itemId;
+  console.log("itemMoved is raised: ", args);
+  var items = $('#div-kanban').jqxKanban('getItems')
+  console.log("all items after move: ", items)
+  console.log("items before move:[plansArray]", plansArray)
+  //var idx = $('#div-kanban_' + itemId).index();
+  //alert(idx);
+  let oldCid = args.oldColumn.headerElement[0].nextElementSibling.id
+  let newCid = args.newColumn.headerElement[0].nextElementSibling.id
+  console.log("oldCid, newCid:", oldCid, newCid)
+  //var session1 = getListOrder("div-kanban-column-container-"+cid);
+  var oldColumnOrder = getListOrder(oldCid)
+  var newColumnOrder = getListOrder(newCid)
+  console.log("oldColumnOrder: ", oldColumnOrder)
+  console.log("newColumnOrder: ", newColumnOrder)
+  console.log("items after move:[plansArray]", plansArray)
+  //addToLogsArray('Moved An Item')
+  //console.log("LogsArray: ", logsArray)
+  $('[data-toggle="popover"]').popover()
+  updatePlanInfo()
+  /*submitPlan().then(function(){
+    console.log("[Item Moved] Plan Submited and Saved!")
+  })*/
+  //console.log("itemId, opid,npid,data,oc,nc: ", itemId,oldParentId,newParentId,itemData,oldColumn,newColumn)
 })

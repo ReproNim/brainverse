@@ -585,6 +585,39 @@ function getAllTasks(columnName){
   return tasksArray
 }
 
+function convertItemsToPlanArray(items){
+  let previousPlanArray = plansArray.slice()
+  plansArray = []
+  let pObj = {}
+  for(let i=0;i<items.length;i++){
+    pObj = {}
+    pObj["id"] = items[i].id
+    pObj["state"] = items[i].status
+    pObj["label"] = items[i].text
+    pObj["content"] = items[i].content
+    pObj["tags"] = items[i].tags
+    pObj["hex"] = "#5dc3f0"
+    pObj["resourceId"] = items[i].resourceId
+    plansArray.push(pObj)
+  }
+}
+
+function getListOrder(id) {
+     var list = document.getElementById(id).childNodes
+     var listLength = list.length
+     var i = 0
+     var res = []
+     //console.log("ChildNodes: ",list)
+     for(var i=0; i<listLength; i++){
+          var order = list.item(i).id
+          var table = order.split("_")
+          var index = table[1]
+          res.push(index)
+     }
+     var order = res.toString()
+     return order;
+}
+
 /**
 * Saving new project plan information
 * Converting Kanban Objects to the format for rdf serilialization

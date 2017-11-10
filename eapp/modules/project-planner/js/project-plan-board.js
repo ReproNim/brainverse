@@ -430,7 +430,7 @@ function getListOrder(id) {
      //console.log("ChildNodes: ",list)
      for(var i=0; i<listLength; i++){
           var order = list.item(i).id
-          var table = chain.split("_")
+          var table = order.split("_")
           var index = table[1]
           res.push(index)
      }
