@@ -16,8 +16,6 @@ cache:
   - $HOME/.cache/electron
   - $HOME/.cache/electron-builder
 
-before_install:
-  - composer config github-oauth.github.com ${GH_TOKEN};
 install:
   - |
     if [ "$TRAVIS_OS_NAME" == "osx" ]; then
