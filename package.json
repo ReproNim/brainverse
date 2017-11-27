@@ -6,7 +6,6 @@
   "scripts": {
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps",
-    "test:e2e": "./node_modules/mocha/bin/mocha tests/mainWindow-test.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
