@@ -17,21 +17,29 @@ class AlpacaForm {
 
       Precondition: element is a valid HTML element, properties and fields are
       in valid alpaca format. */
-    this.element = element;
-    this.properties = {};
-    this.fields = {};
+    this.element = element
+    this.properties = {}
+    this.fields = {}
+    this.form = {}
+    this.x = {}
+    this.postRender = function(){}
     this.baseForm = {
       "schema": {
         "type": "object",
         "properties": this.properties
-
       },
       "options": {
-        "fields": this.fields
-      }
-    };
+        "fields": this.fields,
+        "form": this.form
+      },
+      /*"postRender": function(control){
+        console.log("inside control: ", control)
+      }*/
+    }
   }
-
+  render(fn){
+    this.postRender = fn()
+  }
   inputForm(title, label, id, type='string', date=false, placehold='null', disable=false) {
     /*Input Form Method
 
@@ -65,6 +73,20 @@ class AlpacaForm {
       }
     }
   }
+   textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
+     this.properties[title.toLowerCase()] = {
+       "title": title,
+       "type": type,
+       "required": true
+     }
+    this.fields[title.toLowerCase()] = {
+      "type": "textarea",
+      "label": label,
+      "id": id,
+      "placeholder": placehold,
+      "disabled": disable
+    }
+   }
 
   radioForm(title, label, id, op1, op2, disable=false) {
     /*Radio Form Method
@@ -96,6 +118,7 @@ class AlpacaForm {
     }
     this.fields[title.toLowerCase()] = {
       "label": label,
+      "type": "select",
       "id": id,
       "noneLabel": "-- Select --",
       "removeDefaultNone": false,
@@ -103,6 +126,84 @@ class AlpacaForm {
       "disabled": disable
     }
   }
+
+  selectFormGeneral(title, label, enumlist, optionsLabelList, id, require, disable=false) {
+    /*Select Form Method
+
+      Creates a selection form field */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "enum": enumlist,
+      "required": require
+    }
+    this.fields[title.toLowerCase()] = {
+      "label": label,
+      "type": "select",
+      "id": id,
+      "noneLabel": "-- Select --",
+      "optionLabels": optionsLabelList,
+      "removeDefaultNone": false,
+      "sort": false,
+      "showMessages": false,
+      "hideInitValidationError":true,
+      "disabled": disable
+
+    }
+  }
+
+  inputFormTypeAhead(title, label, id, type='string', date=false, placehold='null', disable=false) {
+    /*Input Form Method
+
+      Creates a text input field
+
+      Parameters:
+        type: 'string' or 'number' for now */
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "type": type,
+      "required": false
+    }
+    if (date == true) {
+      this.fields[title.toLowerCase()] = {
+        "type": "date",
+        "picker": {
+            "format": "MM/DD/YYYY"
+        },
+        "label": label,
+        "id": id,
+        "placeholder": placehold,
+        "disabled": disable
+      }
+    }
+    else {
+      this.fields[title.toLowerCase()] = {
+        "label": label,
+        "id": id,
+        "placeholder": placehold,
+        "disabled": disable,
+        "typeahead": {
+          "config": {
+              "autoselect": true,
+              "highlight": true,
+              "hint":true,
+              "minLength": 1
+          },
+          "datasets":{
+            "type":"remote",
+            "source":"http://www.alpacajs.org/endpoints/typeahead-sample.php?q=%QUERY",
+            //"source":["red", "green", "blue","black","brown"]
+            "templates": {
+              "empty": "username not found ...",
+              "header": "<h5>github usernames</h5><br>",
+              "footer": "",
+              "suggestion": "<p style='color:blue'>{{value}}</p>"
+            }
+          }
+        }//typeahead
+      }
+    }
+  }
+
 
   arrayForm(title, label, items, id) {
     /*Array Form Method
@@ -122,7 +223,14 @@ class AlpacaForm {
     }
   }
 
-
+  submitBtnForm(title, sActionFunc){
+    this.form["buttons"] = {
+      "submit": {
+        'title': title,
+        'click': sActionFunc
+      }
+    }
+  }
   alpacaGen() {
     //Generates the alpaca form
     $(this.element).alpaca(this.baseForm);

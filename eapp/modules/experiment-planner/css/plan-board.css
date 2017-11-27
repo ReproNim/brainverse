@@ -1,0 +1,56 @@
+.add-column {
+  border: 1px dotted grey;
+  position: relative;
+  width:30%;
+  height:50px;
+  text-align: center;
+}
+
+.add-column:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.column-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.fa-edit-icon {
+    position:relative;
+    /*font-family: FontAwesome;
+    content: "\f040";*/
+  }
+.fa-edit-icon:before {
+  font-family: FontAwesome;
+  /*top: 0;
+  left: -5px;
+  padding-right: 10px;*/
+  content: "\f040";
+  }
+  .fa-pencil-square-o-icon {
+      position:relative;
+      /*font-family: FontAwesome;
+      content: "\f040";*/
+    }
+  .fa-pencil-square-o-icon:before {
+    font-family: FontAwesome;
+    /*top: 0;
+    left: -5px;
+    padding-right: 10px;*/
+    content: "\f044";
+    }
+  .fa-bars-icon {
+      position:relative;
+      /*font-family: FontAwesome;
+      content: "\f040";*/
+    }
+  .fa-bars-icon:before {
+    font-family: FontAwesome;
+    /*top: 0;
+    left: -5px;
+    padding-right: 10px;*/
+    content: "\f0c9";
+    }
