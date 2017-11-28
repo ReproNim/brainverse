@@ -22,7 +22,7 @@
     }catch(e){}
   </script>
   <script src="https://unpkg.com/vue"></script>
-  <script type='text/javascript' src="/lib/rdfstore_min.js">
+  <script type='text/javascript' src="/lib/rdfstore/rdfstore_min.js">
   </script>
 
   <script type="text/x-template" id="grid-template">
@@ -32,9 +32,9 @@
         <th v-for="key in columns">
           {{ key }}
         </th>
-        <th>
+        <!--th>
           Actions
-        </th>
+        </th-->
       </tr>
     </thead>
     <tbody>
@@ -42,11 +42,9 @@
         <td v-for="key in columns">
           {{entry[key]}}
         </td>
-        <td><!--a href="#"><i class="fa fa-pencil fa-fw"></i></a-->
+        <!--td>
           <button id="show-modal" @click="showModal = true"><i class="fa fa-github-square" aria-hidden="true"></i></a></button>
-        <!--a href="#"><i class="fa fa-github-square" aria-hidden="true"></i></a>
-        <a href="#"><i class="fa fa-external-link" aria-hidden="true"></i></a-->
-      </td>
+        </td-->
       </tr>
     </tbody>
   </table>

@@ -23,7 +23,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "electron": "^1.4.11",
-    "electron-builder": "^19.43.0",
+    "electron-builder": "^19.46.9",
     "electron-oauth-github": "^1.0.0",
     "mocha": "^3.2.0",
     "spectron": "^3.5.0"
@@ -49,6 +49,7 @@
     "method-override": "^2.3.9",
     "moment": "^2.18.1",
     "node-b64": "0.0.3",
+    "node-gyp": "^3.6.2",
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
     "passport-github2": "^0.1.10",
