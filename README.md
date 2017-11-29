@@ -37,20 +37,20 @@ npm install
 # Go to eapp/config
 cd eapp/config
 
+# Get clientId and secretKey from GitHub (see below)
 # Fill in app-config.js using your favorite editor
 # Note you should not commit app-config.js as it contains clientId and secretKey
 vim app-config.js
 
-# Get clientId and secretKey from GitHub by registering this App
-# Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
-# use the following values:
-# Application Name: brainverse
-# Homepage URL: https://github.com/ReproNim/brainverse
-# Authorization callback URL: http://127.0.0.1:3000/auth/github/callback
-
 # Run the app
 npm start
 ```
+#### Get clientId and secretKey from GitHub by registering this App
+* Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
+  * Use the following values:
+  * Application Name: brainverse
+  * Homepage URL: https://github.com/ReproNim/brainverse
+  * Authorization callback URL: http://127.0.0.1:3000/auth/github/callback
 
 ## Learning Resources
 
