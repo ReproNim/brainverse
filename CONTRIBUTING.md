@@ -12,7 +12,7 @@ This document is adapted from [NICEMAN's CONTRINUTING.md](https://github.com/Rep
 This app is being developed and tested with NodeJS v8.9.1, npm 5.5.1 and git 2.11.0 on macOS Sierra version 10.12.6.
 
 ### To Begin
-* To start contributing follow git set up instructions provided in either [Option 1](###Option-1) or Option 2 from [Git set up](#git-set-up)
+* To start contributing follow git set up instructions provided in either [Option 1](#option-1) or [Option 2](#option-2) from [Git set up](#git-set-up)
 
 ```bash
 # For quick start clone the main repository
