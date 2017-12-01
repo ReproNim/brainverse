@@ -2,7 +2,7 @@ Contributing to BrainVerse
 ========================
 This document is adapted from [NICEMAN's CONTRINUTING.md](https://github.com/ReproNim/niceman/blob/master/CONTRIBUTING.md) . Thanks to NICEMAN team!
 
-Development environment
+## Development environment
 -----------------------
 ### Requirements
 * [Node.js](https://nodejs.org/en/download/) (which comes with npm) installed on your computer.
@@ -12,7 +12,7 @@ Development environment
 This app is being developed and tested with NodeJS v8.9.1, npm 5.5.1 and git 2.11.0 on macOS Sierra version 10.12.6.
 
 ### To Begin
-* To start contributing follow git set up instructions provided in either Option 1 or Option 2 from [How to contribute](#How-to-contribute)
+* To start contributing follow git set up instructions provided in either [Option 1](###Option-1) or Option 2 from [Git set up](#git-set-up)
 
 ```bash
 # For quick start clone the main repository
@@ -39,7 +39,7 @@ npm start
 
 #### Get clientId and secretKey from GitHub by registering this App
 * Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
-  * Use the following values:
+* Use the following values:
   * Application Name: brainverse
   * Homepage URL: https://github.com/ReproNim/brainverse
   * Authorization callback URL: http://127.0.0.1:3000/auth/github/callback
@@ -50,7 +50,7 @@ npm start
 - To access any html page in eapp/modules/module-name/html in your browser, type '127.0.0.1:3000/module-name/html/HTMLFileName.html'
 - The REST API for the app is in the eapp/routes directory
 
-Files organization
+## Files organization
 ------------------
 
 - `eapp/` is the folder consisting of source code for the app and where major development is happening.
@@ -85,7 +85,7 @@ Files organization
 - `.travis.yml` - configuration for TRAVIS CI
 
 
-How to contribute
+## Git set up
 -----------------
 
 The preferred way to contribute to the BrainVerse code base is
