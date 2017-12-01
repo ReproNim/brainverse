@@ -1,43 +1,25 @@
 # brainverse
-## For Developers
 
-## Requirements
-- [Node.js](https://nodejs.org/en/download/) (which comes with npm) installed on your computer
+## To use the App in MacOS
+- Download the App (DMG file) from the [Dropbox link](https://www.dropbox.com/s/41fx3ufnrej1d02/BrainVerse-0.0.1.dmg?dl=0)
+- Double click on the dmg file
+- Drag the app icon to the Application folder, it will start installing
+- To start the app, double click on the app icon in the Application folder
+- All the files created are stored outside the Brainverse App folder under /Users/username/Documents/uploads.
 
-- Git
+### Linux
 
-## To Begin
-```bash
-# Clone this repository
-git clone https://github.com/ReproNim/brainverse.git
-# Go into the repository
-cd brainverse
+### Windows
 
-# Install devDependencies and dependencies listed in the package.json - e.g. electron, bootstrap and jQuery
-npm install
+## Status
+BrainVerse is under rapid development with core functionality being added.
 
-# App Configuration
-# Go to eapp/config and create app-config.js
-cd eapp/config
-cp ref-config.js app-config.js
+If you want to contribute, set up development enviroment or understand the project internals, see [CONTRIBUTING.md](CONTRIBUTING.md)
 
-# Add cliendId and secretKey to app-config.js file
+You can track the different [modules](https://github.com/ReproNim/brainverse/projects) that are being aimed/developed within BrainVerse.
 
-# Run the app
-npm start
-```
-## To Use as Web app
-- Type '127.0.0.1:3000/' in your browser
-- To access any html page in eapp/public/html in your browser, type '127.0.0.1:3000/HTMLFileName.html'
-- The REST API for the app is in the eapp/routes directory
-
-## For OSX User
-- Download the App (zipped file) from the Dropbox link
-https://www.dropbox.com/s/6tomk4kpiqqjswt/BrainVerse-darwin-x64v0.2.zip?dl=0
-- Unzip the folder
-- To start the app, double click on the app
-- All the files created are stored inside the Brainverse App folder under Contents/Resources/app/uploads. To check the files created, right click on the Brainverse app icon> Click on 'Show Package Contents'
-
+### Code Status
+[![Travis tests status](https://travis-ci.org/ReproNim/brainverse.svg?branch=master)](https://travis-ci.org/ReproNim/brainverse) travis-ci.org (master branch)
 
 ## Learning Resources
 
