@@ -46,7 +46,12 @@ class AlpacaForm {
       Creates a text input field
 
       Parameters:
-        type: 'string' or 'number' for now */
+        title: short description of the property
+        type: 'string' or 'number' for now
+        label: Field label
+        name: Field Name
+    */
+
     this.properties[title.toLowerCase()] = {
       "title": title,
       "type": type,
