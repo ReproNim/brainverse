@@ -208,7 +208,7 @@ module.exports = () => {
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
-        //console.log("lists:---> ", list)
+        console.log("instrument lists:---> ", list)
         resolve(list)
       })
     })
@@ -396,6 +396,26 @@ module.exports = () => {
       console.log("StatusCode for Pull Request: ", response.statusCode)
     })
   }
+
+  app.post('/repronim/dictionaries/local', ensureAuthenticated,jsonParser, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    console.log('[nda/dictionaries/] Received at server side')
+    //console.log(req.body)
+    let term_info = req.body
+    term_info['DictionaryID'] = uuid()
+    term_info['author'] = req.user.username
+    console.log(term_info)
+    pid = term_info['DictionaryID'].split('-')
+    psname = term_info['shortName'].split(" ")
+    pname = term_info['Name'].split(" ")
+
+    //let cpath = path.join(__dirname, '/../../../uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    writeJsonFile(cpath, req.body).then(() => {
+      console.log('done')
+      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
+    })
+  })
 
   function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
