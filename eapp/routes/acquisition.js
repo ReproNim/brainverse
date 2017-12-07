@@ -65,7 +65,7 @@ module.exports = () => {
   })
 
   app.get('/acquisitions/nda_forms', ensureAuthenticated, function(req, res){
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
@@ -76,7 +76,7 @@ module.exports = () => {
     listOfFiles.then(function(list){
       console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
