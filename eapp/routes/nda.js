@@ -208,8 +208,14 @@ module.exports = () => {
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
+        let instList = []
+        for(let i=0;i< list.length;i++){
+          if(list[i]!==".DS_Store"){
+            instList.push(list[i])
+          }
+        }
         console.log("instrument lists:---> ", list)
-        resolve(list)
+        resolve(instList)
       })
     })
     listOfFiles.then(function(list){
@@ -236,8 +242,14 @@ module.exports = () => {
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
-        //console.log("lists:---> ", list)
-        resolve(list)
+        let instList = []
+        for(let i=0;i< list.length;i++){
+          if(list[i]!==".DS_Store"){
+            instList.push(list[i])
+          }
+        }
+        console.log("instrument lists:---> ", list)
+        resolve(instList)
       })
     })
     listOfFiles.then(function(list){
