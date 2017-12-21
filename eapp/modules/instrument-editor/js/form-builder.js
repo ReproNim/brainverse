@@ -2,7 +2,7 @@
 * Setting Up form editor
 * This code is adapted from http://www.alpacajs.org/demos/form-builder/form-builder.html
 */
-var setup = function(){
+var setup = function(properties,fields){
   //Alpaca.logLevel = Alpaca.DEBUG;
 
   var MODAL_VIEW = "bootstrap-edit-horizontal";
@@ -29,29 +29,44 @@ var setup = function(){
   //var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
   var schema = {}
   var options = {}
-  console.log("schema just during setup: ", schema)
+  //console.log("schema just during setup: ", schema)
   var data ={}
   //localStorage.removeItem("alpacaDesignerSchema")
   //localStorage.removeItem("alpacaDesignerOptions")
   //localStorage.setItem("alpacaDesignerSchema",JSON.stringify({}))
   //localStorage.setItem("alpacaDesignerOptions",JSON.stringify({}))
-  var schema = {
-        "type": "object",
-        "properties": {
-            "New field": {
-                "type": "string",
-                "required": false
-            }
-        }
-    };
-    var options = {
-        "fields": {
-            "New field": {
-                "type": "text",
-                "label": "New field"
-            },
+
+  if($.isEmptyObject(properties) && $.isEmptyObject(fields)){
+    schema = {
+          "type": "object",
+          "properties": {
+              "new123": {
+                  "type": "string",
+                  "required": false
+              }
+          }
       }
-    };
+    options = {
+          "fields": {
+              "new123": {
+                  "type": "text",
+                  "label": "New field"
+              },
+        }
+      }
+  } else{
+  console.log("displaying an existing form")
+  console.log("properties: ", properties)
+  console.log("fields: ", fields)
+  schema = {
+    "type":"object",
+    "properties":properties
+  }
+  options = {
+    "fields": fields
+  }
+}
+
 
   console.log("--- Setting up Form Editor Space--- ")
   var mainViewField = null;
