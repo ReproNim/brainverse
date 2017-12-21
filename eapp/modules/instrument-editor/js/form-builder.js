@@ -841,7 +841,7 @@ var setup = function(properties,fields){
     //$(".tab-item-source").click();
 
     // save button
-    $(".save-button").off().click(function(e) {
+    $(".save-button-local").off().click(function(e) {
         e.preventDefault()
         if (!localStorage)
         {
@@ -871,7 +871,7 @@ var setup = function(properties,fields){
         console.log("data", data)
 
     })
-    $(".git-push-button").off().click(function(e) {
+    $(".save-button-github").off().click(function(e) {
         e.preventDefault()
         if (!localStorage)
         {
@@ -895,6 +895,10 @@ var setup = function(properties,fields){
         var configString = JSON.stringify(config)
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
-        //saveCuratedForm(schema,options,'github')
+        //convertAlpacaToNDA(schema,options)
+        saveCuratedForm(schema,options,'github')
+        console.log("schema: ", schema)
+        console.log("options:", options)
+        console.log("data", data)
     })
 }

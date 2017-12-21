@@ -103,6 +103,7 @@ module.exports = () => {
       //res.json(ob)
     })
   })
+
   app.post('/instruments/local/new', ensureAuthenticated,jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log('[instruments/dictionaries/] Received at server side')
@@ -121,6 +122,99 @@ module.exports = () => {
       res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
     })
   })
+
+  // saving instruments locally and pushing to GitHub
+  app.post('/instruments/github/new', ensureAuthenticated,jsonParser, function(req,res){
+    let user = req.user
+    if (!req.body) return res.sendStatus(400)
+    console.log('[instruments/github/new] Received at server side')
+    //console.log(req.body)
+    let term_info = req.body
+    term_info['DictionaryID'] = uuid()
+    term_info['author'] = req.user.username
+    console.log(term_info)
+    pid = term_info['DictionaryID'].split('-')
+    psname = term_info['shortName'].split(' ')
+    pname = term_info['Name'].split(' ')
+    let fileName = psname[0]+'-'+ pname[0] +'.json'
+
+    //Local save
+    let cpath = path.join(userData, '/uploads/termforms/terms-'+ fileName)
+    writeJsonFile(cpath, term_info).then(() => {
+      console.log('done')
+    })
+
+    //Saving to GitHub
+    // create instruments repository in GitHub in user's account
+    let url = 'https://api.github.com/'
+    request.get({url:url+'repos/'+req.user.username+'/instruments',headers:{'User-Agent':'brainverse','accept':'application/json'}}, function(err, resn, body){
+      //console.log(JSON.parse(body))
+      //res.send(body)
+      let jbody = JSON.parse(body)
+      if("message" in jbody){
+        console.log("has message: ")
+        if(jbody.message == "Not Found"){
+          console.log("--Message not found--")
+          console.log("access_token", github_token)
+          // create the repo
+          var options = {
+            method: 'POST',
+            url: url + 'user/repos',
+            headers: {
+              'Authorization': 'token '+ github_token,
+              'User-Agent': 'brainverse',
+              'Content-Type': 'application/json'
+              //'Content-Type': 'multipart/form-data'
+            },
+            body: {
+              "name": "instruments",
+              "description": "Repository created by BrainVerse to save and share forms being using during experimental studies"
+            },
+            json : true
+          }
+          request(options,function(err1,resn1,body1){
+            console.log("resn1.statusCode", resn1.statusCode)
+            //console.log("resn1", resn1)
+            if(!err1 && resn1.statusCode == 200 || resn1.statusCode == 201){
+              console.log("resn1.statusCode", resn1.statusCode)
+              createFileInRepo(url,term_info,fileName,user)
+            }else if(resn1.statusCode == 202){
+              setTimeout(createFileInRepo,3000,url,term_info,fileName,user)
+            }
+            //console.log("resn: ", resn1)
+            //console.log("post: create ", JSON.parse(body1).full_name)
+          })
+        } //ends - If block - NotFound
+      }else{
+        console.log("It already exist----")
+        //create File in the repo
+        createFileInRepo(url,term_info,fileName,user)
+      }
+
+      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ fileName})
+    })// end of request GET end
+  })
+
+  function createFileInRepo(url,jsonTermObj,pathToFile,user){
+    let content = Buffer.from(JSON.stringify(jsonTermObj,undefined,2)).toString('base64')
+    var options = {
+      method: 'PUT',
+      url: url + 'repos/'+ user.username+'/instruments/contents/'+ pathToFile,
+      headers: {
+        'Authorization': 'token '+ github_token,
+        'User-Agent': 'brainverse',
+        'Content-Type': 'application/json'
+      },
+      body: {
+        message: pathToFile + ' added',
+        content: content
+      },
+      json: true
+    }
+    request(options,function(err,response,body){
+      console.log("statusCode for createFile: ", response.statusCode)
+    })
+  }
 
   function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
