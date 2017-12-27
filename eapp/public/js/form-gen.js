@@ -23,6 +23,7 @@ class AlpacaForm {
     this.form = {}
     this.x = {}
     this.data = {}
+    //this.validator = {}
     this.postRender = function(){}
     this.baseForm = {
       "data": this.data,
@@ -32,7 +33,8 @@ class AlpacaForm {
       },
       "options": {
         "fields": this.fields,
-        "form": this.form
+        "form": this.form,
+        //"validator": this.validator
       },
       /*"postRender": function(control){
         console.log("inside control: ", control)
@@ -42,7 +44,8 @@ class AlpacaForm {
   render(fn){
     this.postRender = fn()
   }
-  inputForm(title, label, id, type='string', date=false, placehold='null', disable=false) {
+
+  inputForm(title, label, id, type='string', renderType='text', date=false, placehold='null', require=false,disable=false) {
     /*Input Form Method
 
       Creates a text input field
@@ -53,34 +56,57 @@ class AlpacaForm {
         label: Field label
         name: Field Name
     */
-
-    this.properties[title.toLowerCase()] = {
-      "title": title,
-      "type": type,
-      "required": true
-    }
     if (date == true) {
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "format":"date",
+        "required": require
+      }
+
       this.fields[title.toLowerCase()] = {
         "type": "date",
-        "picker": {
-            "format": "MM/DD/YYYY"
-        },
+        //"picker": {
+        "dateFormat": "MM/DD/YYYY",
+        //},
         "label": label,
         "id": id,
-        "placeholder": placehold,
-        "disabled": disable
+        //"placeholder": placehold,
+        "disabled": disable,
+        "manualEntry": true
       }
     }
     else {
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "required": require
+      }
       this.fields[title.toLowerCase()] = {
+        "type": renderType,
         "label": label,
         "id": id,
         "placeholder": placehold,
-        "disabled": disable
+        "disabled": disable,
+        "hideInitValidationError": true,
+        "validator": function(callback) {
+              var value = this.getValue();
+              if(type ==="number" && isNaN(value)){
+                callback({
+                  "status": false,
+                  "message": "Enter a number"
+                  });
+              } else {
+                  callback({
+                      "status": true
+                  })
+              }
+          }
       }
     }
   }
-   textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
+
+  textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
      this.properties[title.toLowerCase()] = {
        "title": title,
        "type": type,
@@ -94,7 +120,7 @@ class AlpacaForm {
       "disabled": disable
     }
     this.data[title.toLowerCase()] = placehold
-   }
+  }
 
    radioForm(title, label, id, op, require=false, disable=false) {
      /*Radio Form Method
