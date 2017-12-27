@@ -1,6 +1,7 @@
 /** Global Variables **/
 let collectionObj = {}
 let planListObjs = {}
+let dataTableSource = new Array()
 let serverURL = "http://127.0.0.1:3000"
 
 /*
