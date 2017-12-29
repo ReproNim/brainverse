@@ -66,9 +66,7 @@ class AlpacaForm {
 
       this.fields[title.toLowerCase()] = {
         "type": "date",
-        //"picker": {
         "dateFormat": "MM/DD/YYYY",
-        //},
         "label": label,
         "id": id,
         //"placeholder": placehold,
