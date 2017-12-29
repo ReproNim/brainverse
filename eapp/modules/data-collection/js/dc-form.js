@@ -1,5 +1,16 @@
-moment().format()
+collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
+console.log("collectionObj: ", collectionObj)
+planObjSelected = JSON.parse(localStorage.getItem('planObjSelected'))
+console.log("planObjSelected: ", planObjSelected)
 let actionObj = JSON.parse(localStorage.getItem('action'))
+console.log("actionObj: ", actionObj)
+
+$('#projectId').append('<h5> Project Name: '+collectionObj['Name']+'</h5>')
+$('#subjectId').append('<h5> Subject ID: '+ actionObj['subjectId']+'</h5>')
+$('#planId').append('<h5> Plan: '+ planObjSelected['Project Name']+'</h5>')
+$('#sessionId').append('<h5> Session: '+ actionObj['sessionName']+'</h5>')
+$('#taskId').append('<h5> Task: '+ actionObj['taskName']+'</h5>')
+$('#instrumentId').append('<h5> Instrument: '+ actionObj['instrumentName']+'</h5>')
 $.ajax({
   type: "GET",
   url: serverURL +"/acquisitions/forms/" + actionObj.instrumentName+'.json',
@@ -14,11 +25,13 @@ $.ajax({
 var form = new AlpacaForm('#dc-fields')
 form.alpacaDestroy()
 var form = new AlpacaForm('#dc-fields')
+moment().format()
 /**
 Add fields to the acquistion form UI using a specified JSON file
 */
 var fieldsCorrect = true
 let selectedFields = []
+
 function addTermsToForm(termForm){
   selectedFields = termForm['fields']
   console.log("Number of Fields in the form: ",selectedFields.length)
@@ -227,16 +240,6 @@ function checkNotes(key,notes){
 function saveDCFormData(e){
   e.preventDefault()
   let saveObj = {}
-  //Validation WORK IN PROGRESS
-  // for (let i=0; i<=selectedFields.length; i++){
-  //   if($("#ndar"+ i).val()==undefined && $("#ndar"+ i).attr('type')!='radio'){
-  //     console.log(i)
-  //     console.log($("#ndar"+ i).attr('name'))
-  //     console.log('flag')
-  //     fieldsCorrect = false
-  //   }
-  // }
-  // console.log(fieldsCorrect)
   if(fieldsCorrect == false){
     $("#termsInfoSaveMsg").empty()
     $("#termsInfoSaveMsg").append('<div class="alert alert-danger alert-dismissible" role="alert">\
@@ -261,6 +264,9 @@ function saveDCFormData(e){
     }
 
     console.log("saveObj", saveObj)
+    //RDF Graph Model
+
+
     //Save the data entered
     /*$.ajax({
       type: "POST",
@@ -288,4 +294,29 @@ function saveDCFormData(e){
 }
 $('#btn-aqInfoSave').click(function(e){
   saveDCFormData(e)
+  actionObj['status'] = 'completed'
+
+  let numSessions = planObjSelected["Sessions"].length
+  let sessions = planObjSelected["Sessions"]
+  let m=0
+  for(let i=0; i<numSessions; i++){
+    let numInst = sessions[i]["Instruments"].length
+    let inst = sessions[i]["Instruments"]
+    for(let j=0; j< numInst; j++){
+      if(inst[j].hasOwnProperty('status') && actionObj['uid']===m){
+        inst[j]["status"] = 'completed'
+        break
+      }
+      m++
+    }
+  }
+  let dataTS = JSON.parse(localStorage.getItem('dataTableSource'))
+  dataTS[actionObj['uid']]["status"] = 'completed'
+  console.log('[dc-form: save]dataTableSource:', dataTS)
+  console.log("[dc-form: save]planObjSelected: ", planObjSelected)
+
+  localStorage.setItem('action',JSON.stringify(actionObj))
+  localStorage.setItem('planObjSelected',JSON.stringify(planObjSelected))
+  localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
+  window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })

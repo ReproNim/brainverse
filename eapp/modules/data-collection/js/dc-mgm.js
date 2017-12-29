@@ -11,6 +11,7 @@ function createCollection(){
 
 function submitAction(){
   console.log("New Collection Being Added Action performed")
+  collectionObj["ID"] = uuid()
   collectionObj["Name"] = $("#collectionName").val()
   collectionObj["Description"] = $("#collectionDescription").val()
   collectionObj["version"]=0

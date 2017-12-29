@@ -45,6 +45,12 @@
     <script src='/dist/select2/js/select2.min.js', type='text/javascript'></script>
     <script src='/dist/alpaca/bootstrap/alpaca.js', type='text/javascript'></script>
     <script src='/dist/moment/moment.js', type='text/javascript'></script>
+    <script src='/dist/uuid/uuid-random.min.js'></script>
+    <script>
+      try{
+        window.uuid = module.exports
+      }catch(e){}
+    </script>
     <script src='/js/templates/template.js'></script>
     <script src='/js/form-gen.js'></script>
     <script src='/js/userAccount.js'></script>

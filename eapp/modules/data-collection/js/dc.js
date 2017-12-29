@@ -1,11 +1,6 @@
-let sessionNumbers =[]
-let sessionNames =[]
-let instrumentNames = []
-let taskNames = []
-let statuses = []
-
 $.fn.select2.defaults.set( "theme", "bootstrap" )
 $("#div-planListMenu").select2()
+
 collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("collectionObj: ", collectionObj)
 
@@ -33,6 +28,7 @@ $(document).on('hidden.bs.modal','#updateCollectionInfoModal', function(e){
   updateCollectionInfo()
 })
 
+addPlan()
 /**
 ** Updating and Saving the updated collection info into the format for rdf serialization
 **/
@@ -60,36 +56,38 @@ function displayPlanList(){
     })
   })
 }
-
-displayPlanList().then(function(planList){
-  var values = planList.map(function(planName){
-    return new Promise(function(resolve){
-      let url = serverURL+"/project-plans/" + planName
-        $.ajax({
-          type: "GET",
-          url: url,
-          accept: "application/json",
-          success: function(data){
-            console.log('acquisitions term forms:success', data)
-            resolve(data)
-          }//data
-        })
+function addPlan(){
+  displayPlanList().then(function(planList){
+    var values = planList.map(function(planName){
+      return new Promise(function(resolve){
+        let url = serverURL+"/project-plans/" + planName
+          $.ajax({
+            type: "GET",
+            url: url,
+            accept: "application/json",
+            success: function(data){
+              console.log('acquisitions term forms:success', data)
+              resolve(data)
+            }//data
+          })
+      })
     })
-  })
-  return Promise.all(values)
-}).then(function(planObjs){
-  console.log("all plan obj: ", planObjs)
-  if(planObjs.length !== 0){
-    for (let i=0;i<planObjs.length;i++){
-      $("#div-planListMenu").append('<option value="'+ planObjs[i]["Project Name"]+'">'+ planObjs[i]["Project Name"] +'</option>')
-      planListObjs[planObjs[i]["Project Name"].trim()] = planObjs[i]
+    return Promise.all(values)
+  }).then(function(planObjs){
+    console.log("all plan obj: ", planObjs)
+    if(planObjs.length !== 0){
+      for (let i=0;i<planObjs.length;i++){
+        $("#div-planListMenu").append('<option id="'+planObjs[i]["Project Name"].trim()+'" value="'+ planObjs[i]["Project Name"]+'">'+ planObjs[i]["Project Name"] +'</option>')
+        planListObjs[planObjs[i]["Project Name"].trim()] = planObjs[i]
+      }
     }
-  }
-})
+  })
+}
+
 
 $("#div-planListMenu").change(function(){
   let planSelected = $("#div-planListMenu").val()
-  let planObjSelected = planListObjs[planSelected.trim()]
+  planObjSelected = planListObjs[planSelected.trim()]
   localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
   loadPlan1(planObjSelected)
   //let test = JSON.parse(localStorage.getItem('planObjSelected'))
@@ -195,6 +193,7 @@ function loadPlan1(plan){
     console.log("index: ", index)
     console.log("rowKey: ", rowKey)
     event.stopPropagation()
+    row['subjectId'] = $("#subjectId").val()
     localStorage.setItem("action",JSON.stringify(row))
     window.location.href = serverURL+"/data-collection/html/dc-form.html"
 
@@ -224,13 +223,21 @@ function convert2jqxTableSource(plan){
       sessionNames.push(sessions[i]["Session Name"])
       taskNames.push(inst[j]["Task Name"])
       instrumentNames.push(inst[j]["InstrumentName"])
-      if(inst.hasOwnProperty('status')){
+      if(inst[j].hasOwnProperty('status')){
+        console.log("if: [dc:] status already set: ", inst[j]["status"])
         statuses.push(inst[j]["status"])
       }else{
-        statuses.push("Not completed")
+        console.log("else: status is being added to planObj and statuses")
+        inst[j]["status"] = "Not completed"
+        statuses.push(inst[j]["status"])
       }
     }
   }
+  console.log("[dc:convert2jqxTableSource]:planObjSelected", planObjSelected)
+
+  //localStorage.setItem('statuses', JSON.stringify(statuses))
+  localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
+
   for(let k=0; k<sessionNames.length;k++){
     let row = {}
     row['sessionNumber'] = sessionNumbers[k]
@@ -240,5 +247,6 @@ function convert2jqxTableSource(plan){
     row['status'] = statuses[k]
     dataTableSource[k] = row
   }
-  console.log("dataTableSource:--- ", dataTableSource)
+  console.log("---dataTableSource:--- ", dataTableSource)
+  localStorage.setItem('dataTableSource', JSON.stringify(dataTableSource))
 }

@@ -1,9 +1,17 @@
 /** Global Variables **/
 let collectionObj = {}
 let planListObjs = {}
+let planObjSelected = {}
+let sessionNumbers =[]
+let sessionNames =[]
+let instrumentNames = []
+let taskNames = []
+let statuses = []
+
 let dataTableSource = new Array()
 let serverURL = "http://127.0.0.1:3000"
 
+/** Global Variables **/
 /*
 * A generic modal where Modal body is an new alpaca form
 */
