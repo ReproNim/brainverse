@@ -146,6 +146,12 @@
   <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxlistbox.js"></script>
   <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdropdownlist.js"></script>
   <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdatatable.js"></script>
+  <script src='/dist/uuid/uuid-random.min.js'></script>
+  <script>
+    try{
+      window.uuid = module.exports
+    }catch(e){}
+  </script>
   <script src='/js/form-gen.js'></script>
   <script src='/js/templates/template.js'></script>
   <script src='/js/userAccount.js'></script>
