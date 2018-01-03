@@ -7,6 +7,8 @@ let sessionNames =[]
 let instrumentNames = []
 let taskNames = []
 let statuses = []
+let sessionIds = []
+let taskIds = []
 
 let dataTableSource = new Array()
 let serverURL = "http://127.0.0.1:3000"
