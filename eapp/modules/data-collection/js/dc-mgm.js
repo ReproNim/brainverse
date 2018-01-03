@@ -44,6 +44,9 @@ function submitAction(){
 
 
 $('#btn-newCollection').click(createCollection)
+$('#btn-back-mn').click(function(){
+  window.location.href = serverURL+"/main"
+})
 
 function displayCollectionList(){
   return new Promise(function(resolve){
@@ -123,7 +126,8 @@ displayCollectionList().then(function(dcList){
             localStorage.setItem("saveObj", JSON.stringify(dcNameObj1))
             console.log("[dc-mgm]collectionObj: ", collectionObj)
             console.log("[dc-mgm] saveobj: ", JSON.parse(localStorage.getItem('saveObj')))
-            window.location.href = serverURL+"/data-collection/html/dc.html"
+            //window.location.href = serverURL+"/data-collection/html/dc.html"
+            window.location.href = serverURL+"/data-collection/html/dc-list.html"
           }
         }
       })
