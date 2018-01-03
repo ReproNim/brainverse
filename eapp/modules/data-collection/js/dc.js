@@ -2,7 +2,10 @@ $.fn.select2.defaults.set( "theme", "bootstrap" )
 $("#div-planListMenu").select2()
 
 collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
-console.log("collectionObj: ", collectionObj)
+console.log("[dc.js]collectionObj: ", collectionObj)
+
+let saveObj = JSON.parse(localStorage.getItem("saveObj"))
+console.log("[dc.js] saveObj:", saveObj)
 
 $('#collectionInfo').append('<h4 id="collectionName">'+ collectionObj['Name']+' <a data-toggle="modal" href="#updateCollectionInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 $('#collectionInfo').append(createModal('updateCollectionInfoModal', 'Update Collection Information', 'Update'))
@@ -128,12 +131,20 @@ function loadPlan1(plan){
     localData: dataTableSource,
     dataType: "array",
     dataFields: [{
+      name: 'sessionId',
+      type:'string'
+    },
+      {
         name: 'sessionNumber',
         type: 'string'
     }, {
         name: 'sessionName',
         type: 'string'
     }, {
+      name: 'taskId',
+      type: 'string'
+
+    },{
         name: 'taskName',
         type: 'string'
     }, {
@@ -217,10 +228,18 @@ function convert2jqxTableSource(plan){
   for(let i=0; i<numSessions; i++){
     let numInst = sessions[i]["Instruments"].length
     let inst = sessions[i]["Instruments"]
+    let sessionId = ''
+
     for(let j=0; j< numInst; j++){
+      let taskId = uuid()
       m++
+      if(j === 0){
+        sessionId = uuid()
+      }
+      sessionIds.push(sessionId)
       sessionNumbers.push(i+1)
       sessionNames.push(sessions[i]["Session Name"])
+      taskIds.push(taskId)
       taskNames.push(inst[j]["Task Name"])
       instrumentNames.push(inst[j]["InstrumentName"])
       if(inst[j].hasOwnProperty('status')){
@@ -245,6 +264,8 @@ function convert2jqxTableSource(plan){
     row['taskName'] = taskNames[k]
     row['instrumentName'] = instrumentNames[k]
     row['status'] = statuses[k]
+    row['sessionId'] = sessionIds[k]
+    row['taskId'] = taskIds[k]
     dataTableSource[k] = row
   }
   console.log("---dataTableSource:--- ", dataTableSource)
