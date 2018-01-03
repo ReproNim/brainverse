@@ -21,20 +21,60 @@ module.exports = () => {
       return res.sendStatus(400)
     console.log('recieved at server side')
     let obj_info = req.body
-    obj_info['objID'] = uuid()
+    //obj_info['objID'] = obj_info['CurrentObjID']
 
-    let fName = 'experiments/entity-graph-' + obj_info['experimentid'] + '.ttl'
-    let graphId = "nidm:entity-graph-" + obj_info['experimentid']
+    let pname = obj_info['Project']['Name'].split(' ')
+    //let jsonFile = 'exp-'+ pname[0]+'-'+ obj_info['Project']['ID'] +'.json'
+    let jsonFile = 'exp-'+ pname[0]+'-'+ obj_info['objID'] +'.json'
+    //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/'+ jsonFile)
+    let cpath = path.join(userData, '/uploads/experimentdocs/'+ jsonFile)
+
+    /**
+    ** Writing plan to JSON document
+    **/
+    writeJsonFile(cpath, req.body).then(() => {
+      console.log('[ProjectActivity written to JSON Document]: ', jsonFile )
+    })
+
+    //let fName = 'experiments/entity-graph-' + obj_info['experimentid'] + '.ttl'
+    //let graphId = "nidm:entity-graph-" + obj_info['experimentid']
+    //let fName = 'experiments/activity-graph-' + obj_info['Project']['ID'] + '.ttl'
+    //let graphId = "nidm:entity-graph-" + obj_info['Project']['ProjectID']
+
+    let fName = 'experiments/activity-graph-' + obj_info['objID'] + '.ttl'
+    //let graphId = "nidm:entity-graph-" + obj_info['objID']
+    let graphId = "nidm:activity-graph-" + obj_info['Project']['ID']
+
     let nidmg = new rdfHelper.NIDMGraph()
-    nidmg.addNDAExperiment(obj_info)
+    //nidmg.addNDAExperiment(obj_info)
+    let projectNode = nidmg.addProjectActivity(obj_info)
+    let sessionNode = {}
+    let taskNode = {}
+    let agentNode = {}
+    let acqObjNode = {}
+    if(obj_info.hasOwnProperty('Session')){
+      sessionNode = nidmg.addSessionActivity(obj_info,projectNode)
+    }
+    if(obj_info.hasOwnProperty('AcquisitionActivity')){
+      taskNode = nidmg.addAcquisitionActivity(obj_info,sessionNode)
+    }
+    if(obj_info.hasOwnProperty('SubjectID')) {
+     agentNode = nidmg.addAgent(obj_info,taskNode,sessionNode)
+    }
+    if(obj_info.hasOwnProperty('fields')){
+      acqNode = nidmg.addAcquisitionObject(obj_info,taskNode,agentNode)
+    }
+
     /**
     ** Saving Graph to RDF Store
     **/
     rdfHelper.saveToRDFstore(nidmg, graphId, fName, function(graphId,tstring){
       console.log("callback fn: tstring: ", tstring)
       //let cpath = path.join(__dirname, '/../../../uploads/acquisition/'+fName)
+      //let cpath = path.join(userData, '/uploads/acquisition/'+fName)
       let cpath = path.join(userData, '/uploads/acquisition/'+fName)
-      fs.appendFile(cpath, tstring, function(err) {
+      //fs.appendFile(cpath, tstring, function(err) {
+        fs.writeFile(cpath, tstring, function(err) {
         if(err) {
           return console.log(err);
         }
@@ -43,6 +83,8 @@ module.exports = () => {
       })
     })
   })
+
+
 
   app.get('/acquisitions/forms/:name', ensureAuthenticated, function(req,res){
     //var cpath = path.join(__dirname, '/../../../uploads/termforms/')
@@ -69,6 +111,99 @@ module.exports = () => {
       console.log("[1-/instruments/local/list]instruments lists:---> ", instList)
       //resolve(instList)
       res.json({'list':instList})
+    })
+  })
+
+  app.get('/acquisitions/local/list', ensureAuthenticated,jsonParser, function(req,res){
+    let termDirPath = path.join(userData, '/uploads/experimentdocs/')
+    var listOfFiles = new Promise(function(resolve){
+      fs.readdir(termDirPath, function(err,list){
+        if(err) throw err
+        let instList = []
+        for(let i=0;i< list.length;i++){
+          if(list[i]!==".DS_Store"){
+            instList.push(list[i])
+          }
+        }
+        console.log("[1-/acquisitions/local/list]experiment project lists:---> ", instList)
+        resolve(instList)
+      })
+    })
+    listOfFiles.then(function(list){
+      //console.log("lists: then---> ", list)
+      let namesArr = list.map(function(fname){
+        return loadJsonFile(path.join(userData, '/uploads/experimentdocs/'+fname))
+      })
+      return Promise.all(namesArr)
+    }).then(function(obs){
+      let nameList = []
+      let recentObjs = {}
+      let deleteList = []
+      // Getting the chain of derivation and getting the recent version
+      for(let i = 0; i< obs.length;i++){
+        if(recentObjs.hasOwnProperty(obs[i]['Project'].ID)){
+          recentObjs[obs[i]['Project'].ID].push(obs[i])
+        }else{
+          recentObjs[obs[i]['Project'].ID] = []
+          recentObjs[obs[i]['Project'].ID].push(obs[i])
+        }
+
+      }
+      for(var key in recentObjs){
+        let ob = recentObjs[key]
+        nameList.push({"Name":ob[0]['Project']['Name'],"Description": ob[0]['Project']['Description'], "ID":ob[0]['Project']['ID']})
+      }
+      console.log("[2-/acquisitions/local/list]experiment project lists--> ", nameList)
+      res.json({"list":nameList})
+    })
+  })
+
+  app.get('/acquisitions/local/:dcId', ensureAuthenticated,jsonParser, function(req,res){
+    console.log("dcId: --", req.params.dcId)
+    let termDirPath = path.join(userData, '/uploads/experimentdocs/')
+    var listOfFiles = new Promise(function(resolve){
+      fs.readdir(termDirPath, function(err,list){
+        if(err) throw err
+        let instList = []
+        for(let i=0;i< list.length;i++){
+          if(list[i]!==".DS_Store"){
+            instList.push(list[i])
+          }
+        }
+        console.log("[1-/acquisitions/local/dcId]experiment project lists:---> ", instList)
+        resolve(instList)
+      })
+    })
+    listOfFiles.then(function(list){
+      //console.log("lists: then---> ", list)
+      let namesArr = list.map(function(fname){
+        return loadJsonFile(path.join(userData, '/uploads/experimentdocs/'+fname))
+      })
+      return Promise.all(namesArr)
+    }).then(function(obs){
+      let nameList = []
+      let recentObjs = {}
+
+      // Getting the chain of derivation and getting the recent version
+      for(let i = 0; i< obs.length;i++){
+        if(recentObjs.hasOwnProperty(obs[i]['Project'].ID)){
+          recentObjs[obs[i]['Project'].ID].push(obs[i])
+        }else{
+          recentObjs[obs[i]['Project'].ID] = []
+          recentObjs[obs[i]['Project'].ID].push(obs[i])
+        }
+
+      }
+      //for(var key in recentObjs){
+      //  let ob = recentObjs[key]
+
+      //  nameList.push({"Name":ob[0]['Project']['Name'],"Description": ob[0]['Project']['Description'], "author":ob[0]['Project']['ID']})
+      //}
+      //console.log("[2-/acquisitions/local/list]experiment project lists--> ", nameList)
+      //res.json({"list":nameList})
+      console.log("recentObjs: ", recentObjs)
+      res.json({"list":recentObjs[req.params.dcId]})
+      //res.send(recentObjs[dcId])
     })
   })
 
