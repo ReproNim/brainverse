@@ -6,6 +6,7 @@ let actionObj = JSON.parse(localStorage.getItem('action'))
 console.log("[dc-form-2] actionObj: ", actionObj)
 
 dataTableSource = JSON.parse(localStorage.getItem('dataTableSource'))
+console.log('[dc-form-2 start] dataTableSource: ',dataTableSource )
 
 $('#projectId').append('<h5> Project Name: '+ collectionObj['Name'] +'</h5>')
 $('#subjectId').append('<h5> Subject ID: '+ actionObj['subjectId'] +'</h5>')
@@ -18,12 +19,20 @@ function loadPlan(plan){
     localData: dataTableSource,
     dataType: "array",
     dataFields: [{
+      name: 'sessionId',
+      type:'string'
+    },
+      {
         name: 'sessionNumber',
         type: 'string'
     }, {
         name: 'sessionName',
         type: 'string'
     }, {
+      name: 'taskId',
+      type: 'string'
+    },
+    {
         name: 'taskName',
         type: 'string'
     }, {
@@ -36,7 +45,7 @@ function loadPlan(plan){
   }
 
   var dataAdapter = new $.jqx.dataAdapter(source)
-  
+
   $("#activityTable").jqxDataTable({
       width: 1000,
       theme: 'energyblue',
@@ -72,6 +81,8 @@ function loadPlan(plan){
           //cellsFormat: 'c2'
       }]
   })
+}
+
   $('#activityTable').on('rowClick', function (event) {
     var args = event.args
     var row = args.row
@@ -88,14 +99,4 @@ function loadPlan(plan){
 
     localStorage.setItem("action",JSON.stringify(row))
     window.location.href = serverURL+"/data-collection/html/dc-form.html"
-
-
-    /*$("#activityTable").jqxDataTable('updateRow', index, {
-        sessionNumber: row.sessionNumber,
-        sessionName: row.sessionName,
-        taskName: row.taskName,
-        instrumentName:row.instrumentName,
-        status: "completed"
-    });*/
-
   })
