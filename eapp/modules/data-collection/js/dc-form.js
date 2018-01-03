@@ -5,6 +5,9 @@ console.log("planObjSelected: ", planObjSelected)
 let actionObj = JSON.parse(localStorage.getItem('action'))
 console.log("actionObj: ", actionObj)
 
+dataTableSource = JSON.parse(localStorage.getItem('dataTableSource'))
+console.log('[dc-form: start] dataTableSource:', dataTableSource)
+
 $('#projectId').append('<h5> Project Name: '+collectionObj['Name']+'</h5>')
 $('#subjectId').append('<h5> Subject ID: '+ actionObj['subjectId']+'</h5>')
 $('#planId').append('<h5> Plan: '+ planObjSelected['Project Name']+'</h5>')
@@ -248,35 +251,62 @@ function saveDCFormData(e){
       </div>')
   }
   else{
-    saveObj['objID'] = ''
+
+
+    saveObj['fields'] = {}
     for(let i=0; i< selectedFields.length; i++){
       //If statement for when selectedFields[i] does not exist
       if (i == selectedFields.length) {
         let lb=$("#ndar"+ i).attr('name')
-        saveObj[lb] = $("#ndar"+ i).val()
+        saveObj['fields'][lb] = $("#ndar"+ i).val()
       }
       else{
         let lb=$("#ndar"+ i).attr('name') || $("input[type='radio'][name= " + selectedFields[i].name + "]").attr('name')
         console.log('lb1:', lb)
-        saveObj[lb] = $("#ndar"+ i).val() || $("input[type='radio'][name= " + selectedFields[i].name + "]:checked").val()
-        console.log('saveObj[lb]:',saveObj[lb])
+        saveObj['fields'][lb] = $("#ndar"+ i).val() || $("input[type='radio'][name= " + selectedFields[i].name + "]:checked").val()
+        console.log('saveObj[lb]:',saveObj['fields'][lb])
       }
     }
-
-    console.log("saveObj", saveObj)
+    saveObj['objID'] = uuid()
     //RDF Graph Model
+    //collectionObj['PlanID'] = collectionObj
+    //collectionObj['wasDerivedFrom'] = collectionObj["CurrentObjID"]
+    //collectionObj['version'] = collectionObj['version']+1
+    //collectionObj["CurrentObjID"] = saveObj['objID']
+    saveObj['Project'] = collectionObj
+
+
+    saveObj['Session'] = {
+      'SessionID': actionObj['sessionId'],
+      'SessionNumber': actionObj['sessionNumber'],
+      'SessionName': actionObj['sessionName']
+    }
+    saveObj['AcquisitionActivity'] = {
+      'AcquisitionActivityID':actionObj['taskId'],
+      'AcquisitionName': actionObj['taskName'],
+      'Status': 'completed'
+    }
+    saveObj['InstrumentName'] = actionObj['instrumentName']
+    saveObj['PlanID'] = planObjSelected['ProjectPlanID']
+    saveObj['SubjectID'] = actionObj['subjectId']
+
+    console.log("saveObj: ", saveObj)
+
 
 
     //Save the data entered
-    /*$.ajax({
+    $.ajax({
       type: "POST",
       url: serverURL +"/acquisitions/new",
       contentType: "application/json",
       data: JSON.stringify(saveObj),
       success: function(data){
-        console.log('success:', data)
+        console.log('[dc-form]success:', data)
+        saveObj['ObjID'] = data['tid']
+        localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
+        localStorage.setItem("saveObj", JSON.stringify(saveObj))
         //$("#div-projectFields").empty()
-        $("#termsInfoSaveMsg").empty()
+        /*$("#termsInfoSaveMsg").empty()
         $("#terms-list").empty()
         $("#terms-back").empty()
 
@@ -286,9 +316,9 @@ function saveDCFormData(e){
         </div>')
         $("#termsInfoSaveMsg").append('<br>')
         $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Another Form </button><br>')
-        $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')
+        $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')*/
       }
-    })*/
+    })
     console.log('done')
   }
 }
