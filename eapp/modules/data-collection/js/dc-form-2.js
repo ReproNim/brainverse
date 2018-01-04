@@ -14,6 +14,12 @@ $('#planId').append('<h5> Plan: '+ planObjSelected['Project Name'] +'</h5>')
 
 loadPlan(planObjSelected)
 
+$('#btn-back-pj').click(function(){
+  window.location.href = serverURL+"/data-collection/html/dc-list.html"
+})
+$('#btn-back-mn').click(function(){
+  window.location.href = serverURL+"/data-collection/html/dc-mgm.html"
+})
 function loadPlan(plan){
   var source = {
     localData: dataTableSource,
