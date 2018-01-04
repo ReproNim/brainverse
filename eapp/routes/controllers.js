@@ -279,9 +279,11 @@ module.exports = () => {
       for(i=0;i<unique.length;i++){
         let parr = unique[i]["origin"].split("#")
         let pf = parr[1].split("_")[1]
-        list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
+        let pname = unique[i]["pjname"].split(' ')
+        //list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
+        list.push("plan-"+pname[0]+"-"+pf+".json")
       }
-      console.log("list: ", list)
+      console.log("[Get /project-plans/]list: ", list)
       res.json({'list':list})
     }).catch(function(error){
       console.log("error:", error)
