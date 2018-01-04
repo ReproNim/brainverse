@@ -7,5 +7,6 @@ exports.dirPaths = [
   "/uploads/acquisition",
   "/uploads/acquisition/experiments",
   "/uploads/acquisition/plans",
-  "/uploads/plansdocs"
+  "/uploads/plansdocs",
+  "/uploads/experimentdocs"
 ]
