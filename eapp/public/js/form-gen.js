@@ -101,9 +101,84 @@ class AlpacaForm {
               }
           }
       }
+      //this.data[title.toLowerCase()] = value
     }
   }
+  // auto-filled data as argument
+  inputText(title, label, id, type='string', renderType='text', date=false, value='', require=false,disable=false) {
+    /*Input Form Method
 
+      Creates a text input field
+
+      Parameters:
+        title: short description of the property
+        type: 'string' or 'number' for now
+        label: Field label
+        name: Field Name
+    */
+    this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "required": require
+      }
+      this.fields[title.toLowerCase()] = {
+        "type": renderType,
+        "label": label,
+        "id": id,
+        "disabled": disable,
+        "readonly": true
+      }
+      this.data[title.toLowerCase()] = value
+  }
+   //auto-filled date
+  inputDate(title, label, id, type='string', renderType='text', date=false,placehold='null',require=false,disable=false){
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "type": type,
+      "format":"date",
+      "required": require
+    }
+
+    this.fields[title.toLowerCase()] = {
+      "type": "date",
+      "dateFormat": "MM/DD/YYYY",
+      "label": label,
+      "id": id,
+      //"placeholder": placehold,
+      "disabled": disable,
+      //"manualEntry": true,
+      "readonly": true
+    }
+    this.data[title.toLowerCase()] = moment().format("MM/DD/YYYY")
+  }
+
+
+    inputInteger(title, label, id, type='string', renderType='text', date=false, value='', require=false,disable=false) {
+      /*Input Form Method
+
+        Creates a text input field
+
+        Parameters:
+          title: short description of the property
+          type: 'string' or 'number' for now
+          label: Field label
+          name: Field Name
+      */
+        this.properties[title.toLowerCase()] = {
+          "title": title,
+          "type": type,
+          "required": require
+        }
+        this.fields[title.toLowerCase()] = {
+          "type": renderType,
+          "label": label,
+          "id": id,
+          "disabled": disable,
+          "readonly": true
+        }
+        this.data[title.toLowerCase()] = value
+
+    }
   textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
      this.properties[title.toLowerCase()] = {
        "title": title,
