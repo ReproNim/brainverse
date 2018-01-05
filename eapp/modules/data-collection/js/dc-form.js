@@ -1,12 +1,18 @@
-collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
+let collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("collectionObj: ", collectionObj)
-planObjSelected = JSON.parse(localStorage.getItem('planObjSelected'))
+let planObjSelected = JSON.parse(localStorage.getItem('planObjSelected'))
 console.log("planObjSelected: ", planObjSelected)
 let actionObj = JSON.parse(localStorage.getItem('action'))
 console.log("actionObj: ", actionObj)
 
 dataTableSource = JSON.parse(localStorage.getItem('dataTableSource'))
 console.log('[dc-form: start] dataTableSource:', dataTableSource)
+let prevSaveObj={}
+let dataSaveObj = localStorage.getItem('saveObj')
+if(dataSaveObj !== null){
+  prevSaveObj = JSON.parse(localStorage.getItem('saveObj'))
+  console.log("prevSaveObj: ", prevSaveObj)
+}
 
 $('#projectId').append('<h5> Project Name: '+collectionObj['Name']+'</h5>')
 $('#subjectId').append('<h5> Subject ID: '+ actionObj['subjectId']+'</h5>')
@@ -58,6 +64,8 @@ function addTermsToForm(termForm){
     if(selectedFields[i].hasOwnProperty('renderType')){
       renderType = selectedFields[i].renderType
     }
+
+    console.log("-- Field being added to form: ", selectedFields[i])
     // check the 'notes' field for any value specified
     let notes = checkNotes(selectedFields[i].name,selectedFields[i].notes)
     if(notes != null){
@@ -69,18 +77,32 @@ function addTermsToForm(termForm){
     if(selectedFields[i].valueRange == null || selectedFields[i].valueRange.length ===0){
       /* Case1: No Value Range */
       if (selectedFields[i].type == "Integer") {
-        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange,fieldRequired,false)
-
+        if (selectedFields[i].name ==='interview_age') {
+          console.log("[interview_age] Interview Age Field ---:",selectedFields[i].name )
+          if((prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj.hasOwnProperty('DateOfBirth')){
+              let interview_age = moment().diff(prevSaveObj['DateOfBirth'],'months')
+              console.log("[dc-form.js]interview_age calculated: ", interview_age)
+              form.inputInteger(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined,interview_age, fieldRequired,false)
+          }else{
+            form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange,fieldRequired,false)
+          }
+        }else{
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange,fieldRequired,false)
+        }
       }
       else if (selectedFields[i].type == "Date") {
-        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", "date",true, fieldValueRange, fieldRequired,false)
-
+        //form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", "date",true, fieldValueRange, fieldRequired,false)
+        form.inputDate(fieldName, fieldDescription, 'ndar'+i, "string", "date",true, fieldValueRange, fieldRequired,false)
       }
       else {
-        form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", renderType,undefined, fieldValueRange, fieldRequired,false)
+        if(selectedFields[i].name ==='src_subject_id'){
+          form.inputText(fieldName, fieldDescription, 'ndar'+i, "string", renderType,undefined, actionObj['subjectId'], fieldRequired,false)
+        }else{
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", renderType,undefined, fieldValueRange, fieldRequired,false)
+        }
 
       }
-      console.log("CASE1: form::::", form.baseForm)
+      //console.log("CASE1: form::::", form.baseForm)
     }
     else if (selectedFields[i].valueRange.indexOf(';')> -1 || $.isArray(selectedFields[i].valueRange)){
       /*  Case 2:
@@ -104,13 +126,13 @@ function addTermsToForm(termForm){
           //if((notes != null) && (Object.values(notes).length ==  options.length)){
           //  options = Object.values(notes)
           //}
-      console.log("c2::options::", options)
-      console.log("c2::options.length::", options.length)
+      //console.log("c2::options::", options)
+      //console.log("c2::options.length::", options.length)
 
       var doubleoption = options.length==2 && selectedFields[i].valueRange.indexOf("::")== -1
 
       for (let j=0; j< options.length; j++){
-        console.log("Adding:",options[j])
+        //console.log("Adding:",options[j])
         if(options[j].indexOf("::")> -1){
           let sub_options = options[j].split("::")
           for(let k=sub_options[0];k<=sub_options[1];k++){
@@ -160,8 +182,8 @@ function addTermsToForm(termForm){
       else{
         //sub_options1 = Object.values(notes)
         sub_options1 = nvalues
-        console.log("c3::sub_options1:: ", sub_options1)
-        console.log("c3::sub_options1.length:: ", sub_options1.length)
+        //console.log("c3::sub_options1:: ", sub_options1)
+        //console.log("c3::sub_options1.length:: ", sub_options1.length)
         //console.log("notes: ", notes)
         if(sub_options1.length == 1){
           sub_options1 = selectedFields[i].valueRange.trim().split("::")
@@ -169,8 +191,8 @@ function addTermsToForm(termForm){
         //console.log(":: ",sub_options1)
       }
 
-      console.log("c3-1::sub-options1:: ",sub_options1)
-      console.log("c3-1::sub_options1.length:: ", sub_options1.length)
+      //console.log("c3-1::sub-options1:: ",sub_options1)
+      //console.log("c3-1::sub_options1.length:: ", sub_options1.length)
 
       if(sub_options1[1].trim()>20){
         if (selectedFields[i].type == "Integer") {
@@ -243,16 +265,6 @@ function checkNotes(key,notes){
 function saveDCFormData(e){
   e.preventDefault()
   let saveObj = {}
-  if(fieldsCorrect == false){
-    $("#termsInfoSaveMsg").empty()
-    $("#termsInfoSaveMsg").append('<div class="alert alert-danger alert-dismissible" role="alert">\
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
-        <strong>Error!</strong> You must either complete form or correct input types.\
-      </div>')
-  }
-  else{
-
-
     saveObj['fields'] = {}
     for(let i=0; i< selectedFields.length; i++){
       //If statement for when selectedFields[i] does not exist
@@ -265,17 +277,17 @@ function saveDCFormData(e){
         console.log('lb1:', lb)
         saveObj['fields'][lb] = $("#ndar"+ i).val() || $("input[type='radio'][name= " + selectedFields[i].name + "]:checked").val()
         console.log('saveObj[lb]:',saveObj['fields'][lb])
+        if(selectedFields[i].name === 'interview_age'){
+          let iage = saveObj['fields'][lb]
+          let dateOfBirth = moment().subtract(iage,'months').calendar()
+          console.log("date of birth: ", dateOfBirth)
+          saveObj['DateOfBirth'] = dateOfBirth
+        }
+
       }
     }
     saveObj['objID'] = uuid()
-    //RDF Graph Model
-    //collectionObj['PlanID'] = collectionObj
-    //collectionObj['wasDerivedFrom'] = collectionObj["CurrentObjID"]
-    //collectionObj['version'] = collectionObj['version']+1
-    //collectionObj["CurrentObjID"] = saveObj['objID']
     saveObj['Project'] = collectionObj
-
-
     saveObj['Session'] = {
       'SessionID': actionObj['sessionId'],
       'SessionNumber': actionObj['sessionNumber'],
@@ -290,8 +302,8 @@ function saveDCFormData(e){
     saveObj['PlanID'] = planObjSelected['ProjectPlanID']
     saveObj['SubjectID'] = actionObj['subjectId']
 
-    console.log("saveObj: ", saveObj)
-
+    console.log("[dc-form] saveObj: ", saveObj)
+    localStorage.setItem("saveObj", JSON.stringify(saveObj))
 
 
     //Save the data entered
@@ -302,25 +314,16 @@ function saveDCFormData(e){
       data: JSON.stringify(saveObj),
       success: function(data){
         console.log('[dc-form]success:', data)
-        saveObj['ObjID'] = data['tid']
-        localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
-        localStorage.setItem("saveObj", JSON.stringify(saveObj))
-        //$("#div-projectFields").empty()
-        /*$("#termsInfoSaveMsg").empty()
-        $("#terms-list").empty()
-        $("#terms-back").empty()
-
-        $("#termsInfoSaveMsg").append('<br><div class="alert alert-success fade in" role="alert">\
-          <a href="#" class="close" data-dismiss="alert">&times;</a>\
-          <strong>Aquisition Object Saved in uploads/acquisition/'+ data['fid']+'!</strong>\
-        </div>')
-        $("#termsInfoSaveMsg").append('<br>')
-        $("#terms-list").append('<button id= "btn-pj-list" class="btn btn-primary">Fill up Another Form </button><br>')
-        $("#terms-back").append('<button id= "btn-back" class="btn btn-primary">Back To Main Page </button>')*/
+        //saveObj['ObjID'] = data['tid']
+        //localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
+        //localStorage.setItem("saveObj", JSON.stringify(saveObj))
+        saveObj = JSON.parse(localStorage.getItem("saveObj"))
+        console.log("[dc-form: ajax] saveObj: ", saveObj)
+        console.log('done')
       }
     })
-    console.log('done')
-  }
+
+
 }
 $('#btn-aqInfoSave').click(function(e){
   saveDCFormData(e)
@@ -344,7 +347,6 @@ $('#btn-aqInfoSave').click(function(e){
   dataTS[actionObj['uid']]["status"] = 'completed'
   console.log('[dc-form: save]dataTableSource:', dataTS)
   console.log("[dc-form: save]planObjSelected: ", planObjSelected)
-
   localStorage.setItem('action',JSON.stringify(actionObj))
   localStorage.setItem('planObjSelected',JSON.stringify(planObjSelected))
   localStorage.setItem('dataTableSource', JSON.stringify(dataTS))

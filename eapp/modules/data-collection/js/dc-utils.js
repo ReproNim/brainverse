@@ -1,7 +1,7 @@
 /** Global Variables **/
-let collectionObj = {}
+//let collectionObj = {}
 let planListObjs = {}
-let planObjSelected = {}
+//let planObjSelected = {}
 let sessionNumbers =[]
 let sessionNames =[]
 let instrumentNames = []
@@ -10,6 +10,7 @@ let statuses = []
 let sessionIds = []
 let taskIds = []
 let subjectIds = []
+//let saveObj = {}
 
 let dataTableSource = new Array()
 let serverURL = "http://127.0.0.1:3000"

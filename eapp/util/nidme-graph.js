@@ -345,6 +345,12 @@ var NIDMGraph = class NIDMGraph {
     store.rdf.createNamedNode(store.rdf.resolve("rdf:a")),
     store.rdf.createNamedNode(store.rdf.resolve("prov:Agent"))))
 
+    if(jsonObj.hasOwnProperty('DateOfBirth')){
+      this.rgraph.add(store.rdf.createTriple(agentNode,
+      store.rdf.createNamedNode(store.rdf.resolve("nidm:dateOfBirth")),
+      store.rdf.createLiteral(jsonObj['DateOfBirth'],null,store.rdf.resolve("xsd:dateTime"))))
+    }
+
     this.rgraph.add(store.rdf.createTriple(agentNode,
     store.rdf.createNamedNode(store.rdf.resolve("prov:wasAssociatedWith")),
     taskNode))

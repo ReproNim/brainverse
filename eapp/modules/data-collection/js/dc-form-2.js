@@ -1,9 +1,12 @@
-collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
+let collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("[dc-form-2] collectionObj: ", collectionObj)
-planObjSelected = JSON.parse(localStorage.getItem('planObjSelected'))
+let planObjSelected = JSON.parse(localStorage.getItem('planObjSelected'))
 console.log("[dc-form-2] planObjSelected: ", planObjSelected)
 let actionObj = JSON.parse(localStorage.getItem('action'))
 console.log("[dc-form-2] actionObj: ", actionObj)
+
+let prevSaveObj = JSON.parse(localStorage.getItem("saveObj"))
+console.log("[dc-form-2] prevSaveObj: ", prevSaveObj)
 
 dataTableSource = JSON.parse(localStorage.getItem('dataTableSource'))
 console.log('[dc-form-2 start] dataTableSource: ',dataTableSource )

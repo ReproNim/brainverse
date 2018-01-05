@@ -4,8 +4,8 @@ $("#div-planListMenu").select2()
 collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("[dc.js]collectionObj: ", collectionObj)
 
-let saveObj = JSON.parse(localStorage.getItem("saveObj"))
-console.log("[dc.js] saveObj:", saveObj)
+/*saveObj = JSON.parse(localStorage.getItem("saveObj"))
+console.log("[dc.js] saveObj:", saveObj)*/
 
 $('#collectionInfo').append('<h4 id="collectionName">'+ collectionObj['Name']+' <a data-toggle="modal" href="#updateCollectionInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 $('#collectionInfo').append(createModal('updateCollectionInfoModal', 'Update Collection Information', 'Update'))
@@ -92,40 +92,23 @@ $("#div-planListMenu").change(function(){
   let planSelected = $("#div-planListMenu").val()
   planObjSelected = planListObjs[planSelected.trim()]
   localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
-  loadPlan1(planObjSelected)
+  dataTableSource = []
+  sessionNumbers =[]
+  sessionNames =[]
+  instrumentNames = []
+  taskNames = []
+  statuses = []
+  sessionIds = []
+  taskIds = []
+  subjectIds = []
+  loadPlan(planObjSelected)
+
   //let test = JSON.parse(localStorage.getItem('planObjSelected'))
   //console.log("test: ", test)
 })
 
-//Show the plan in kanaban board style with status
+
 function loadPlan(plan){
- // append all sessions informations into the table
- $("#activityList").empty()
- let numSessions = plan["Sessions"].length
- let sessions = plan["Sessions"]
- let tableHTML = ''
- for(let i=0; i<numSessions; i++){
-
-  let numInst = sessions[i]["Instruments"].length
-  let inst = sessions[i]["Instruments"]
-  for(let j=0; j< numInst; j++){
-    tableHTML = tableHTML + '<tr><td class="rowlink-skip">' + (i+1) + '</td><td class="rowlink-skip">'+sessions[i]["Session Name"]+'</td>'
-    tableHTML = tableHTML + '<td class="rowlink-skip">' + inst[j]["Task Name"] + '</td>' + '<td class="rowlink-skip"><a href="#rowlinkModal" data-toggle="modal">'+inst[j]["InstrumentName"] +'</a></td>'
-    if(inst.hasOwnProperty('status')){
-      tableHTML = tableHTML + '<td class="rowlink-skip">'+inst[j]["status"]+' </td></tr>'
-    }else{
-      tableHTML = tableHTML + '<td class="rowlink-skip"> Not Completed </a></td></tr>'
-    }
-  }
- }
- $("#activityList").append('<table class="table table-striped table-bordered table-hover" id="planSummary">\
- <thead><tr><th>Session Number</th> <th> Session Name</th><th>Task Name</th><th>Instrument Name</th><th>Status </th></tr></thead>\
- <tbody data-link="row" class="rowlink">'+tableHTML+'</tbody>\
- </table>')
-
-}
-
-function loadPlan1(plan){
   convert2jqxTableSource(plan)
   var source = {
     localData: dataTableSource,
@@ -255,7 +238,7 @@ function convert2jqxTableSource(plan){
   console.log("[dc:convert2jqxTableSource]:planObjSelected", planObjSelected)
 
   //localStorage.setItem('statuses', JSON.stringify(statuses))
-  localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
+  //localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
 
   for(let k=0; k<sessionNames.length;k++){
     let row = {}

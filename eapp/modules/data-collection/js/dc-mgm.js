@@ -11,6 +11,7 @@ function createCollection(){
 
 function submitAction(){
   console.log("New Collection Being Added Action performed")
+  let collectionObj = {}
   collectionObj["ID"] = uuid()
   collectionObj["Name"] = $("#collectionName").val()
   collectionObj["Description"] = $("#collectionDescription").val()
@@ -25,7 +26,7 @@ function submitAction(){
   //saveObj['objID'] = collectionObj["CurrentObjID"]
   saveObj['objID'] = uuid()
   saveObj['Project'] = collectionObj
-  console.log("saveObj: ", saveObj)
+  console.log("[dc-mgm.js]saveObj: ", saveObj)
   $.ajax({
     type: "POST",
     url: serverURL +"/acquisitions/new",
@@ -34,11 +35,12 @@ function submitAction(){
     success: function(data){
       console.log('[dc-mgm]success:', data, "  data['tid']: ",data['tid'])
       //saveObj['ObjID'] = data['tid']
-      localStorage.setItem("saveObj", JSON.stringify(saveObj))
-      console.log("saveObj: ", JSON.parse(localStorage.getItem('saveObj')))
+      //localStorage.setItem("saveObj", JSON.stringify(saveObj))
+      //console.log("[dc-mgm.js] saveObj: ", JSON.parse(localStorage.getItem('saveObj')))
     }
   })
 
+  //window.location.href = serverURL+"/data-collection/html/dc-list.html"
   window.location.href = serverURL+"/data-collection/html/dc.html"
 }
 
@@ -86,52 +88,110 @@ displayCollectionList().then(function(dcList){
   return Promise.all(values)
 }).then(function(dcObjs){
   console.log("all project obj: ", dcObjs)
-  localStorage.setItem('array dcObjs', JSON.stringify(dcObjs))
-  if(dcObjs.length !== 0){
-    $('#div-collectionList').append('<table class="table table-striped" id="tab1"></table>')
-    let instTable = document.getElementById("tab1")
-    var header = instTable.createTHead()
-    var rowH = header.insertRow(0)
-    var cellH = rowH.insertCell(0)
-    var cellD = rowH.insertCell(1)
-    cellH.innerHTML = "<b>Project Data Collection Name</b>";
-    cellD.innerHTML = "<b>Description</b>"
-    for (let i=0;i<dcObjs.length;i++){
-      let row = instTable.insertRow(i+1)
-      console.log("dcObjs[i]: ", dcObjs[i].list[0])
-      let dcObj1 = dcObjs[i].list[0]
-      let cell0 = row.insertCell(0)
-      let cell1 = row.insertCell(1)
-      //console.log("dcObj: ", dcObj[i][0]["Name"])
-      cell0.innerHTML = dcObj1["Project"]["Name"]
-      cell1.innerHTML = dcObj1["Project"]["Description"]
-      row.addEventListener("click",function(e){
-        var target = e.target;
-        if ( target.nodeName != 'TD' )
-          return;
-        var columns = target.parentNode.getElementsByTagName( 'td' );
-        for ( var i = columns.length; i-- ; ){
-          let dcNameObj = localStorage.getItem(columns[ i ].innerHTML)
-          console.log("[dc-mgm] dcNameObj:", dcNameObj)
-          if(dcNameObj != null){
-            let dcNameObj1 = JSON.parse(dcNameObj)
-            collectionObj["Name"] = dcNameObj1["Project"]["Name"]
-            collectionObj["Description"] = dcNameObj1["Project"]["Description"]
-            collectionObj["ID"] = dcNameObj1["Project"]["ID"]
-            collectionObj["version"]= dcNameObj1["Project"]["version"]
-            collectionObj["created"] = dcNameObj1["Project"]["created"]
-            //collectionObj["wasDerivedFrom"] = dcNameObj1["Project"]["wasDerivedFrom"]
-            //collectionObj["CurrentObjID"] = dcNameObj1["Project"]["CurrentObjID"]
-            localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
-            localStorage.setItem("saveObj", JSON.stringify(dcNameObj1))
-            console.log("[dc-mgm]collectionObj: ", collectionObj)
-            console.log("[dc-mgm] saveobj: ", JSON.parse(localStorage.getItem('saveObj')))
-            //window.location.href = serverURL+"/data-collection/html/dc.html"
-            window.location.href = serverURL+"/data-collection/html/dc-list.html"
-          }
-        }
-      })
-      localStorage.setItem(dcObj1["Project"]["Name"], JSON.stringify(dcObj1))
-    }
+  loadCollectionInfo(dcObjs)
+})
+
+let collectionTableSource = new Array()
+let collectionNames = []
+let collectionIds = []
+let collectionDescriptions = []
+let collectionVersions = []
+let collectionCreated =[]
+
+function convert2CollectionTableSource(dcObjs){
+  console.log("[dc-mgm: convert2AcqTableSource list] dcObjs", dcObjs)
+  for (let i=0;i<dcObjs.length;i++){
+    console.log("dcObjs[i].list[0]: ", dcObjs[i].list[0])
+    let dcObj1 = dcObjs[i].list[0]
+    collectionNames.push(dcObj1['Project']['Name'])
+    collectionDescriptions.push(dcObj1['Project']['Description'])
+    collectionIds.push(dcObj1['Project']['ID'])
+    collectionVersions.push(dcObj1['Project']['version'])
+    collectionCreated.push(dcObj1['Project']['created'])
   }
+  for(let k=0;k<collectionNames.length;k++){
+    let row = {}
+    row['collectionName'] = collectionNames[k]
+    row['collectionDescription'] = collectionDescriptions[k]
+    row['collectionId'] = collectionIds[k]
+    row['collectionVersion'] = collectionVersions[k]
+    row['collectionCreated'] = collectionCreated[k]
+    collectionTableSource[k] = row
+  }
+  console.log("[dc-mgm.js] --collectionTableSource--:",collectionTableSource )
+}
+
+function loadCollectionInfo(values){
+  convert2CollectionTableSource(values)
+  var source = {
+    localData: collectionTableSource,
+    dataType: "array",
+    dataFields: [{
+      name: 'collectionName',
+      type:'string'
+    },
+    {
+      name: 'collectionDescription',
+      type:'string'
+    },
+      {
+        name: 'collectionId',
+        type: 'string'
+    }, {
+        name: 'collectionCreated',
+        type: 'string'
+    }, {
+      name: 'collectionVersion',
+      type: 'string'
+    }]
+  }
+
+  var dataAdapter = new $.jqx.dataAdapter(source)
+
+  $("#collectionTable").jqxDataTable({
+      width: 1000,
+      theme: 'energyblue',
+      //pageable: true,
+      //pagerMode: 'advanced',
+      filterable: true,
+      source: dataAdapter,
+      columns: [{
+        text: 'Collection Name',
+        dataField: 'collectionName',
+        width: 400
+        },
+        {
+          text: 'Description',
+          dataField: 'collectionDescription',
+          width: 400
+      }, {
+          text: 'Created',
+          dataField: 'collectionCreated',
+          width: 200
+      }]
+  })
+
+}
+$('#collectionTable').on('rowClick', function (event) {
+  var args = event.args
+  var row = args.row
+  var index = args.index;
+  // row key
+  var rowKey = args.key;
+
+  console.log("args: ", args)
+  console.log("row clicked:", row)
+  console.log("index: ", index)
+  console.log("rowKey: ", rowKey)
+  event.stopPropagation()
+
+  let collectionObj = {}
+  collectionObj["Name"] = row['collectionName']
+  collectionObj["Description"] = row['collectionDescription']
+  collectionObj["ID"] = row['collectionId']
+  collectionObj["version"]= row['collectionVersion']
+  collectionObj["created"] = row['collectionCreated']
+  localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
+  //console.log("collectionObj after setItem: ", JSON.parse(localStorage.getItem("collectionObj")))
+  window.location.href = serverURL+"/data-collection/html/dc-list.html"
 })
