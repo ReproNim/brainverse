@@ -20,21 +20,38 @@ $('#planId').append('<h5> Plan: '+ planObjSelected['Project Name']+'</h5>')
 $('#sessionId').append('<h5> Session: '+ actionObj['sessionName']+'</h5>')
 $('#taskId').append('<h5> Task: '+ actionObj['taskName']+'</h5>')
 $('#instrumentId').append('<h5> Instrument: '+ actionObj['instrumentName']+'</h5>')
-$.ajax({
-  type: "GET",
-  url: serverURL +"/acquisitions/forms/" + actionObj.instrumentName+'.json',
-  accept: "application/json",
-  success: function(data){
-    console.log('acquistions term forms:success', data)
-    addTermsToForm(data)
-  }//data
-})
-
 
 var form = new AlpacaForm('#dc-fields')
 form.alpacaDestroy()
 var form = new AlpacaForm('#dc-fields')
 moment().format()
+
+let prefilledFields = {'gender':'',
+                        'dateOfBirth':''}
+
+queryGraph(actionObj['subjectId'],'gender').then(function(value){
+  prefilledFields['gender'] = value['attr']
+  console.log("value for gender field: ",prefilledFields['gender'])
+  queryGraph(actionObj['subjectId'],'dateofbirth').then (function(value1){
+    //if(typeof value1 !== 'undefined'){
+      prefilledFields['dateOfBirth'] = value1['attr']
+      console.log("value for dateof birth field: ",prefilledFields['dateOfBirth'])
+    //}
+    $.ajax({
+      type: "GET",
+      url: serverURL +"/acquisitions/forms/" + actionObj.instrumentName+'.json',
+      accept: "application/json",
+      success: function(data){
+        console.log('acquistions term forms:success', data)
+        addTermsToForm(data)
+      }//data
+    })
+  })
+}).catch(function(error){
+  console.log("error: ",error)
+})
+
+
 /**
 Add fields to the acquistion form UI using a specified JSON file
 */
@@ -79,8 +96,11 @@ function addTermsToForm(termForm){
       if (selectedFields[i].type == "Integer") {
         if (selectedFields[i].name ==='interview_age') {
           console.log("[interview_age] Interview Age Field ---:",selectedFields[i].name )
-          if((prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj.hasOwnProperty('DateOfBirth')){
-              let interview_age = moment().diff(prevSaveObj['DateOfBirth'],'months')
+          //if((prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj.hasOwnProperty('DateOfBirth')){
+          if(prefilledFields['dateOfBirth']!==''){
+              console.log("dateOfBirth is not empty: ", prefilledFields['dateOfBirth'])
+              //let interview_age = moment().diff(prevSaveObj['DateOfBirth'],'months')
+              let interview_age = moment().diff(prefilledFields['dateOfBirth'],'months')
               console.log("[dc-form.js]interview_age calculated: ", interview_age)
               form.inputInteger(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined,interview_age, fieldRequired,false)
           }else{
@@ -148,14 +168,8 @@ function addTermsToForm(termForm){
         //options = Object.values(notes)
         options = nvalues
         if(doubleoption){
-          if(selectedFields[i].name == 'gender' && (prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj['fields'].hasOwnProperty('gender')){
-            /*queryGraph(actionObj['subjectId'],'gender').then(function(value){
-              form.inputRadio(fieldName, fieldDescription, 'ndar'+i, options,value['attr'],fieldRequired,false)
-            }).catch(function(error){
-              console.log("error: ",error)
-            })*/
-            form.inputRadio(fieldName, fieldDescription, 'ndar'+i, options,prevSaveObj['fields']['gender'],fieldRequired,false)
-
+          if(selectedFields[i].name == 'gender' && (prefilledFields['gender'] !== '') && (typeof prefilledFields['gender'] !=='undefined')){
+            form.inputRadio(fieldName, fieldDescription, 'ndar'+i, options,prefilledFields['gender'],fieldRequired,false)
           }else{
             form.radioForm(fieldName, fieldDescription, 'ndar'+i, options,fieldRequired,false)
           }
