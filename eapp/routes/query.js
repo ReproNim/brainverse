@@ -46,7 +46,6 @@ module.exports = () => {
             }
             //console.log("results: ", results)
             if(typeof results !== 'undefined'  && results !== []){
-              //console.log("results value undefined? ", typeof(results) === 'undefined')
               console.log("[if] results is defined: [0]", results[0])
               if(typeof results[0]!=='undefined' && results[0].hasOwnProperty('dateOfBirth')){
                 resolve({

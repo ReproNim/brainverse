@@ -26,42 +26,54 @@ form.alpacaDestroy()
 var form = new AlpacaForm('#dc-fields')
 moment().format()
 
-let prefilledFields = {'gender':'',
-                        'dateOfBirth':''}
+let prefilledFields = {'gender':'','dateOfBirth':''}
+
+/*
+* Query an activity graph based on SubjectID and Attribute
+*/
+function queryGraph(subjectId,attrName){
+  return new Promise(function(resolve){
+    $.ajax({
+    type: "GET",
+    url: serverURL +"/query/graphs/" + subjectId+'/'+attrName,
+    accept: "application/json",
+    success: function(data){
+      console.log('Query Graph ----:success', data)
+      resolve(data)
+    }//data
+    })
+  })
+}
 
 queryGraph(actionObj['subjectId'],'gender').then(function(value){
   prefilledFields['gender'] = value['attr']
   console.log("value for gender field: ",prefilledFields['gender'])
   queryGraph(actionObj['subjectId'],'dateofbirth').then (function(value1){
-    //if(typeof value1 !== 'undefined'){
-      prefilledFields['dateOfBirth'] = value1['attr']
-      console.log("value for dateof birth field: ",prefilledFields['dateOfBirth'])
-    //}
+    prefilledFields['dateOfBirth'] = value1['attr']
+    console.log("value for dateof birth field: ",prefilledFields['dateOfBirth'])
     $.ajax({
-      type: "GET",
-      url: serverURL +"/acquisitions/forms/" + actionObj.instrumentName+'.json',
-      accept: "application/json",
-      success: function(data){
-        console.log('acquistions term forms:success', data)
-        addTermsToForm(data)
-      }//data
-    })
+    type: "GET",
+    url: serverURL +"/acquisitions/forms/" + actionObj.instrumentName+'.json',
+    accept: "application/json",
+    success: function(data){
+      console.log('acquistions term forms:success', data)
+      addTermsToForm(data)
+    }//data
+  })
   })
 }).catch(function(error){
-  console.log("error: ",error)
+  console.log("query graph error: ",error)
 })
 
 
 /**
 Add fields to the acquistion form UI using a specified JSON file
 */
-var fieldsCorrect = true
 let selectedFields = []
 
 function addTermsToForm(termForm){
   selectedFields = termForm['fields']
   console.log("Number of Fields in the form: ",selectedFields.length)
-  //console.log("x",x.length)
 
   //Create ungenerated JSON form
 
@@ -96,13 +108,11 @@ function addTermsToForm(termForm){
       if (selectedFields[i].type == "Integer") {
         if (selectedFields[i].name ==='interview_age') {
           console.log("[interview_age] Interview Age Field ---:",selectedFields[i].name )
-          //if((prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj.hasOwnProperty('DateOfBirth')){
           if(prefilledFields['dateOfBirth']!==''){
-              console.log("dateOfBirth is not empty: ", prefilledFields['dateOfBirth'])
-              //let interview_age = moment().diff(prevSaveObj['DateOfBirth'],'months')
-              let interview_age = moment().diff(prefilledFields['dateOfBirth'],'months')
-              console.log("[dc-form.js]interview_age calculated: ", interview_age)
-              form.inputInteger(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined,interview_age, fieldRequired,false)
+            console.log("dateOfBirth is not empty: ", prefilledFields['dateOfBirth'])
+            let interview_age = moment().diff(prefilledFields['dateOfBirth'],'months')
+            console.log("[dc-form.js]interview_age calculated: ", interview_age)
+            form.inputInteger(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined,interview_age, fieldRequired,false)
           }else{
             form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange,fieldRequired,false)
           }
@@ -193,8 +203,7 @@ function addTermsToForm(termForm){
           form.radioForm(fieldName, fieldDescription,'ndar'+i, optionList, fieldRequired,false)
         }
       }
-    }
-    else if (selectedFields[i].valueRange.indexOf("::")> -1){
+    }else if(selectedFields[i].valueRange.indexOf("::")> -1){
       /*
       * Case3: valueRange of the form - 0::3
       * check notes - parse notes
@@ -207,17 +216,12 @@ function addTermsToForm(termForm){
         //sub_options1 = Object.values(notes)
         sub_options1 = nvalues
         //console.log("c3::sub_options1:: ", sub_options1)
-        //console.log("c3::sub_options1.length:: ", sub_options1.length)
-        //console.log("notes: ", notes)
         if(sub_options1.length == 1){
           sub_options1 = selectedFields[i].valueRange.trim().split("::")
         }
         //console.log(":: ",sub_options1)
       }
-
       //console.log("c3-1::sub-options1:: ",sub_options1)
-      //console.log("c3-1::sub_options1.length:: ", sub_options1.length)
-
       if(sub_options1[1].trim()>20){
         if (selectedFields[i].type == "Integer") {
           form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", undefined, fieldValueRange, fieldRequired,false)
@@ -228,26 +232,20 @@ function addTermsToForm(termForm){
         else {
           form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", undefined, fieldValueRange, fieldRequired,false)
         }
-      }
-
-      else{
+      }else{
         let optionList = []
-
         if(notes == null || notes.hasOwnProperty(selectedFields[i].name)){
           for(let m=sub_options1[0].trim();m<sub_options1[1].trim();m++){
             optionList.push(m)
           }
-        }
-
-        else{
+        }else{
           for(let m=0;m<sub_options1.length;m++){
             optionList.push(sub_options1[m])
           }
         }
         form.radioForm(fieldName, fieldDescription,'ndar'+i, optionList,fieldRequired, false)
       }
-    }
-    else{
+    }else{
       if (selectedFields[i].type == "Integer") {
         form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange,fieldRequired,false)
       }
@@ -337,9 +335,6 @@ function saveDCFormData(e){
       data: JSON.stringify(saveObj),
       success: function(data){
         console.log('[dc-form]success:', data)
-        //saveObj['ObjID'] = data['tid']
-        //localStorage.setItem("collectionObj",JSON.stringify(collectionObj))
-        //localStorage.setItem("saveObj", JSON.stringify(saveObj))
         saveObj = JSON.parse(localStorage.getItem("saveObj"))
         console.log("[dc-form: ajax] saveObj: ", saveObj)
         console.log('done')
@@ -375,18 +370,3 @@ $('#btn-aqInfoSave').click(function(e){
   localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
   window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
-
-//queryGraph('S11','gender')
-function queryGraph(subjectId,attrName){
-  return new Promise(function(resolve){
-    $.ajax({
-    type: "GET",
-    url: serverURL +"/query/graphs/" + subjectId+'/'+attrName,
-    accept: "application/json",
-    success: function(data){
-      console.log('Query Graph ----:success', data)
-      resolve(data)
-    }//data
-    })
-  })
-}
