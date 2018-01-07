@@ -148,7 +148,17 @@ function addTermsToForm(termForm){
         //options = Object.values(notes)
         options = nvalues
         if(doubleoption){
-          form.radioForm(fieldName, fieldDescription, 'ndar'+i, options,fieldRequired,false)
+          if(selectedFields[i].name == 'gender' && (prevSaveObj['SubjectID'] == actionObj['subjectId']) && prevSaveObj['fields'].hasOwnProperty('gender')){
+            /*queryGraph(actionObj['subjectId'],'gender').then(function(value){
+              form.inputRadio(fieldName, fieldDescription, 'ndar'+i, options,value['attr'],fieldRequired,false)
+            }).catch(function(error){
+              console.log("error: ",error)
+            })*/
+            form.inputRadio(fieldName, fieldDescription, 'ndar'+i, options,prevSaveObj['fields']['gender'],fieldRequired,false)
+
+          }else{
+            form.radioForm(fieldName, fieldDescription, 'ndar'+i, options,fieldRequired,false)
+          }
         }
         else{
           for(let m=0;m<options.length;m++){
@@ -283,7 +293,6 @@ function saveDCFormData(e){
           console.log("date of birth: ", dateOfBirth)
           saveObj['DateOfBirth'] = dateOfBirth
         }
-
       }
     }
     saveObj['objID'] = uuid()
@@ -352,3 +361,18 @@ $('#btn-aqInfoSave').click(function(e){
   localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
   window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
+
+//queryGraph('S11','gender')
+function queryGraph(subjectId,attrName){
+  return new Promise(function(resolve){
+    $.ajax({
+    type: "GET",
+    url: serverURL +"/query/graphs/" + subjectId+'/'+attrName,
+    accept: "application/json",
+    success: function(data){
+      console.log('Query Graph ----:success', data)
+      resolve(data)
+    }//data
+    })
+  })
+}

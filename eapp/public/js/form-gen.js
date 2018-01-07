@@ -195,7 +195,7 @@ class AlpacaForm {
     this.data[title.toLowerCase()] = placehold
   }
 
-   radioForm(title, label, id, op, require=false, disable=false) {
+  radioForm(title, label, id, op, require=false, disable=false) {
      /*Radio Form Method
 
        Creates a radio input field */
@@ -213,6 +213,27 @@ class AlpacaForm {
        "disabled": false
      }
    }
+
+  inputRadio(title, label, id, op, value,require=false, disable=false) {
+      /*Radio Form Method
+
+        Creates a radio input field */
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "enum": op,
+        "required": require
+      }
+      this.fields[title.toLowerCase()] = {
+        "type": "radio",
+        "label": label,
+        "id": id,
+        "removeDefaultNone": true,
+        "sort": false,
+        "disabled": false,
+        "readonly":true
+      }
+      this.data[title.toLowerCase()] = value
+    }
 
   selectForm(title, label, list, id, require, disable=false) {
     /*Select Form Method
