@@ -90,88 +90,54 @@
     </div>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-12" id="import">
-          <p><h4><a href="/nda-editor/html/nda-editor.html">NDA Editor <i class="fa fa-refresh" aria-hidden="true"></i></a></h4></p>
-          <div class="form-group row">
-            <label for="nda-src" class="col-xs-2 col-form-label">Source</label>
-            <div class="col-xs-7">
-              <select class="form-control" id="nda-src" style="width: 100%">
-              <option value="dd-src">Select a Source</option>
-              </select>
-            </div>
+        <div class="col-lg-12">
+          <div id= 'instrumentInfo'>
           </div>
-
-          <div class="form-group row">
-            <label for="ndar-dd" class="col-xs-2 col-form-label">Data Dictionary</label>
-            <div class="col-xs-7">
-              <select class="form-control" id="ndar-dd" style="width: 100%">
-              <option value="ddform">Select a Form</option>
-              </select>
-            </div>
-          </div>
-          <br>
-          <p style="test-align:center">               <b>OR</b>   </p>
-          <br>
-          <div class="form-group row">
-            <label class="col-xs-2 col-form-label" for="dd-url"> Data Dictionary File URL</label>
-            <div class="col-xs-7">
-              <input id="dd-url" class="form-control" type="url" name="url" placeholder="Enter URL">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="ndar-dd-selected" class="col-xs-2 col-form-label"> Fields</label>
-            <div class="col-xs-7" id = "ndar-dd-1">
-              <button id= "btn-dd-selected" type="submit" class="btn btn-primary"> Choose </button>
-            </div>
-          </div>
-          <div id="div-projectFields">
-          </div>
-      </div>
-    </div>
-  </div>
+        </div>
+      <div>
   <div class="row">
     <div class="col-md-12">
       <div>
         <ul class="nav nav-tabs">
-          <li><a href="#view" data-toggle="tab" class="tab-item tab-item-view">View</a></li>
           <li><a href="#designer" data-toggle="tab" class="tab-item tab-item-designer">Designer</a></li>
+          <li><a href="#view" data-toggle="tab" class="tab-item tab-item-view">View</a></li>
           <li><a href="#loadsave" data-toggle="tab" class="tab-item tab-item-loadsave">Save</a></li>
         </ul>
       </div>
       <div class="tab-content">
-      <div class="tab-pane active" id="view">
+        <div class="tab-pane active" id="designer">
+          <div class="row">
+            <div class="col-md-7">
+              <div class="row">
+                <div class="col-md-12">
+                  <div id="designerDiv"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="row">
+                <div class="col-md-12">
+                  <div>
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#types" data-toggle="tab">Types</a></li>
+                      <li><a href="#basic" data-toggle="tab">Basic</a></li>
+                      <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+                    </ul>
+                  </div>
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="types"></div>
+                    <div class="tab-pane" id="basic"></div>
+                    <div class="tab-pane" id="advanced"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="tab-pane" id="view">
         <div class="row">
           <div class="col-md-12">
             <div id="viewDiv"></div>
-          </div>
-        </div>
-      </div>
-      <div class="tab-pane" id="designer">
-        <div class="row">
-          <div class="col-md-7">
-            <div class="row">
-              <div class="col-md-12">
-                <div id="designerDiv"></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-5">
-            <div class="row">
-              <div class="col-md-12">
-                <div>
-                  <ul class="nav nav-tabs">
-                    <li class="active"><a href="#types" data-toggle="tab">Types</a></li>
-                    <li><a href="#basic" data-toggle="tab">Basic</a></li>
-                    <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
-                  </ul>
-                </div>
-                <div class="tab-content">
-                  <div class="tab-pane active" id="types"></div>
-                  <div class="tab-pane" id="basic"></div>
-                  <div class="tab-pane" id="advanced"></div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -179,21 +145,9 @@
         <div class="row">
           <div class="col-md-12">
             <form id="ndar">
-            <div class="form-group row">
-              <label for="nda-form-name" class="col-xs-2 col-form-label">Form Name</label>
-              <div class="col-xs-7">
-              <input class="form-control" type="text" placeholder="Form Name Here" id="nda-form-name">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="nda-form-desc" class="col-xs-2 col-form-label">Description</label>
-              <div class="col-xs-7">
-                <input class="form-control" type="text" placeholder="Description here" id="nda-form-desc">
-              </div>
-            </div>
-            <button class="btn btn-default save-button">Local Save</button>
-            <button class="btn btn-default git-push-button" id="btn-git-push">Push to GitHub</button>
-          </form>
+              <button class="btn btn-default save-button-local">Local Save</button>
+              <button class="btn btn-default save-button-github">Local Save and Push to GitHub</button>
+            </form>
             <br/>
             <div id = "termsInfoSaveMsg"></div>
           </div>
@@ -202,11 +156,12 @@
     </div>
   </div>
 </div>
-    <script src='/js/form-gen1.js'></script>
+    <script src='/js/form-gen.js'></script>
     <script src='/js/templates/template.js'></script>
     <script src='/js/userAccount.js'></script>
-    <script type="text/javascript" src="/nda-editor/js/form-builder.js"></script>
-    <script src='/nda-editor/js/nda-editor.js'></script>
+    <script type="text/javascript" src="/instrument-editor/js/form-builder.js"></script>
+    <script type="text/javascript" src="/instrument-editor/js/ie-utils.js"></script>
+    <script src='/instrument-editor/js/ie.js'></script>
 
   </body>
 </html>

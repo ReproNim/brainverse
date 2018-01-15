@@ -327,9 +327,13 @@ $(document).on('hidden.bs.modal','#itemModal', function(e){
   addToLogsArray('Added New Task')
   console.log("LogsArray: ", logsArray)
   $('[data-toggle="popover"]').popover()
-  submitPlan().then(function(){
+  if(taskName ==='' && desc === '' && instrumentName==='' && estimateTime==='' && len==0){
+
+  }else{
+    submitPlan().then(function(){
     console.log("Plan Submited and Saved!")
-  })
+    })
+  }
 })
 
 $(document).on('itemAttrClicked', '#div-kanban', function (event) {

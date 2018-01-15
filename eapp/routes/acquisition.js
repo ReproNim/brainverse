@@ -60,23 +60,39 @@ module.exports = () => {
     var cpath = path.join(userData, '/uploads/termforms')
     fs.readdir(cpath, function(err,list){
       if(err) throw err;
-      res.json({'list':list})
+      let instList = []
+      for(let i=0;i< list.length;i++){
+        if(list[i]!==".DS_Store"){
+          instList.push(list[i])
+        }
+      }
+      console.log("[1-/instruments/local/list]instruments lists:---> ", instList)
+      //resolve(instList)
+      res.json({'list':instList})
     })
   })
 
   app.get('/acquisitions/nda_forms', ensureAuthenticated, function(req, res){
-    let termDirPath = path.join(__dirname, '/../../uploads/termforms/')
+    let termDirPath = path.join(userData, '/uploads/termforms/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
         //console.log("lists:---> ", list)
-        resolve(list)
+        let instList = []
+        for(let i=0;i< list.length;i++){
+          if(list[i]!==".DS_Store"){
+            instList.push(list[i])
+          }
+        }
+        console.log("[1-/instruments/local/list]instruments lists:---> ", instList)
+        resolve(instList)
+        //resolve(list)
       })
     })
     listOfFiles.then(function(list){
       console.log("lists: then---> ", list)
       let namesArr = list.map(function(fname){
-        return loadJsonFile(path.join(__dirname, '/../../uploads/termforms/'+fname))
+        return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
       return Promise.all(namesArr)
     }).then(function(obs){
