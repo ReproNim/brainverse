@@ -23,6 +23,7 @@ class AlpacaForm {
     this.form = {}
     this.x = {}
     this.data = {}
+    //this.validator = {}
     this.postRender = function(){}
     this.baseForm = {
       "data": this.data,
@@ -32,7 +33,8 @@ class AlpacaForm {
       },
       "options": {
         "fields": this.fields,
-        "form": this.form
+        "form": this.form,
+        //"validator": this.validator
       },
       /*"postRender": function(control){
         console.log("inside control: ", control)
@@ -42,7 +44,8 @@ class AlpacaForm {
   render(fn){
     this.postRender = fn()
   }
-  inputForm(title, label, id, type='string', date=false, placehold='null', disable=false) {
+
+  inputForm(title, label, id, type='string', renderType='text', date=false, placehold='null', require=false,disable=false) {
     /*Input Form Method
 
       Creates a text input field
@@ -53,34 +56,130 @@ class AlpacaForm {
         label: Field label
         name: Field Name
     */
-
-    this.properties[title.toLowerCase()] = {
-      "title": title,
-      "type": type,
-      "required": true
-    }
     if (date == true) {
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "format":"date",
+        "required": require
+      }
+
       this.fields[title.toLowerCase()] = {
         "type": "date",
-        "picker": {
-            "format": "MM/DD/YYYY"
-        },
+        "dateFormat": "MM/DD/YYYY",
         "label": label,
         "id": id,
-        "placeholder": placehold,
-        "disabled": disable
+        //"placeholder": placehold,
+        "disabled": disable,
+        "manualEntry": true
       }
     }
     else {
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "required": require
+      }
       this.fields[title.toLowerCase()] = {
+        "type": renderType,
         "label": label,
         "id": id,
         "placeholder": placehold,
-        "disabled": disable
+        "disabled": disable,
+        "hideInitValidationError": true,
+        "validator": function(callback) {
+              var value = this.getValue();
+              if(type ==="number" && isNaN(value)){
+                callback({
+                  "status": false,
+                  "message": "Enter a number"
+                  });
+              } else {
+                  callback({
+                      "status": true
+                  })
+              }
+          }
       }
+      //this.data[title.toLowerCase()] = value
     }
   }
-   textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
+  // auto-filled data as argument
+  inputText(title, label, id, type='string', renderType='text', date=false, value='', require=false,disable=false) {
+    /*Input Form Method
+
+      Creates a text input field
+
+      Parameters:
+        title: short description of the property
+        type: 'string' or 'number' for now
+        label: Field label
+        name: Field Name
+    */
+    this.properties[title.toLowerCase()] = {
+        "title": title,
+        "type": type,
+        "required": require
+      }
+      this.fields[title.toLowerCase()] = {
+        "type": renderType,
+        "label": label,
+        "id": id,
+        "disabled": disable,
+        "readonly": true
+      }
+      this.data[title.toLowerCase()] = value
+  }
+   //auto-filled date
+  inputDate(title, label, id, type='string', renderType='text', date=false,placehold='null',require=false,disable=false){
+    this.properties[title.toLowerCase()] = {
+      "title": title,
+      "type": type,
+      "format":"date",
+      "required": require
+    }
+
+    this.fields[title.toLowerCase()] = {
+      "type": "date",
+      "dateFormat": "MM/DD/YYYY",
+      "label": label,
+      "id": id,
+      //"placeholder": placehold,
+      "disabled": disable,
+      //"manualEntry": true,
+      "readonly": true
+    }
+    this.data[title.toLowerCase()] = moment().format("MM/DD/YYYY")
+  }
+
+
+    inputInteger(title, label, id, type='string', renderType='text', date=false, value='', require=false,disable=false) {
+      /*Input Form Method
+
+        Creates a text input field
+
+        Parameters:
+          title: short description of the property
+          type: 'string' or 'number' for now
+          label: Field label
+          name: Field Name
+      */
+        this.properties[title.toLowerCase()] = {
+          "title": title,
+          "type": type,
+          "required": require
+        }
+        this.fields[title.toLowerCase()] = {
+          "type": renderType,
+          "label": label,
+          "id": id,
+          "disabled": disable,
+          "readonly": true
+        }
+        this.data[title.toLowerCase()] = value
+
+    }
+  textAreaForm(title, label, id, type='string', date=false, placehold='null', disable=false){
      this.properties[title.toLowerCase()] = {
        "title": title,
        "type": type,
@@ -94,9 +193,9 @@ class AlpacaForm {
       "disabled": disable
     }
     this.data[title.toLowerCase()] = placehold
-   }
+  }
 
-   radioForm(title, label, id, op, require=false, disable=false) {
+  radioForm(title, label, id, op, require=false, disable=false) {
      /*Radio Form Method
 
        Creates a radio input field */
@@ -114,6 +213,27 @@ class AlpacaForm {
        "disabled": false
      }
    }
+
+  inputRadio(title, label, id, op, value,require=false, disable=false) {
+      /*Radio Form Method
+
+        Creates a radio input field */
+      this.properties[title.toLowerCase()] = {
+        "title": title,
+        "enum": op,
+        "required": require
+      }
+      this.fields[title.toLowerCase()] = {
+        "type": "radio",
+        "label": label,
+        "id": id,
+        "removeDefaultNone": true,
+        "sort": false,
+        "disabled": false,
+        "readonly":true
+      }
+      this.data[title.toLowerCase()] = value
+    }
 
   selectForm(title, label, list, id, require, disable=false) {
     /*Select Form Method

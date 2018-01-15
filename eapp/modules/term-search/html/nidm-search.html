@@ -167,6 +167,7 @@
       selected:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl',
       options:[
         {text:'NIDM-Experiment', value:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl'},
+        {text:'NIDM-DICOM', value:'https://raw.githubusercontent.com/incf-nidash/dicom-ontology/master/dicom_ontology_nlx.owl'},
         {text:'NIDM-Results', value:'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-results_130.owl'}
       ],
       gridColumns: [],
@@ -208,6 +209,7 @@
   gridC.showDefaultOwl = 'https://raw.githubusercontent.com/smpadhy/nidm-term-search/master/owl/nidm-experiment.owl'
 
   function successCallBack(data,gridComponent){
+    prefixes = {}
     let lines = data.split("\n")
     for(let i=0;i<lines.length; i++){
       let line = lines[i].split(" ")
@@ -217,11 +219,14 @@
           console.log("TODO")
           prefixes[substrPrefix] = "turtle"
         }else{
-          prefixes[substrPrefix] = line[1].substring(0,line[1].length-1)
+          let pf = line[1].substring(0,line[1].length-1)
+          prefixes[substrPrefix] = pf
         }
       }else if(line[0] == "@base"){
+        substrPrefix = line[1].substring(1,line[2].length-2)
         prefixes[substrPrefix] = "owl"
       }else{
+        console.log("prefixes--: ", prefixes)
         break;
       }
     }
@@ -258,7 +263,6 @@
           gridComponent.gridData = triples
           gridComponent.prefixColumns = ['Prefix', 'URI']
           gridComponent.prefixData = prefixItems
-          gridComponent.showModal = false
         })//end of store execute
       })//end of load
     })//rdf store

@@ -203,27 +203,56 @@ module.exports = () => {
       store.registeredGraphs(function(results, graphs) {
         var values = []
         for (var i = 0; i < graphs.length; i++) {
-          values.push(graphs[i].valueOf())
+          if(graphs[i].valueOf()!== undefined){
+            values.push(graphs[i].valueOf())
+          }
         }
         resolve(values)
       })
     })
     listOfGraphs.then(function(values){
       console.log("Registered graphs: ", values)
-      var graphOfPromises = values.map(function(graph){
+      let regGraphs = []
+      for(let i=0;i<values.length; i++){
+        if(values[i].indexOf('plan')!== -1){
+          regGraphs.push(values[i])
+        }
+      }
+      console.log("Filtered graphs:", regGraphs)
+      var graphOfPromises = regGraphs.map(function(graph){
         return new Promise(function(resolve){
           store.execute(queryFunction("<"+graph+">"), function(err,results){
-            console.log("graph: ", graph, "  results: \n", results)
-            if(results == []){
+            console.log('[execute] for graph: ', graph)
+            if(err){
+              console.log("err: ", err)
+              console.log(" err: graph: ", graph, "  results: ", results)
               resolve({})
-            }else{
-              resolve({
-                "origin":results[0].s.value,
-                "derivedFrom":results[0].derivedFrom.value,
-                "date":results[0].date.value,
-                "pjname":results[0].pjname.value
-              })
             }
+            /*if(results == []){
+              console.log(" []: graph: ", graph, "  results: \n", results)
+              resolve({})
+            }else if(results === undefined){
+              console.log(" undefined: graph: ", graph, "  results: \n", results)
+              resolve({})
+            }else{*/
+                //console.log("graph: ", graph, "  results: \n", results)
+                //if(results!==undefined){
+                console.log("results: ", results)
+                console.log("check typeof results === 'undefined': ", typeof results === 'undefined')
+                if(typeof results !== 'undefined'  && results !== []){
+                  //console.log("results value undefined? ", typeof(results) === 'undefined')
+                  console.log("[if] results is defined: ", results)
+                  resolve({
+                    "origin":results[0].s.value,
+                    "derivedFrom":results[0].derivedFrom.value,
+                    "date":results[0].date.value,
+                    "pjname":results[0].pjname.value
+                  })
+                }else{
+                  console.log("[else] resolving for undefined/empty:--- ", results)
+                  resolve({})
+                }
+          //  }
           })//execute
         })//promise
       })//graph of promises
@@ -250,9 +279,11 @@ module.exports = () => {
       for(i=0;i<unique.length;i++){
         let parr = unique[i]["origin"].split("#")
         let pf = parr[1].split("_")[1]
-        list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
+        let pname = unique[i]["pjname"].split(' ')
+        //list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
+        list.push("plan-"+pname[0]+"-"+pf+".json")
       }
-      console.log("list: ", list)
+      console.log("[Get /project-plans/]list: ", list)
       res.json({'list':list})
     }).catch(function(error){
       console.log("error:", error)
