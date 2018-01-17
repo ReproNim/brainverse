@@ -12,8 +12,8 @@
   "build": {
     "appId": "org.repronim.brainverse",
     "linux": {
-      "category": "public.app-category.education",
-      "target": ["AppImage", "deb", "rpm"]
+      "category": "Education",
+      "target": ["AppImage"]
     },
     "mac": {
       "category": "public.app-category.education",
