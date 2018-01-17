@@ -1,6 +1,6 @@
 Contributing to BrainVerse
 ========================
-This document is adapted from [NICEMAN's CONTRINUTING.md](https://github.com/ReproNim/niceman/blob/master/CONTRIBUTING.md) . Thanks to NICEMAN team!
+This document is adapted from [NICEMAN's CONTRIBUTING.md](https://github.com/ReproNim/niceman/blob/master/CONTRIBUTING.md). Thanks to NICEMAN team!
 
 ## Development environment
 -----------------------
@@ -36,6 +36,22 @@ vim app-config.js
 # Run the app in development mode
 npm start
 ```
+
+
+### Building for multiple platforms
+
+The BrainVerse application can be built for Linux and Windows within Docker. Build a macOS distributable on macOS, as code signing is not available for macOS within Docker. Run the following command in the root project directory to build BrainVerse for Linux and Windows.
+
+```shell
+docker run --rm \
+  -v $(pwd):/project \
+  electronuserland/builder:wine \
+  bash -c "
+    yarn --link-duplicates --pure-lockfile \
+    && yarn dist --linux --win
+  "
+```
+
 
 #### Get clientId and secretKey from GitHub by registering this App
 * Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
