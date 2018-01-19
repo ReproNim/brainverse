@@ -1,3 +1,7 @@
+# Travis CI configuration file to build BrainVerse application for
+# macOS, Linux, and Windows
+# Based on https://github.com/develar/onshape-desktop-shell/blob/51c8894e2857412dcf2ff4d68f8578bd4653b7a3/.travis.yml
+
 matrix:
   include:
     - os: osx
@@ -8,6 +12,9 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - TRAVIS_SECURE_ENV_VARS=true
+    - os: linux
+      services: docker
+      language: generic
 
 cache:
   yarn: true
@@ -16,22 +23,25 @@ cache:
   - $HOME/.cache/electron
   - $HOME/.cache/electron-builder
 
-install:
-  - |
-    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-      mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v2.3.4/git-lfs-darwin-amd64-2.3.4.tar.gz | tar -xz -C /tmp/git-lfs --strip-components 1
-      export PATH="/tmp/git-lfs:$PATH"
-      git-lfs pull
-    fi
-  - curl -L https://yarnpkg.com/latest.tar.gz | tar xvz && mv yarn-* $HOME/.yarn
-  - export PATH="$HOME/.yarn/bin:$PATH"
-  - yarn
-  - yarn add electron-builder --dev
-
-
 script:
-  - yarn dist
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      docker run --rm \
+        --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
+        -v $(pwd):/project \
+        -v ~/.cache/electron:/root/.cache/electron \
+        -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        electronuserland/builder:wine \
+        bash -c "
+          yarn --link-duplicates --pure-lockfile \
+          && yarn dist --linux --win
+        "
+    else
+      # Code signing for macOS is not available in Docker, so we build on macOS.
+      yarn dist --mac
+    fi
 
+    ls dist/
 
 before_cache:
   - rm -rf $HOME/.cache/electron-builder/wine
