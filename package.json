@@ -29,6 +29,7 @@
     "spectron": "^3.5.0"
   },
   "dependencies": {
+    "7zip-bin-mac": "^1.0.1",
     "alpaca": "^1.5.23",
     "body-parser": "^1.16.1",
     "bootstrap": "^3.3.7",
@@ -42,6 +43,7 @@
     "express-partials": "^0.3.0",
     "express-session": "^1.15.1",
     "handlebars": "^4.0.10",
+    "install": "^0.10.2",
     "jquery": "^3.1.1",
     "jquery-mousewheel": "^3.1.13",
     "jqwidgets-framework": "^4.6.2",
@@ -50,6 +52,7 @@
     "moment": "^2.18.1",
     "node-b64": "0.0.3",
     "node-gyp": "^3.6.2",
+    "npm": "^5.6.0",
     "passport": "^0.3.2",
     "passport-github": "^1.1.0",
     "passport-github2": "^0.1.10",
