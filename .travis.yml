@@ -12,9 +12,12 @@ matrix:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
         - TRAVIS_SECURE_ENV_VARS=true
-    #- os: linux
-    #  services: docker
-    #  language: generic
+    - os: linux
+      sudo: required
+      services: docker
+      language: generic
+      env:
+        TRAVIS_SECURE_ENV_VARS=true
 
 cache:
   yarn: true
@@ -25,21 +28,21 @@ cache:
 
 script:
   - |
-    #if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    #  docker run --rm \
-    #    --env-file <(env | grep -iE 'DEBUG|NODE_|ELECTRON_|YARN_|NPM_|CI|CIRCLE|TRAVIS_|APPVEYOR_|CSC_|_TOKEN|_KEY|AWS_|STRIP|BUILD_') \
-    #    -v $(pwd):/project \
-    #    -v ~/.cache/electron:/root/.cache/electron \
-    #    -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-    #    electronuserland/builder:wine \
-    #    bash -c "
-    #      yarn --link-duplicates --pure-lockfile \
-    #      && yarn dist --linux --win
-    #    "
-    #else
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      docker run --rm \
+        -e TRAVIS=$TRAVIS -e TRAVIS_SECURE_ENV_VARS=$TRAVIS_SECURE_ENV_VARS -e clientId=$clientId -e clientSecret=$clientSecret -e GH_TOKEN=$GH_TOKEN \
+        -v $(pwd):/project \
+        -v ~/.cache/electron:/root/.cache/electron \
+        -v ~/.cache/electron-builder:/root/.cache/electron-builder \
+        electronuserland/builder:wine \
+        bash -c "
+          yarn --link-duplicates --pure-lockfile \
+          && yarn dist --linux --win
+        "
+    else
       # Code signing for macOS is not available in Docker, so we build on macOS.
-    yarn dist --mac
-    #fi
+      yarn dist --mac
+    fi
 
     #ls dist/
 
