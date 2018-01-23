@@ -1,7 +1,7 @@
 # brainverse
 
 ## To use the App in MacOS
-- Download the App (DMG file) from the [Dropbox link](https://www.dropbox.com/s/isqq63rj899islb/BrainVerse-0.0.1.dmg?dl=0)
+- Download the App (DMG file) from the [Dropbox link](https://www.dropbox.com/s/1ya58rsgm2kdz00/BrainVerse-0.0.1-security-fix.dmg?dl=0)
 - Double click on the dmg file
 - Drag the app icon to the Application folder, it will start installing
 - To start the app, double click on the app icon in the Application folder
