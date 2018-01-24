@@ -34,9 +34,9 @@ script:
       docker run --rm \
         -e TRAVIS=$TRAVIS \
         -e TRAVIS_SECURE_ENV_VARS=$TRAVIS_SECURE_ENV_VARS \
-        -e clientId="$clientId" \
-        -e clientSecret="$clientSecret" \
-        -e GH_TOKEN="$GH_TOKEN" \
+        -e clientId=${clientId} \
+        -e clientSecret=${clientSecret} \
+        -e GH_TOKEN=${GH_TOKEN} \
         -v $(pwd):/project \
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
