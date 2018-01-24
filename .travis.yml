@@ -2,6 +2,10 @@
 # macOS, Linux, and Windows
 # Based on https://github.com/develar/onshape-desktop-shell/blob/51c8894e2857412dcf2ff4d68f8578bd4653b7a3/.travis.yml
 
+env:
+  global:
+    - TRAVIS_SECURE_ENV_VARS=true
+    - DEBUG=electron-builder
 matrix:
   include:
     - os: osx
@@ -11,13 +15,11 @@ matrix:
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-        - TRAVIS_SECURE_ENV_VARS=true
+
     - os: linux
       sudo: required
       services: docker
-      language: generic
-      env:
-        TRAVIS_SECURE_ENV_VARS=true
+
 
 cache:
   yarn: true
@@ -30,14 +32,18 @@ script:
   - |
     if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       docker run --rm \
-        -e TRAVIS=$TRAVIS -e TRAVIS_SECURE_ENV_VARS=$TRAVIS_SECURE_ENV_VARS -e clientId=$clientId -e clientSecret=$clientSecret -e GH_TOKEN=$GH_TOKEN \
+        -e TRAVIS=$TRAVIS \
+        -e TRAVIS_SECURE_ENV_VARS=$TRAVIS_SECURE_ENV_VARS \
+        -e clientId=$clientId \
+        -e clientSecret=$clientSecret \
+        -e GH_TOKEN=$GH_TOKEN \
         -v $(pwd):/project \
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
         electronuserland/builder:wine \
         bash -c "
           yarn --link-duplicates --pure-lockfile \
-          && yarn dist --linux --win
+          && yarn dist --linux
         "
     else
       # Code signing for macOS is not available in Docker, so we build on macOS.
