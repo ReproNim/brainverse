@@ -43,7 +43,7 @@ script:
         electronuserland/builder:wine \
         bash -c "
           yarn --link-duplicates --pure-lockfile \
-          && yarn dist --linux
+          && yarn dist --linux --win
         "
     else
       # Code signing for macOS is not available in Docker, so we build on macOS.
