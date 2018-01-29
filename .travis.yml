@@ -32,7 +32,6 @@ cache:
 before_script:
   # Replace clientId and clientSecret values in app-config.js with environment
   # variable values.
-  - set -eu
   - cd eapp/config/
   - cp ref-config.js app-config.js
   - sed -i -e "s/exports.clientId = ''/exports.clientId = \"$clientId\"/g" app-config.js
