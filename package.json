@@ -13,9 +13,7 @@
     "appId": "org.repronim.brainverse",
     "linux": {
       "category": "Education",
-      "target": [
-        "AppImage"
-      ]
+      "target": ["AppImage", "deb", "rpm"]
     },
     "mac": {
       "category": "public.app-category.education",
@@ -23,7 +21,7 @@
     }
   },
   "keywords": [],
-  "author": "Smruti Padhy",
+  "author": "Smruti Padhy <smruti@mit.edu>",
   "license": "Apache 2",
   "devDependencies": {
     "chai": "^3.5.0",
