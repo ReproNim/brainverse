@@ -1,6 +1,8 @@
 # brainverse
 
-## To use the App in MacOS
+## Installation
+
+### macOS
 - Download the App (DMG file) from the [Dropbox link](https://www.dropbox.com/s/1ya58rsgm2kdz00/BrainVerse-0.0.1-security-fix.dmg?dl=0)
 - Double click on the dmg file
 - Drag the app icon to the Application folder, it will start installing
@@ -8,8 +10,20 @@
 - All the files created are stored outside the Brainverse App folder under /Users/username/Documents/uploads.
 
 ### Linux
+- Debian and Ubuntu
+  - Download the `.deb` file.
+  - Run `sudo dpkg -i BrainVerse.deb && sudo apt-get install --fix-missing`.
+  - Run `brainverse` in a terminal, or double-click the app icon.
+- CentOS, Fedora, RedHat
+  - Download the `.rpm` file.
+  - Run `sudo dnf install BrainVerse.rpm` or `sudo yum install BrainVerse.rpm`.
+  - Run `brainverse` in a terminal, or double-click the app icon.
+- Other distributions
+  - Download the `.AppImage`.
+  - Execute the file in a terminal or double-click it in a file explorer.
 
 ### Windows
+- Download and run the `.exe` file. Follow the steps to install the software. Once the app is installed, double-click the app icon to run BrainVerse.
 
 ## Status
 BrainVerse is under rapid development with core functionality being added.
