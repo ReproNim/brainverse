@@ -7,6 +7,7 @@ var plansArray = []
 var columnArray = []
 var newPlanObj = {}
 var projPlanObj = {}
+
 /**
 ** Array that keep track of logging
 **/
@@ -14,6 +15,8 @@ let logsArray = []
 let prevState = {}
 
 $.fn.select2.defaults.set( "theme", "bootstrap" )
+
+addNoNameToResourceLocalData()
 
 function addToLogsArray(action){
   let pArray = plansArray.slice()
@@ -236,6 +239,8 @@ function editItemForm(form,modalID, task,content,resourceId){
   * Assignee
   * estimate Time
   */
+
+
   getNDAFormNames().then(function(ndaFormsList){
     let nTitle=[]
     let nFileName=[]
@@ -248,10 +253,12 @@ function editItemForm(form,modalID, task,content,resourceId){
         htmlStr = htmlStr + '<option value="'+ ndaFormsList[i].filename+'">'+ ndaFormsList[i].title +'</option>"'
       }
     }
-    form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', false,task, false)
+    form.inputForm('Task Name', 'Task Name', modalID+'-task', 'string', 'text',false,task, false,false)
+    //title, label, id, type='string', renderType='text', date=false, placehold='null', require=false,disable=false
     form.textAreaForm('Description', 'Description', modalID+"-desc",'string', undefined, content.desc, false)
+    //form.selectFormGeneral('Instruments','Instruments',[],[],modalID+'-inst',false,content.instrumentName,false)
     form.selectFormGeneral('Instruments','Instruments',[],[],modalID+'-inst',false,false)
-    form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', false, content.estimateTime, false)
+    form.inputForm('Time Estimate', 'Time Estimate', modalID+'-time', 'string', 'text',false, content.estimateTime, false,false)
     //form.inputForm('Assignee','Assignee' , modalID+'-per', 'string', false,inv_resources[resourceId], false)
 
     form.baseForm["postRender"] = function(control){
@@ -463,22 +470,31 @@ function setResources(){
   return resourcesSource
 }
 
+function addNoNameToResourceLocalData(){
+  let resObj = {}
+  resObj["id"] = 0
+  resObj["name"] = "No Name"
+  resObj["image"] = ""
+  resources["No Name"] = 0
+  inv_resources[0]="No Name"
+  resArray.push(resObj)
+}
 function addToResourcelocalData(id,userName,aUrl){
   let resObj = {}
   let flag = false
-  if(id === 0){
+  /*if(id === 0){
     resObj["id"] = 0
     resObj["name"] = "No Name"
     resObj["image"] = ""
     resources["No Name"] = 0
     inv_resources[0] = "No Name"
 
-  }else{
+  }else{*/
     //resObj["id"] = personnelArray.length
     resObj["id"] = resArray.length
     resObj["name"] = userName
     resObj["image"] = aUrl
-  }
+  //}
 
   for(let i=0;i<resArray.length;i++){
     if(resArray[i].name === userName){
