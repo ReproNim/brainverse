@@ -1,9 +1,9 @@
 # brainverse
 
 ## Installation
-
+The App for different OSes can be found in the [releases here](https://github.com/ReproNim/brainverse/releases)
 ### macOS
-- Download the App (DMG file) from the [Dropbox link](https://www.dropbox.com/s/1ya58rsgm2kdz00/BrainVerse-0.0.1-security-fix.dmg?dl=0)
+- Download the `.dmg` file
 - Double click on the dmg file
 - Drag the app icon to the Application folder, it will start installing
 - To start the app, double click on the app icon in the Application folder

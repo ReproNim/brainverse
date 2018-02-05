@@ -21,7 +21,7 @@ if(projPlanObj["Number Of Sessions"]!==0){
   if(sessions[0]["Instruments"].length ===0){
     addToSourcelocalData(sessions[0]["Session Name"],"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
-    addToResourcelocalData(0,"","")
+    //addToResourcelocalData(0,"","")
   }
   $('#div-kanban').jqxKanban('destroy')
   $('#div-addColumn').empty()
@@ -96,7 +96,7 @@ $(document).on('click','#btn-add-session',function(e){
     addToSourcelocalData(sname,"task0", "","","","")
     console.log("PlansArray Adding 0th task::: ", plansArray)
     //addToResourcelocalData("0","","")
-    addToResourcelocalData(0,"No Name","")
+    //addToResourcelocalData(0,"No Name","")
     createKanbanBoard(sname,sname)
     addToLogsArray('Added Session Column')
     console.log("LogsArray: ", logsArray)
@@ -349,8 +349,14 @@ $(document).on('itemAttrClicked', '#div-kanban', function (event) {
   }else if(args.attribute == "content"){
     console.log("content clicked: ", args)
     $('#div-kanban').append(createModal('itemEditModal', 'Edit Item', 'Update'))
-    let itemEditForm = new AlpacaForm('#body-itemEditModal')
+
+    if($('#body-itemEditModal').alpaca("exists")){
+      $('#body-itemEditModal').alpaca("destroy")
+    }
+    var itemEditForm = new AlpacaForm('#body-itemEditModal')
+
     editItemForm(itemEditForm,"itemEditModal", args.item.text,args.item.content,args.item.resourceId)
+
     localStorage.setItem('itemBeingUpdated', JSON.stringify(args.item) )
   }else{
     console.log("other attribute:", args)

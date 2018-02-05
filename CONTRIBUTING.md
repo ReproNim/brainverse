@@ -37,6 +37,18 @@ vim app-config.js
 npm start
 ```
 
+#### Get clientId and secretKey from GitHub by registering this App
+* Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
+* Use the following values:
+  * Application Name: brainverse
+  * Homepage URL: https://github.com/ReproNim/brainverse
+  * Authorization callback URL: http://127.0.0.1:3000/auth/github/callback
+
+### To use BrainVerse as Web app
+- Type '127.0.0.1:3000/' in your browser
+- Login using your GitHub credentials
+- To access any html page in eapp/modules/module-name/html in your browser, type '127.0.0.1:3000/module-name/html/HTMLFileName.html'
+- The REST API for the app is in the eapp/routes directory
 
 ### Building for multiple platforms
 
@@ -52,20 +64,6 @@ docker run --rm \
   "
 ```
 
-
-#### Get clientId and secretKey from GitHub by registering this App
-* Go to this [link](https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/registering-oauth-apps/) and follow the steps.
-* Use the following values:
-  * Application Name: brainverse
-  * Homepage URL: https://github.com/ReproNim/brainverse
-  * Authorization callback URL: http://127.0.0.1:3000/auth/github/callback
-
-### To use BrainVerse as Web app
-- Type '127.0.0.1:3000/' in your browser
-- Login using your GitHub credentials
-- To access any html page in eapp/modules/module-name/html in your browser, type '127.0.0.1:3000/module-name/html/HTMLFileName.html'
-- The REST API for the app is in the eapp/routes directory
-
 ## Files organization
 ------------------
 
@@ -77,6 +75,8 @@ docker run --rm \
       - Current modules that are being actively developed:
         * `experiment-planner/`
         * `nda-editor/`
+        * `instrument-editor`
+        * `data-collection`
         * `term-search/`
         * `audit-trail/`
       - Deprecated modules (will be removed):
