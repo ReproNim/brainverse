@@ -40,7 +40,7 @@ If you would like to ask a question about how to do something in BrainVerse plea
 
 If you see an issue or a bug while using BrainVerse, please create an issue in this github repository.
 
-The BrainVerse updates and news will be posted to repronim-announcement mailing list. To receive BrainVerse news, email me at smruti@mit.edu to get added to the mailing list.
+The BrainVerse updates and news will be posted to repronim-announcement mailing list. To receive BrainVerse news, subscribe to the [mailing-list](https://www.nitrc.org/mailman/listinfo/repronim-announcement).
 
 
 ## Learning Resources
