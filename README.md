@@ -35,6 +35,14 @@ You can track the different [modules](https://github.com/ReproNim/brainverse/pro
 ### Code Status
 [![Travis tests status](https://travis-ci.org/ReproNim/brainverse.svg?branch=master)](https://travis-ci.org/ReproNim/brainverse) travis-ci.org (master branch)
 
+### Support and Communication
+If you would like to ask a question about how to do something in BrainVerse please open a new topic in [NeuroStars.org](https://neurostars.org/) with a brainverse tag. NeuroStars.org is a platform similar to StackOverflow but dedicated to neuroinformatics.
+
+If you see an issue or a bug while using BrainVerse, please create an issue in this github repository.
+
+The BrainVerse updates and news will be posted to repronim-announcement mailing list. To receive BrainVerse news, email me at smruti@mit.edu to get added to the mailing list.
+
+
 ## Learning Resources
 
 - [Electron and its API](http://electron.atom.io)
