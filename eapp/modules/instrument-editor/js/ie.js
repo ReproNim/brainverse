@@ -136,7 +136,11 @@ function setTerm(schema, key, field,position){
     term['filterElement'] = null
     term['position'] = position
     term['dataElementId'] = position
-    term['name'] = field.name
+    if(field.hasOwnProperty('name')){
+      term['name'] = field.name
+    }else{
+      term['name'] = termId
+    }
     term['description'] = field.label
     if(schema.properties[key].enum === undefined){
       term['valueRange'] = null
