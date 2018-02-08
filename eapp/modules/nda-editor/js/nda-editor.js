@@ -125,6 +125,7 @@ function ajaxCallSrc(nUrl){
     } // end of success
   }) // ajax call
 }
+
 /*
 * getDataDictionary AJAX call sucess callback
 */
@@ -152,7 +153,14 @@ function getDDcallbk(data){
   <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
   <tbody>')
   for (let i=0;i<termsKey.length;i++){
-    termsIndex[termsKey[i].id] = termsKey[i]
+    if(termsKey[i].hasOwnProperty('id')){
+      termsIndex[termsKey[i].id] = termsKey[i]
+      console.log("CASE 1: termsKey[i]: ", termsKey[i])
+    }else{
+      termsKey[i]['id'] = getRandomIntInclusive(1000,10000)
+      termsIndex[termsKey[i].id] = termsKey[i]
+      console.log("CASE2: termskey[i]: ", termsKey[i])
+    }
     /*$("#div-projectFields").append('<div class="form-check"><label class="form-check-label" data-toggle="tooltip" title="'+termsKey[i].description+'">\
     <input class="form-check-input"  type="checkbox" name="projfield-checkbox" id="projfield-'+ count +'" value="'+ termsKey[i].id +'"\
     >' +termsKey[i].name +'</label></div>')

@@ -224,13 +224,13 @@ function addTermsToForm(termForm){
       //console.log("c3-1::sub-options1:: ",sub_options1)
       if(sub_options1[1].trim()>20){
         if (selectedFields[i].type == "Integer") {
-          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", undefined, fieldValueRange, fieldRequired,false)
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "number", "number",undefined, fieldValueRange, fieldRequired,false)
         }
         else if (selectedFields[i].type == "Date") {
-          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", true, fieldValueRange, fieldRequired,false)
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", "date",true, fieldValueRange, fieldRequired,false)
         }
         else {
-          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", undefined, fieldValueRange, fieldRequired,false)
+          form.inputForm(fieldName, fieldDescription, 'ndar'+i, "string", renderType,undefined, fieldValueRange, fieldRequired,false)
         }
       }else{
         let optionList = []
