@@ -88,11 +88,16 @@ function setCommonFields(){
 function setTerm(schema, key, field,position){
   let term = {}
   let termId = key
-  console.log("key: ", termId)
+  console.log("KEY--: ", termId)
   if(field.hasOwnProperty('id')){
+    console.log("CASE1: terms exists: ", )
     termId = field.id.split('-')[1]
-    term['id'] = parseInt(termId)
-    console.log("termId: ", termId)
+    if(termId.indexOf('new') !== -1){
+      term['id'] = termId
+    }else{
+      term['id'] = parseInt(termId)
+    }
+    console.log("termId: ", termId, "  term['id']=", term['id'])
     if(schema.properties[key].required){
       term['required'] = "Required"
     } else{
@@ -118,7 +123,9 @@ function setTerm(schema, key, field,position){
     console.log("instrument existing term: ", term)
   }else{
     /** adding new field **/
+    console.log("CASE 2: ADDing New Term: ")
     term['id'] = termId
+    console.log("termId: ", termId, "  term['id']=", term['id'])
     if(schema.properties[key].required){
       term['required'] = "Required"
     } else{
@@ -129,7 +136,11 @@ function setTerm(schema, key, field,position){
     term['filterElement'] = null
     term['position'] = position
     term['dataElementId'] = position
-    term['name'] = field.name
+    if(field.hasOwnProperty('name')){
+      term['name'] = field.name
+    }else{
+      term['name'] = termId
+    }
     term['description'] = field.label
     if(schema.properties[key].enum === undefined){
       term['valueRange'] = null
@@ -214,6 +225,7 @@ function setTerm(schema, key, field,position){
       termsIndex[terms[i].id] = terms[i]
       addTermToForm(terms[i])
     }
+    console.log("TermsIndex: ", termsIndex)
     termsIndex["shortName"] = instObj["shortName"]
   }
 
@@ -231,6 +243,10 @@ function setTerm(schema, key, field,position){
      if(selectedField.required == "Required"){
        fieldRequired = true
      }
+    let renderType='text'
+    if(selectedField.hasOwnProperty('renderType')){
+      renderType = selectedField.renderType
+    }
      let idnum = selectedField.id
      // check the 'notes' field for any value specified
      let notes = checkNotes(selectedField.name,selectedField.notes)
@@ -246,13 +262,13 @@ function setTerm(schema, key, field,position){
        /* Case1: No Value Range */
        console.log("Case 1: valueRange == null ")
        if (selectedField.type == "Integer") {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,false)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", "number",undefined, fieldValueRange, fieldRequired,false)
        }
        else if (selectedField.type == "Date") {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", "date",true, fieldValueRange, fieldRequired,true)
        }
        else {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,false)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string",renderType,undefined, fieldValueRange, fieldRequired,false)
        }
      }
      else if (selectedField.valueRange.indexOf(';')> -1 || $.isArray(selectedField.valueRange)){
@@ -346,13 +362,13 @@ function setTerm(schema, key, field,position){
 
        if(sub_options1[1].trim()>20){
          if (selectedField.type == "Integer") {
-           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
+           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", "number",undefined, fieldValueRange, fieldRequired,true)
          }
          else if (selectedField.type == "Date") {
-           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", "date",true, fieldValueRange, fieldRequired,true)
          }
          else {
-           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired,true)
+           instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", renderType,undefined, fieldValueRange, fieldRequired,true)
          }
        }
 
@@ -378,13 +394,13 @@ function setTerm(schema, key, field,position){
      else{
        console.log("Case 4: other options ")
        if (selectedField.type == "Integer") {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", undefined, fieldValueRange, fieldRequired,true)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "number", "number",undefined, fieldValueRange, fieldRequired,true)
        }
        else if (selectedField.type == "Date") {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", true, fieldValueRange, fieldRequired,true)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", "date",true, fieldValueRange, fieldRequired,true)
        }
        else {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", undefined, fieldValueRange, fieldRequired, true)
+         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", renderType,undefined, fieldValueRange, fieldRequired, true)
        }
      }
 

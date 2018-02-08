@@ -1,6 +1,6 @@
 {
   "name": "BrainVerse",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Electronic Lab Notebook for Reproducible Neuro Imaging Research",
   "main": "main.js",
   "scripts": {
@@ -13,7 +13,11 @@
     "appId": "org.repronim.brainverse",
     "linux": {
       "category": "Education",
-      "target": ["AppImage", "deb", "rpm"]
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ]
     },
     "mac": {
       "category": "public.app-category.education",
@@ -40,6 +44,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "csv": "^1.1.0",
+    "electron-debug": "^1.5.0",
     "express": "^4.14.1",
     "express-fileupload": "^0.1.1",
     "express-flash": "0.0.2",

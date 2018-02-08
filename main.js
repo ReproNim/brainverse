@@ -8,6 +8,8 @@ const url = require('url')
 const fs = require('fs')
 
 const {Menu} = require("electron")
+
+require('electron-debug')({showDevTools: true})
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -20,7 +22,9 @@ function createWindow () {
   app.server = require(__dirname + '/eapp/app')();
 
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1200, height: 800})
+  mainWindow = new BrowserWindow({width: 1200,
+    height: 800
+  })
   //mainWindow = new BrowserWindow({width: 1200, height: 800,titleBarStyle: 'hidden'})
   //mainWindow = new BrowserWindow({width: 1200, height: 800,frame: false})
 
@@ -38,7 +42,7 @@ function createWindow () {
     electron.shell.openExternal(url);
   });
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -63,6 +67,7 @@ function createWindow () {
             { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
             { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
             { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+
         ]}
     ];
 
