@@ -204,6 +204,7 @@ function setTerm(schema, key, field,position){
       <strong>Terms Information Saved in uploads/termforms/'+data['fid']+'!</strong>\
       </div>')
       $("#termsInfoSaveMsg").append('<br>')
+      window.location.href = serverURL+"/instrument-editor/html/ie-mgm.html"
     }
   })
  }
@@ -222,6 +223,9 @@ function setTerm(schema, key, field,position){
    let terms = instObj["fields"]
    if(terms !== undefined){
     for (let i=0; i<terms.length; i++){
+      if(!terms[i].hasOwnProperty('name')){
+        terms[i]['name'] = terms[i].id
+      }
       termsIndex[terms[i].id] = terms[i]
       addTermToForm(terms[i])
     }
@@ -268,7 +272,8 @@ function setTerm(schema, key, field,position){
          instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string", "date",true, fieldValueRange, fieldRequired,true)
        }
        else {
-         instForm.inputForm(fieldName, fieldDescription, 'preview-'+idnum, "string",renderType,undefined, fieldValueRange, fieldRequired,false)
+         console.log("fieldName:", fieldName)
+         instForm.inputForm(fieldName.toString(), fieldDescription, 'preview-'+idnum, "string",renderType,undefined, fieldValueRange, fieldRequired,false)
        }
      }
      else if (selectedField.valueRange.indexOf(';')> -1 || $.isArray(selectedField.valueRange)){
