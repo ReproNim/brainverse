@@ -335,7 +335,8 @@ function getNDAFormNames(){
   return new Promise(function(resolve){
     $.ajax({
     type: "GET",
-    url: serverURL+"/acquisitions/nda_forms",
+    //url: serverURL+"/acquisitions/nda_forms",
+    url: serverURL+"/instruments/local/list",
     accept: "application/json",
     success: function(data){
       console.log('acquistions forms:success', data)
