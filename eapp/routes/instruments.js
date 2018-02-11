@@ -57,9 +57,39 @@ module.exports = () => {
         }
       }
       // -----------------------------
+      let hashObj = {}
       for(var key in recentObjs){
         let ob = recentObjs[key]
-        nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author})
+        let title = ob.Name.split(' ')[0]
+        let fileName = 'terms-'+ob.shortName+'-'+title+".json"
+        if(!hashObj.hasOwnProperty(ob.DerivedFrom)){
+          hashObj[ob.DerivedFrom] = ob
+          //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
+        }else{
+          let stats = fs.statSync(path.join(userData, '/uploads/termforms/'+fileName))
+          let mtime = new Date(stats.mtime)
+          console.log("current file name: ", fileName," modification time: ",mtime)
+          let prevFile = hashObj[ob.DerivedFrom]
+          let prevTitle = prevFile.Name.split(' ')[0]
+          let prevFileName = 'terms-'+prevFile.shortName+'-'+prevTitle+".json"
+          let prevStats = fs.statSync(path.join(userData, '/uploads/termforms/'+prevFileName))
+          let prevMtime=new Date(prevStats.mtime)
+          console.log("prev file name:",prevFileName,"modification time: ",prevMtime)
+          if(mtime > prevMtime){
+            console.log("Adding the recent copy of the file ---")
+            delete hashObj[ob.DerivedFrom]
+            hashObj[ob.DerivedFrom] = ob
+
+            //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
+          }
+        }
+        //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
+      }
+      for(var key in hashObj){
+        let ob = hashObj[key]
+        let title = ob.Name.split(' ')[0]
+        let fileName = 'terms-'+ob.shortName+'-'+title+".json"
+        nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
       }
       console.log("[2-/instruments/local/list/] nameList:--> ", nameList)
       res.json({"list":nameList})
