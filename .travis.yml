@@ -49,7 +49,7 @@ script:
         -v $(pwd):/project \
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
-        electronuserland/builder:wine \
+        electronuserland/builder:latest \
         bash -c "
           yarn --link-duplicates --pure-lockfile \
           && yarn dist --linux --win
