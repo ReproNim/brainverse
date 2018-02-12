@@ -62,7 +62,7 @@ script:
     #ls dist/
 
 before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
+  - rm -rf $HOME/.cache/electron-builder/latest
 
 branches:
   except:
