@@ -1,6 +1,6 @@
 {
   "name": "BrainVerse",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Electronic Lab Notebook for Reproducible Neuro Imaging Research",
   "main": "main.js",
   "scripts": {
