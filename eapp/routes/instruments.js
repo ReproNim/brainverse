@@ -29,7 +29,7 @@ module.exports = () => {
       })
     })
     listOfFiles.then(function(list){
-      //console.log("lists: then---> ", list)
+      console.log("[/instruments/local/list] lists::: then---> ", list)
       let namesArr = list.map(function(fname){
         return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
       })
@@ -45,50 +45,72 @@ module.exports = () => {
       for(let j=0;j<obs.length;j++){
         let k = 0
         let sname = obs[j].shortName
+        console.log("[/instruments/local/list]shortName: ", sname)
         while(recentObjs.hasOwnProperty(sname)){
           k++
           if(k!==1){
             deleteList.push(sname)
+            console.log("[/instruments/local/list] - Delete shortName: ", sname)
           }
           sname = recentObjs[sname].DerivedFrom
         }
-        for(k=0; k<deleteList.length;k++){
-          delete recentObjs[deleteList[k]]
+        console.log("[/instruments/local/list] deletList: -->",deleteList)
+        for(l=0; l<deleteList.length;l++){
+          delete recentObjs[deleteList[l]]
         }
       }
       // -----------------------------
       let hashObj = {}
+      let m = 0
       for(var key in recentObjs){
         let ob = recentObjs[key]
         let title = ob.Name.split(' ')[0]
-        let fileName = 'terms-'+ob.shortName+'-'+title+".json"
+        let psname = ob.shortName.split(' ')
+        let shortName = psname[0]+psname[psname.length-1]
+
+        let fileName = 'terms-'+shortName+'-'+title+".json"
+        console.log("[/instruments/local/list] filename: -->", fileName)
+
         if(!hashObj.hasOwnProperty(ob.DerivedFrom)){
           hashObj[ob.DerivedFrom] = ob
-          //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
+          console.log("----Case 1:---- DerivedFrom" )
         }else{
-          let stats = fs.statSync(path.join(userData, '/uploads/termforms/'+fileName))
-          let mtime = new Date(stats.mtime)
-          console.log("current file name: ", fileName," modification time: ",mtime)
-          let prevFile = hashObj[ob.DerivedFrom]
-          let prevTitle = prevFile.Name.split(' ')[0]
-          let prevFileName = 'terms-'+prevFile.shortName+'-'+prevTitle+".json"
-          let prevStats = fs.statSync(path.join(userData, '/uploads/termforms/'+prevFileName))
-          let prevMtime=new Date(prevStats.mtime)
-          console.log("prev file name:",prevFileName,"modification time: ",prevMtime)
-          if(mtime > prevMtime){
-            console.log("Adding the recent copy of the file ---")
-            delete hashObj[ob.DerivedFrom]
-            hashObj[ob.DerivedFrom] = ob
-
-            //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
+          if(ob.DerivedFrom === ""){
+            m++
+            hashObj[ob.DerivedFrom+"_"+m] = ob
+            console.log("----Case 2:----DerivedFrom:-- ")
           }
+          // else{
+          //   // if two files derived from same file, recent most file will be added to the list
+          //   // This case may never happen given in recentObjs it consists of recent files obtained by following derivation chain
+          //   // This step is no longer required, therefore commenting this code
+          //   let stats = fs.statSync(path.join(userData, '/uploads/termforms/'+fileName))
+          //   let mtime = new Date(stats.mtime)
+          //   console.log("[ Case 3: Get Recent most File]current file name: ", fileName," modification time: ",mtime)
+          //   let prevFile = hashObj[ob.DerivedFrom]
+          //   let prevTitle = prevFile.Name.split(' ')[0]
+          //   let pvname = prevFile.shortName.split(' ')
+          //   let prevShortName = pvname[0]+pvname[pvname.length-1]
+          //   //let prevFileName = 'terms-'+prevFile.shortName+'-'+prevTitle+".json"
+          //   let prevFileName = 'terms-'+prevShortName+'-'+prevTitle+".json"
+          //   let prevStats = fs.statSync(path.join(userData, '/uploads/termforms/'+prevFileName))
+          //   let prevMtime=new Date(prevStats.mtime)
+          //   console.log("[/instruments/local/list] prev file name:",prevFileName,"modification time: ",prevMtime)
+          //   if(mtime > prevMtime){
+          //     console.log("[/instruments/local/list]Adding the recent copy of the file ---")
+          //     delete hashObj[ob.DerivedFrom]
+          //     hashObj[ob.DerivedFrom] = ob
+          //   }
+          // }
         }
-        //nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
-      }
+      } //end of for loop
       for(var key in hashObj){
         let ob = hashObj[key]
         let title = ob.Name.split(' ')[0]
-        let fileName = 'terms-'+ob.shortName+'-'+title+".json"
+        let psname = ob.shortName.split(' ')
+        let shortName = psname[0]+psname[psname.length-1]
+        //let fileName = 'terms-'+ob.shortName+'-'+title+".json"
+        let fileName = 'terms-'+shortName+'-'+title+".json"
         nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
       }
       console.log("[2-/instruments/local/list/] nameList:--> ", nameList)
@@ -112,7 +134,6 @@ module.exports = () => {
       })
     })
     listOfFiles.then(function(list){
-      //console.log("lists: then---> ", list)
       console.log("then 1 - [/instruments/local/:shortName]file list:---> ", list)
       let namesArr = list.map(function(fname){
         return loadJsonFile(path.join(userData, '/uploads/termforms/'+fname))
@@ -145,11 +166,13 @@ module.exports = () => {
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
-
-    let cpath = path.join(userData, '/uploads/termforms/terms-'+ psname[0]+'-'+ pname[0] +'.json')
+    
+    let fileName = 'terms-'+ psname[0]+psname[psname.length-1]+'-'+ pname[0] +'.json'
+    console.log("New Instrument Name:::: ", fileName)
+    let cpath = path.join(userData, '/uploads/termforms/'+ fileName)
     writeJsonFile(cpath, req.body).then(() => {
       console.log('done')
-      res.json({'tid': term_info['DictionaryID'], 'fid':'terms-'+ psname[0]+'-'+ pname[0] +'.json'})
+      res.json({'tid': term_info['DictionaryID'], 'fid':fileName})
     })
   })
 
@@ -166,10 +189,11 @@ module.exports = () => {
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
-    let fileName = psname[0]+'-'+ pname[0] +'.json'
-
+    //let fileName = psname[0]+'-'+ pname[0] +'.json'
+    let fileName = 'terms-'+ psname[0]+psname[psname.length-1]+'-'+ pname[0] +'.json'
+    console.log("New Instrument Name:::: ", fileName)
     //Local save
-    let cpath = path.join(userData, '/uploads/termforms/terms-'+ fileName)
+    let cpath = path.join(userData, '/uploads/termforms/'+ fileName)
     writeJsonFile(cpath, term_info).then(() => {
       console.log('done')
     })
