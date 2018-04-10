@@ -1,3 +1,4 @@
 eapp/config/app-config.js
 .idea
 node_modules
+.DS_Store
