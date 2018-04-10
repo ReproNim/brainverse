@@ -62,7 +62,7 @@ displayInstrumentList().then(function(instrumentList){
 }).then(function(instObjs){
   console.log("all inst obj: ", instObjs)
   if(instObjs.length !== 0){
-    $('#div-instrumentList').append('<table class="table table-striped" id="tab1"></table>')
+    $('#div-instrumentList').append('<table class="table table-striped hand" id="tab1"></table>')
     let instTable = document.getElementById("tab1")
     var header = instTable.createTHead()
     var rowH = header.insertRow(0)
