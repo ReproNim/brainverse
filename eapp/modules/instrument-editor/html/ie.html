@@ -94,74 +94,74 @@
           <div id= 'instrumentInfo'>
           </div>
         </div>
-      <div>
-  <div class="row">
-    <div class="col-md-12">
-      <div>
-        <ul class="nav nav-tabs">
-          <li><a href="#designer" data-toggle="tab" class="tab-item tab-item-designer">Designer</a></li>
-          <li><a href="#view" data-toggle="tab" class="tab-item tab-item-view">View</a></li>
-          <li><a href="#loadsave" data-toggle="tab" class="tab-item tab-item-loadsave">Save</a></li>
-        </ul>
       </div>
-      <div class="tab-content">
-        <div class="tab-pane active" id="designer">
-          <div class="row">
-            <div class="col-md-7">
+      <div class="row">
+        <div class="col-md-12">
+          <div>
+            <ul class="nav nav-tabs">
+              <li><a href="#designer" data-toggle="tab" class="tab-item tab-item-designer">Designer</a></li>
+              <li><a href="#view" data-toggle="tab" class="tab-item tab-item-view">View</a></li>
+              <li><a href="#loadsave" data-toggle="tab" class="tab-item tab-item-loadsave">Save</a></li>
+            </ul>
+          </div>
+          <div class="tab-content">
+            <div class="tab-pane active" id="designer">
               <div class="row">
-                <div class="col-md-12">
-                  <div id="designerDiv"></div>
+                <div class="col-md-7">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div id="designerDiv"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div>
+                        <ul class="nav nav-tabs">
+                          <li class="active"><a href="#types" data-toggle="tab">Types</a></li>
+                          <li><a href="#basic" data-toggle="tab">Basic</a></li>
+                          <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
+                        </ul>
+                      </div>
+                      <div class="tab-content">
+                        <div class="tab-pane active" id="types"></div>
+                        <div class="tab-pane" id="basic"></div>
+                        <div class="tab-pane" id="advanced"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-5">
-              <div class="row">
-                <div class="col-md-12">
-                  <div>
-                    <ul class="nav nav-tabs">
-                      <li class="active"><a href="#types" data-toggle="tab">Types</a></li>
-                      <li><a href="#basic" data-toggle="tab">Basic</a></li>
-                      <li><a href="#advanced" data-toggle="tab">Advanced</a></li>
-                    </ul>
-                  </div>
-                  <div class="tab-content">
-                    <div class="tab-pane active" id="types"></div>
-                    <div class="tab-pane" id="basic"></div>
-                    <div class="tab-pane" id="advanced"></div>
-                  </div>
-                </div>
+          <div class="tab-pane" id="view">
+            <div class="row">
+              <div class="col-md-12">
+                <div id="viewDiv"></div>
               </div>
             </div>
           </div>
-        </div>
-      <div class="tab-pane" id="view">
-        <div class="row">
-          <div class="col-md-12">
-            <div id="viewDiv"></div>
+          <div class="tab-pane" id="loadsave">
+            <div class="row">
+              <div class="col-md-12">
+                <form id="ndar">
+                  <button class="btn btn-default save-button-local">Local Save</button>
+                  <button class="btn btn-default save-button-github">Local Save and Push to GitHub</button>
+                </form>
+                <br/>
+                <div id = "termsInfoSaveMsg"></div>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
-      <div class="tab-pane" id="loadsave">
-        <div class="row">
-          <div class="col-md-12">
-            <form id="ndar">
-              <button class="btn btn-default save-button-local">Local Save</button>
-              <button class="btn btn-default save-button-github">Local Save and Push to GitHub</button>
-            </form>
-            <br/>
-            <div id = "termsInfoSaveMsg"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
     <script src='/js/form-gen.js'></script>
     <script src='/js/templates/template.js'></script>
     <script src='/js/userAccount.js'></script>
     <script type="text/javascript" src="/instrument-editor/js/form-builder.js"></script>
     <script type="text/javascript" src="/instrument-editor/js/ie-utils.js"></script>
     <script src='/instrument-editor/js/ie.js'></script>
-
+    </div>
   </body>
 </html>

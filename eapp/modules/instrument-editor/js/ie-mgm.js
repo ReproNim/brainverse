@@ -76,7 +76,7 @@ displayInstrumentList().then(function(instrumentList){
       let instObj1 = instObjs[i]
       let cell0 = row.insertCell(0)
       let cell1 = row.insertCell(1)
-      console.log("instrument name: ", instObj["Name"])
+        console.log("instrument name: ", instObj["Name"])
       cell0.innerHTML = instObj1["Name"]
       cell1.innerHTML = instObj1["Description"]
       row.addEventListener("click",function(e){
