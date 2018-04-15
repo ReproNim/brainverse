@@ -1,6 +1,6 @@
 {
   "name": "BrainVerse",
-  "version": "0.0.4-alpha",
+  "version": "0.0.5-alpha",
   "description": "Electronic Lab Notebook for Reproducible Neuro Imaging Research",
   "main": "main.js",
   "scripts": {
@@ -30,7 +30,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "electron": "^1.7.11",
+    "electron": "1.8.4",
     "electron-builder": "^19.46.9",
     "electron-oauth-github": "^1.0.0",
     "mocha": "^3.2.0",
