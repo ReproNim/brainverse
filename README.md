@@ -1,4 +1,10 @@
 # brainverse
+Brainverse is an open-source, cross-platform desktop application to enable researchers add to reproducible practices into every project.
+
+- An electronic laboratory notebook built as a cross platform desktop application also has feature to be deployed as web application 
+- Enables users to plan experiments, collect, analyze and reuse data, and collaborate
+- Adds semantic annotation to data with relevant metadata based on NeuroImaging data Model (NIDM) making experimental neuroimaging study more reproducible, and making data FAIR
+- Intercept the research workflow at planning stage, curating (raw, processed, results) data at the source and helping users to annotate every step of the process.
 
 ## Installation
 The App for different OSes can be found in the [releases here](https://github.com/ReproNim/brainverse/releases)
@@ -38,7 +44,7 @@ You can track the different [modules](https://github.com/ReproNim/brainverse/pro
 ### Support and Communication
 If you would like to ask a question about how to do something in BrainVerse please open a new topic in [NeuroStars.org](https://neurostars.org/) with a brainverse tag. NeuroStars.org is a platform similar to StackOverflow but dedicated to neuroinformatics.
 
-If you see an issue or a bug while using BrainVerse, please create an issue in this github repository.
+If you see an issue or a bug while using BrainVerse, please create an issue in this github repository and assign a label of the module it belongs to.
 
 The BrainVerse updates and news will be posted to repronim-announcement mailing list. To receive BrainVerse news, subscribe to the [mailing-list](https://www.nitrc.org/mailman/listinfo/repronim-announcement).
 

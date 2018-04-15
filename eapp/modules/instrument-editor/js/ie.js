@@ -20,7 +20,7 @@ if(instObj['shortName'] === undefined){
   shortName = instObj['shortName']
 }
 console.log("[ie]: instObj", instObj)
-var backButton = ' <a href="/instrument-editor/html/ie-mgm.html"><span style="float:right;">Back</span></a>'
+var backButton = ' <a href="/instrument-editor/html/ie-mgm.html"><span class="glyphicon glyphicon-backward" style="float:right;"></span></a>'
 /*
 * Setting up the UI for instrument information - Name and description
 * and update Modal for the instrument
