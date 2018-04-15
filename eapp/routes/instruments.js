@@ -66,7 +66,10 @@ module.exports = () => {
         let ob = recentObjs[key]
         let title = ob.Name.split(' ')[0]
         let psname = ob.shortName.split(' ')
-        let shortName = psname[0]+psname[psname.length-1]
+        let shortName = psname[0]
+        if(psname.length > 1){
+          shortName = shortName + psname[psname.length-1]
+        }
 
         let fileName = 'terms-'+shortName+'-'+title+".json"
         console.log("[/instruments/local/list] filename: -->", fileName)
@@ -108,7 +111,10 @@ module.exports = () => {
         let ob = hashObj[key]
         let title = ob.Name.split(' ')[0]
         let psname = ob.shortName.split(' ')
-        let shortName = psname[0]+psname[psname.length-1]
+        let shortName = psname[0]
+        if(psname.length > 1){
+          shortName = shortName + psname[psname.length-1]
+        }
         //let fileName = 'terms-'+ob.shortName+'-'+title+".json"
         let fileName = 'terms-'+shortName+'-'+title+".json"
         nameList.push({"shortName":ob.shortName,"title": ob.Name, "author":ob.author,"filename": fileName})
@@ -166,8 +172,11 @@ module.exports = () => {
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
-    
-    let fileName = 'terms-'+ psname[0]+psname[psname.length-1]+'-'+ pname[0] +'.json'
+    let shortName = psname[0]
+    if(psname.length > 1){
+      shortName = shortName + psname[psname.length-1]
+    }
+    let fileName = 'terms-'+shortName +'-'+ pname[0] +'.json'
     console.log("New Instrument Name:::: ", fileName)
     let cpath = path.join(userData, '/uploads/termforms/'+ fileName)
     writeJsonFile(cpath, req.body).then(() => {
@@ -189,8 +198,12 @@ module.exports = () => {
     pid = term_info['DictionaryID'].split('-')
     psname = term_info['shortName'].split(' ')
     pname = term_info['Name'].split(' ')
-    //let fileName = psname[0]+'-'+ pname[0] +'.json'
-    let fileName = 'terms-'+ psname[0]+psname[psname.length-1]+'-'+ pname[0] +'.json'
+    let shortName = psname[0]
+    if(psname.length > 1){
+      shortName = shortName + psname[psname.length-1]
+    }
+
+    let fileName = 'terms-'+ shortName+'-'+ pname[0] +'.json'
     console.log("New Instrument Name:::: ", fileName)
     //Local save
     let cpath = path.join(userData, '/uploads/termforms/'+ fileName)
