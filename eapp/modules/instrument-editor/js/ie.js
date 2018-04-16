@@ -59,6 +59,7 @@ function updateInstrumentInfo(){
 }
 setupForm()
 setup(instForm.properties,instForm.fields)
+$(".tab-item-designer").click()
 
 function setCommonFields(){
   let version = ''
