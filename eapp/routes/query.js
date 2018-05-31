@@ -151,8 +151,231 @@ module.exports = () => {
 
   })
 
+app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, function(req, res){
+  console.log("projectId: ", req.params.projectId, "  projectId: ", req.params.projectId)
+  var listOfGraphs = new Promise(function(resolve){
+    store.registeredGraphs(function(results, graphs) {
+      var values = []
+      for (var i = 0; i < graphs.length; i++) {
+        if(graphs[i].valueOf()!== undefined){
+          values.push(graphs[i].valueOf())
+        }
+      }
+      resolve(values)
+    })
+  })
+  listOfGraphs.then(function(values){
+    console.log("Registered graphs: ", values)
+    let regGraphs = []
+    for(let i=0;i<values.length; i++){
+      if(values[i].indexOf('activity')!== -1){
+        regGraphs.push(values[i])
+      }
+    }
+    console.log("Filtered graphs:", regGraphs)
+    var graphOfPromises = regGraphs.map(function(graph){
+      return new Promise(function(resolve){
+        store.execute(queryInstruments(req.params.projectId,"<"+graph+">"), function(err,results){
+          console.log('[execute] for graph: ', graph)
+          let instrumentArray = []
+          if(err){
+            console.log("err: ", err)
+            console.log(" err: graph: ", graph, "  results: ", results)
+            resolve({})
+          }
+          //console.log("results: ", results)
+          if(typeof results !== 'undefined'  && results !== []){
+            //console.log("results value undefined? ", typeof(results) === 'undefined')
+            console.log("[if] results is defined: [0]", results[0])
 
+            if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("projectId")){
 
+              for(let i = 0; i< results.length; i++){
+                instrumentArray.push(results[i].instrument.value)
+              }
+              resolve({
+                  "projectId": req.params.projectId,
+                  "instrument": instrumentArray
+              })
+            }else{
+              resolve({})
+            }
+          }else{
+            console.log("[else] resolving for undefined/empty:--- ", results)
+            resolve({})
+          }
+        //  }
+        })//execute
+      })//promise
+    })//graph of promises
+    return Promise.all(graphOfPromises)
+  }).then(function(objs){
+    let attrVal = ''
+    for(let i=0; i<objs.length; i++){
+      if(objs[i] !== []){
+        console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrument: ", objs[i].instrument)
+      }
+      if(objs[i].hasOwnProperty('instrument')){
+        attrVal = objs[i].instrument
+        break
+      }
+    }
+    res.json({'instruments':attrVal})
+  }).catch(function(error){
+    console.log("error:", error)
+  })
+})
+
+app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticated, function(req, res){
+  console.log("projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
+  var listOfGraphs = new Promise(function(resolve){
+    store.registeredGraphs(function(results, graphs) {
+      var values = []
+      for (var i = 0; i < graphs.length; i++) {
+        if(graphs[i].valueOf()!== undefined){
+          values.push(graphs[i].valueOf())
+        }
+      }
+      resolve(values)
+    })
+  })
+  listOfGraphs.then(function(values){
+    console.log("Registered graphs: ", values)
+    let regGraphs = []
+    for(let i=0;i<values.length; i++){
+      if(values[i].indexOf('activity')!== -1){
+        regGraphs.push(values[i])
+      }
+    }
+    console.log("Filtered graphs:", regGraphs)
+    var graphOfPromises = regGraphs.map(function(graph){
+      return new Promise(function(resolve){
+        store.execute(getInstrumentFields(req.params.projectId,req.params.instrument_name,"<"+graph+">"), function(err,results){
+          console.log('[execute] for graph: ', graph)
+          let fieldsArray = []
+          if(err){
+            console.log("err: ", err)
+            console.log(" err: graph: ", graph, "  results: ", results)
+            resolve({})
+          }
+          //console.log("results: ", results)
+          if(typeof results !== 'undefined'  && results !== []){
+            //console.log("results value undefined? ", typeof(results) === 'undefined')
+            console.log("[if] results is defined: [0]", results[0])
+            let entity = {}
+            if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("entity")){
+              console.log("looking for own property")
+              //entity[results[0].entity.value] = []
+              //let prev_entity = results[0].entity.value
+              for(let i = 0; i< results.length; i++){
+                let earr =[]
+                if(entity.hasOwnProperty(results[i].entity.value)){ //just picking fields of first entity
+                  if(results[i].v.token === 'literal'){
+                    let fieldName = results[i].p.value
+                    let fieldValue = results[i].v.value
+                    console.log("fieldName: ", fieldName, "  field Value: ", fieldValue)
+                    earr = entity[results[i].entity.value]
+                    let vObj = {}
+                    vObj[fieldName] = fieldValue
+                    //earr.push({fieldName : fieldValue})
+                    earr.push(vObj)
+                    if(! fieldsArray.includes(results[i].p.value)){
+                      fieldsArray.push(results[i].p.value)
+                    }
+                    entity[results[i].entity.value] = earr
+                    console.log("field name: ", earr)
+                  }
+                }
+                else{
+                  entity[results[i].entity.value] = []
+                  earr = []
+
+                }
+
+              }
+
+              resolve({
+                  "projectId": req.params.projectId,
+                  "instrumentName": req.params.instrument_name,
+                  "instrument_fields": fieldsArray,
+                  "fieldValues": entity
+              })
+            }else{
+              resolve({})
+            }
+          }else{
+            console.log("[else] resolving for undefined/empty:--- ", results)
+            resolve({})
+          }
+        //  }
+        })//execute
+      })//promise
+    })//graph of promises
+    return Promise.all(graphOfPromises)
+  }).then(function(objs){
+    let attrVal = ''
+    for(let i=0; i<objs.length; i++){
+      if(objs[i] !== []){
+        console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrumentName: ", objs[i].instrumentName, "objs[i].instrument_fields:", objs[i].instrument_fields)
+        console.log("field value", objs[i].fieldValues)
+      }
+      if(objs[i].hasOwnProperty('instrument_fields')){
+        attrVal = objs[i].instrument_fields
+        break
+      }
+      if(objs[i].hasOwnProperty('fieldsValues')){
+      //TODO
+      }
+    }
+    res.json({'instrument fields':attrVal})
+  }).catch(function(error){
+    console.log("error:", error)
+  })
+})
+
+  function getInstrumentFields(projectId, instrumentName, graphId){
+    let query = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
+    PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+    PREFIX nidm:<http://purl.org/nidash/nidm#> \
+    SELECT ?entity ?p ?v\
+    FROM NAMED '+ graphId + '\
+    {GRAPH '+graphId+'{ ?entity rdf:type prov:Entity ;\
+      prov:wasGeneratedBy ?activity; \
+      ?p ?v.\
+      ?activity rdf:type prov:Activity ;\
+      provone:isPartOf ?sessionactivity;\
+      prov:used nidm:'+instrumentName+' .\
+      ?sessionactivity provone:isPartOf ?pj .\
+      ?pj nidm:ID "'+ projectId +'" .\
+    } }'
+    let query1 = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
+    PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+    PREFIX nidm:<http://purl.org/nidash/nidm#> \
+    SELECT ?entity ?p ?v\
+    FROM NAMED '+ graphId + '\
+    {GRAPH '+graphId+'{ ?entity rdf:type prov:Entity ;\
+      prov:wasGeneratedBy ?activity; \
+      ?p ?v.\
+      ?activity rdf:type prov:Activity ;\
+      prov:used nidm:'+ instrumentName +' .\
+    } }'
+    return query1
+  }
+  function queryInstruments(projectId,graphId){
+    let queryInstruments = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
+      PREFIX provone:<http://purl.org/provone#>\
+      PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+      PREFIX nidm:<http://purl.org/nidash/nidm#> \
+      SELECT DISTINCT ?projectId ?instrument \
+      FROM NAMED '+ graphId + '\
+      {GRAPH '+graphId+'{ ?s rdf:type prov:Activity;\
+        provone:isPartOf ?sessionactivity;\
+        prov:used ?instrument .\
+        ?sessionactivity provone:isPartOf ?projectId .\
+        ?p nidm:ID "'+ projectId +'" .\
+      }}'
+    return queryInstruments
+  }
   function queryAttribute(subjectId,attrName,graphId){
     let query = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
   PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
@@ -175,6 +398,19 @@ module.exports = () => {
     {GRAPH '+graphId+'{ nidm:agent_'+subjectId +' rdf:a prov:Agent ; \
       nidm:'+attrName+' ?'+attrName+' .\
     } }'
+    return query
+  }
+
+  function queryAttributes(subjectId, graphId){
+    let query = 'PREFIX prov:<http://www.w3.org/ns/prov#>\
+  PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+  PREFIX nidm:<http://purl.org/nidash/nidm#> \
+  SELECT * \
+  FROM NAMED '+ graphId + '\
+  {GRAPH '+graphId+'{ ?s rdf:type prov:Entity ; \
+    prov:wasAttributedTo nidm:agent_'+subjectId+' ;\
+    ?prop ?attr .\
+  } }'
     return query
   }
 
