@@ -265,29 +265,40 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
             let entity = {}
             if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("entity")){
               console.log("looking for own property")
-              entity[results[0].entity.value] = []
-              let earr =[]
+              //entity[results[0].entity.value] = []
+              //let prev_entity = results[0].entity.value
               for(let i = 0; i< results.length; i++){
+                let earr =[]
                 if(entity.hasOwnProperty(results[i].entity.value)){ //just picking fields of first entity
                   if(results[i].v.token === 'literal'){
                     let fieldName = results[i].p.value
                     let fieldValue = results[i].v.value
-                    earr.push({fieldName : fieldValue})
-                    fieldsArray.push(results[i].p.value)
-                    console.log("field name: ", results[i].p.value)
+                    console.log("fieldName: ", fieldName, "  field Value: ", fieldValue)
+                    earr = entity[results[i].entity.value]
+                    let vObj = {}
+                    vObj[fieldName] = fieldValue
+                    //earr.push({fieldName : fieldValue})
+                    earr.push(vObj)
+                    if(! fieldsArray.includes(results[i].p.value)){
+                      fieldsArray.push(results[i].p.value)
+                    }
+                    entity[results[i].entity.value] = earr
+                    console.log("field name: ", earr)
                   }
                 }
-                /*else{
+                else{
                   entity[results[i].entity.value] = []
                   earr = []
-                }*/
+
+                }
 
               }
-              entity[results[0].entity.value] = earr
+
               resolve({
                   "projectId": req.params.projectId,
                   "instrumentName": req.params.instrument_name,
-                  "instrument_fields": fieldsArray
+                  "instrument_fields": fieldsArray,
+                  "fieldValues": entity
               })
             }else{
               resolve({})
@@ -305,11 +316,15 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
     let attrVal = ''
     for(let i=0; i<objs.length; i++){
       if(objs[i] !== []){
-        console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrumentName: ", objs[i].instrumentName, "objs[i].instrument_field:", objs[i].fieldsArray)
+        console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrumentName: ", objs[i].instrumentName, "objs[i].instrument_fields:", objs[i].instrument_fields)
+        console.log("field value", objs[i].fieldValues)
       }
       if(objs[i].hasOwnProperty('instrument_fields')){
         attrVal = objs[i].instrument_fields
         break
+      }
+      if(objs[i].hasOwnProperty('fieldsValues')){
+      //TODO
       }
     }
     res.json({'instrument fields':attrVal})
