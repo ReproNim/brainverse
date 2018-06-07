@@ -23,6 +23,10 @@ function submitAction(){
 
 $('#btn-newInstrument').click(createInstrument)
 
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})
+
 function displayInstrumentList(){
   return new Promise(function(resolve){
     $.ajax({

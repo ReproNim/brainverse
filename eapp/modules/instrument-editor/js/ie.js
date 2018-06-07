@@ -20,12 +20,12 @@ if(instObj['shortName'] === undefined){
   shortName = instObj['shortName']
 }
 console.log("[ie]: instObj", instObj)
-var backButton = ' <a href="/instrument-editor/html/ie-mgm.html"><span class="glyphicon glyphicon-backward" style="float:right;"></span></a>'
+
 /*
 * Setting up the UI for instrument information - Name and description
 * and update Modal for the instrument
 */
-$('#instrumentInfo').append('<h4 id="iname">'+ instObj['Name']+ backButton + '<a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
+$('#instrumentInfo').append('<h4 id="iname">'+ instObj['Name']+ '<a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 
 $('#instrumentInfo').append(createModal('updateInstrumentInfoModal', 'Update Instrument Information', 'Update'))
 let instInfoForm = new AlpacaForm('#body-updateInstrumentInfoModal')
@@ -46,7 +46,7 @@ $(document).on('hidden.bs.modal','#updateInstrumentInfoModal', function(e){
     instObj["Description"] = $("#instDescription").val()
   }
   localStorage.setItem("instObj", JSON.stringify(instObj))
-  $('#iname').html(instObj['Name']+ backButton + ' <a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
+  $('#iname').html(instObj['Name']+ ' <a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
   updateInstrumentInfo()
 })
 
@@ -437,3 +437,12 @@ function setTerm(schema, key, field,position){
      return null
    }
  }
+
+$('#btn-back-ie').click(function(){
+    window.location.href = serverURL+"/instrument-editor/html/ie-mgm.html"
+})
+
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})
+

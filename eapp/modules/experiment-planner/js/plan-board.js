@@ -467,3 +467,11 @@ $(document).on('itemMoved', '#div-kanban', function (event) {
     console.log("[Item Moved] Plan Submited and Saved!")
   })
 })
+
+$('#btn-back-ep').click(function(){
+    window.location.href = serverURL+"/experiment-planner/html/plan-mgm.html"
+})
+
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})
