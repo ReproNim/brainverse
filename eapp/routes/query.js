@@ -227,7 +227,7 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
 })
 
 app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticated, function(req, res){
-  console.log("projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
+  console.log("-----*********------------^^^^^^^^^---------------------------projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
   var listOfGraphs = new Promise(function(resolve){
     store.registeredGraphs(function(results, graphs) {
       var values = []
@@ -285,6 +285,22 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
                     entity[results[i].entity.value] = earr
                     console.log("field name: ", earr)
                   }
+                    //*** deal with participants
+                    if(results[i].p.token==='uri' && results[i].p.value === 'http://www.w3.org/ns/prov#wasAttributedTo'){
+                        let fieldName = "http://purl.org/nidash/nidm#subject"
+                        let fieldValue = results[i].v.value
+                        console.log("fieldName: ", fieldName, "  field Value: ", fieldValue)
+                        earr = entity[results[i].entity.value]
+                        let vObj = {}
+                        vObj[fieldName] = fieldValue
+
+                        //vObj["agent"] = results[i].agent.value
+                        //earr.push({fieldName : fieldValue})
+                        earr.push(vObj)
+                        entity[results[i].entity.value] = earr
+                        console.log("field name: ", earr)
+                    }
+                    //******
                 }
                 else{
                   entity[results[i].entity.value] = []
