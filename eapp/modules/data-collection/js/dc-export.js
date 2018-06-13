@@ -46,7 +46,7 @@ function getInstrumentFields(sourceUrl) {
         accept: "application/json",
         success: function (data) {
             console.log('getInstrumentFields: success', data)
-            if (data.length) {
+            if (data) {
                 $("#div-fieldsTable").empty()
                 $("#div-fieldsTable").append('<div><table class="table  table-striped"">\
                 <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Instrument Fields</th></tr></thead>')

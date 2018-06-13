@@ -65,7 +65,7 @@ function getDataDictionaryList(sourceUrl){
 
 function getDataDictionary(e3){
   e3.preventDefault()
-  $("#div-projectFields").empty()
+  $("#div- ").empty()
   $("#termsInfoSaveMsg").empty()
   $("#termsInfoSaveMsg").append('<br>')
   $("#terms-list").empty()
@@ -127,7 +127,7 @@ function ajaxCallSrc(nUrl){
 }
 
 /*
-* getDataDictionary AJAX call sucess callback
+* getDataDictionary AJAX call success callback
 */
 function getDDcallbk(data){
   count = 1
@@ -215,7 +215,7 @@ function getDDcallbk(data){
       if(exists1){
         $('#designerDiv').alpaca("destroy")
         console.log("After designerDiv form destory: ",$('#designerDiv').alpaca("exist"))
-      }
+      }btn-dd-selected
       $('#designer').empty()
       $('#designer').append('<div class="row">\
         <div class="col-md-7">\

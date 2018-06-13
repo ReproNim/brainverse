@@ -370,3 +370,11 @@ $('#btn-aqInfoSave').click(function(e){
   localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
   window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
+
+$('#btn-back-dc-form-2').click(function(){
+    window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
+})
+
+$('#btn-back-dc-form-2').click(function(){
+    window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
+})
