@@ -27,7 +27,7 @@ getInstruments(collectionObj['ID']).then(function(values){
         //console.log(splittedValues[1])
         //$instruments.append(splittedValues[1])
         $("#dc-export").append('<option value="splittedValues[1]">'+ splittedValues[1] +'</option>')
-    });
+    })
 
 })
 
@@ -52,7 +52,7 @@ function getInstrumentFields(sourceUrl) {
                 <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Instrument Fields</th></tr></thead>')
                 $.each(data["instrument fields"], function(i, field) {
                     let fieldValues = field.split("#")
-                    //fields.append(fieldValues[1] + '\n')
+                    //fields.append(subjects[1] + '\n')
                     $("#div-fieldsTable").append('<tr>\
                   <td class="td-chk">\
                     <input class="form-check-input"  type="checkbox" name="insfield-checkbox" id="insfield"\
