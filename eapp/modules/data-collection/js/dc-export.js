@@ -62,6 +62,12 @@ $('#btn-export-csv').click(function() {
         return this.value;
     }).toArray().join("|");
 
+    if (!selectedValues)
+    {
+        alert("Select atleast one field!");
+        return false;
+    }
+
     let sourceUrl = serverURL + '/query/graphs/instrument/' + collectionObj['ID'] + '/' + $('#dc-export :selected').text();
     $.ajax({
         type: "POST",
