@@ -1,5 +1,7 @@
 let collectionObj = JSON.parse(localStorage.getItem("collectionObj"));
 
+$("#dc-export").select2()
+
 function getInstruments(dc){
     return new Promise(function(resolve){
         $.ajax({
@@ -16,7 +18,7 @@ function getInstruments(dc){
 
 getInstruments(collectionObj['ID']).then(function(values){
     console.log("[dc-export.js: getInstruments] values: ", values);
-    $("#dc-export").empty();
+    //$("#dc-export").empty();
     $.each(values.instruments, function(i, instrument) {
         let splittedValues = instrument.split("#");
         $("#dc-export").append('<option value="splittedValues[1]">'+ splittedValues[1] +'</option>')
@@ -38,26 +40,45 @@ function getInstrumentFields(sourceUrl) {
         success: function (data) {
             console.log('getInstrumentFields: success', data);
             if (data) {
-                $("#div-fieldsTable").empty();
-                $("#div-fieldsTable").append('<div><table class="table  table-striped"">\
-                <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Instrument Fields</th></tr></thead>');
+                let tabledata = '';
                 $.each(data["instrument fields"], function(i, field) {
                     let fieldValues = field.split("#");
-                    $("#div-fieldsTable").append('<tr>\
-                  <td class="td-chk">\
-                    <input class="form-check-input"  value=\"'+ fieldValues[1] + '\" type="checkbox" name="insfield-checkbox" id="insfield"\
-                    ></td>\
+                    tabledata += '<tr>\
+                  <td class="td-chk"><input class="form-check-input"  value=\"'+ fieldValues[1] + '\" type="checkbox" name="insfield-checkbox" id="insfield"></td>\
                   <td class="td-term"> '+ fieldValues[1] +'</td>\
-                  </tr>')
-                }); // end for each
-            } // end if
+                  </tr>';
+                });
 
+                $("#div-fieldsTable").empty();
+                $("#div-fieldsTable").append('<div><table border="0" class="table table-striped">\
+                <thead><tr>\
+                <th class="th-head-1"><input class="form-check-input"  type="checkbox" name="selectall-checkbox" id="selectall-checkbox">&nbsp;Select</th>\
+                <th class="th-head-2">Instrument Fields</th>\
+                </tr></thead><tbody>'+ tabledata +'</tbody></table></div> ');
+                // end for each
+
+                //select all checkboxes
+                $('input[id="selectall-checkbox"]').change(function(){  //"select all" change
+                    $('input[id="insfield"]').prop('checked', $(this).prop("checked")); //change all into checked status
+                });
+
+                //".checkbox" change
+                $('input[id="insfield"]').change(function(){
+                    //uncheck "select all", if one of the listed checkbox item is unchecked
+                    if(false == $(this).prop("checked")){ //if this item is unchecked
+                        $('input[id="selectall-checkbox"]').prop('checked', false); //change "select all" checked status to false
+                    }
+                    //check "select all" if all checkbox items are checked
+                    if ($('input[id="insfield"]:checked').length == $('input[id="insfield"]').length ){
+                        $('input[id="selectall-checkbox"]').prop('checked', true);
+                    }
+                });
+            } // end if
         } // end of success
     }) // ajax call
 }
 
 $('#btn-export-csv').click(function() {
-
     var selectedValues =  $('input[id="insfield"]:checked').map(function(){
         return this.value;
     }).toArray().join("|");
