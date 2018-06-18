@@ -175,12 +175,3 @@ function exportCollection(e){
 
 
 
-$('#btn-export').click(exportCollection);
-
-function exportCollection(e){
-    e.preventDefault()
-    console.log("-----------inside export Button-----------")
-    window.location.href = serverURL+"/data-collection/html/dc-export.html"
-}
-
-
