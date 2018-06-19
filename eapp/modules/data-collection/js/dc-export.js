@@ -98,7 +98,7 @@ $('#btn-export-csv').click(function() {
         success: function (data) {
             if (data) {
                 console.log('Going to Export to CSV ', data);
-                downloadCSV({ filename: "data-acquisition.csv", data: data });
+                downloadCSV({ filename: "data-acquisition.csv", data: data.field_subjects });
 
             } // end if
 
@@ -107,8 +107,6 @@ $('#btn-export-csv').click(function() {
 });
 
 $('#projectId').append('<h5> Project Name: '+ collectionObj['Name'] +'</h5>');
-//$('#planId').append('<h5> Plan: '+ cObj['Project Name'] +'</h5>')
-
 
 $('#btn-back-dc').click(function(){
     window.location.href = serverURL+"/data-collection/html/dc-list.html"
@@ -118,38 +116,38 @@ $('#btn-back-mn').click(function(){
 });
 
 function convertObjectsToCSV(data) {
-    console.log("inside convert array", data)
+    //console.log("inside convert array", data)
     var result, headerStr='', valueStr='', columnDelimiter, lineDelimiter, inputData;
-    inputData = data.field_subjects || null;
+    inputData = data || null;
     if (inputData == null || !Object.keys(inputData).length) {
         console.log("data null")
         return null;
     }
     columnDelimiter = data.columnDelimiter || ',';
     lineDelimiter = data.lineDelimiter || '\n';
-    let totalSubjects  = Object.keys(inputData)
-    if(totalSubjects.length > 0) {
-        headerStr = 'Subject'
-        for (let i = 0; i < totalSubjects.length; i++) {
-            valueStr += totalSubjects[i]
-            let fieldsForSubject = inputData[totalSubjects[i]]
-            for (let j = 0; j < fieldsForSubject.length; j++) {
-                let fieldKey = (Object.keys(fieldsForSubject[j]))[0]
+    let totalEntities = Object.keys(inputData);
+    if(totalEntities.length>0) {
+        headerStr = ''
+        for (let i = 0; i < totalEntities.length; i++) {
+            let fieldsAndSubject = inputData[totalEntities[i]];
+            for (let j = 0; j < fieldsAndSubject.length; j++) {
+                let fieldObj = fieldsAndSubject[j]
+                let fieldValue = Object.values(fieldObj)[0]
+                let fieldKey = Object.keys(fieldObj)[0]
                 if(i==0) {//Do only for the first subject since header is same for all subjects
-                    headerStr += columnDelimiter + fieldKey
+                    headerStr +=   fieldKey + columnDelimiter
                 }
-                let fieldValue = fieldsForSubject[j][fieldKey]
-                valueStr += columnDelimiter + fieldValue
+                valueStr += fieldValue + columnDelimiter
             }
             valueStr +=lineDelimiter
-        }
-    }
+        } //end for
+    } //end if
     result = headerStr + lineDelimiter + valueStr
     return result;
 }
 
 function downloadCSV(args) {
-    console.log("inside download csv method", args.data)
+    //console.log("inside download csv method", args.data)
     var result, filename, link;
     var csv = convertObjectsToCSV(args.data);
     if (csv == null) return;

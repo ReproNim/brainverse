@@ -152,7 +152,7 @@ module.exports = () => {
   })
 
 app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, function(req, res){
-  console.log("projectId: ", req.params.projectId, "  projectId: ", req.params.projectId)
+  console.log("projectId: ", req.params.projectId)
   var listOfGraphs = new Promise(function(resolve){
     store.registeredGraphs(function(results, graphs) {
       var values = []
@@ -176,7 +176,7 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
     var graphOfPromises = regGraphs.map(function(graph){
       return new Promise(function(resolve){
         store.execute(queryInstruments(req.params.projectId,"<"+graph+">"), function(err,results){
-          console.log('In list instruments api::: [execute] for graph: ', graph)
+          //console.log('In list instruments api::: [execute] for graph: ', graph)
           let instrumentArray = []
           if(err){
             console.log("err: ", err)
@@ -186,15 +186,12 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
           //console.log("results: ", results)
           if(typeof results !== 'undefined'  && results !== []){
             //console.log("results value undefined? ", typeof(results) === 'undefined')
-            console.log("results length", results.length)
-            console.log("[if] results is defined: [0]", results[0])
-
-            console.log("[if] results is defined: [1]", results[1])
+            //console.log("results length", results.length)
+            //console.log("[if] results is defined: [0]", results[0])
 
             if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("projectId")){
 
               for(let i = 0; i< results.length; i++){
-
                 //console.log(results[i].instrument.value)
                 instrumentArray.push(results[i].instrument.value)
               }
@@ -218,7 +215,7 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
     let attrVal = []
     for(let i=0; i<objs.length; i++){
       if(objs[i] !== []){
-        console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrument: ", objs[i].instrument)
+        //console.log("objs[i].projectId: ", objs[i].projectId," objs[i].instrument: ", objs[i].instrument)
       }
       if(objs[i].hasOwnProperty('instrument')){
           for(let j=0; j<objs[i].instrument.length; j++){
@@ -270,19 +267,12 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
           }
           //console.log("--------results:----------", results)
           if(typeof results !== 'undefined'  && results !== []){
-            //console.log("results value undefined? ", typeof(results) === 'undefined')
-            //console.log("[if] results is defined: [0]", results[0])
             let entity = {}
             if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("entity")){
-              //console.log("looking for own property")
-              entity[results[0].entity.value] = []
-
-              //let prev_entity = results[0].entity.value
+                entity[results[0].entity.value] = []
                 let earr =[]
                 let subjectValue = ''
                 for(let i = 0; i< results.length; i++){
-                  //console.log("---results[i].entity.value---", results[i].entity.value)
-                  //console.log("--^^-results[i].entity.value type-^^--", typeof(results[i].entity.value))
                         if(entity.hasOwnProperty(results[i].entity.value)){ //just picking fields of first entity
                               if(results[i].v.token === 'literal'){
                                 let fieldName = results[i].p.value
@@ -300,31 +290,21 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
                                 if(results[i].p.token==='uri' && results[i].p.value === 'http://www.w3.org/ns/prov#wasAttributedTo'){
                                     let fieldName = "http://purl.org/nidash/nidm#subject"
                                     subjectValue = results[i].v.value
-                                    if(! subjectArray.includes(results[i].p.value)){
-                                        subjectArray.push(results[i].v.value)
-                                    }
                                 }
-                                //******
                         }
-                        /*else{
+                        else{
                           entity[results[i].entity.value] = []
                           earr = []
 
-                        }*/
+                        }
 
 
               }//End For loop
-
-                console.log("projectId", req.params.projectId)
-                console.log("instrumentName", req.params.instrument_name,)
-                console.log("instrument_fields", fieldsArray,)
-                console.log("subjects", subjectArray,)
 
               resolve({
                   "projectId": req.params.projectId,
                   "instrumentName": req.params.instrument_name,
                   "instrument_fields": fieldsArray,
-                  "subjects": subjectArray,
               })
             }else{
               resolve({})
@@ -340,17 +320,13 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
     return Promise.all(graphOfPromises)
   }).then(function(objs){
     let attrVal = ''
-    let attrVal2 = ''
     for(let i=0; i<objs.length; i++){
         if(objs[i].hasOwnProperty('instrument_fields')){
             attrVal = objs[i].instrument_fields
             //break
         }
-        if(objs[i].hasOwnProperty('subjects')){
-            attrVal2 = objs[i].subjects
-        }
     }
-    res.json({'instrument fields':attrVal, 'subjects':attrVal2})
+    res.json({'instrument fields':attrVal})
   }).catch(function(error){
     console.log("error:", error)
   })
@@ -358,8 +334,8 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
 
 app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticated, function(req, res){
     console.log("projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
-    console.log(req.body)
-    console.log(req.body.selectedFields)
+    //console.log(req.body)
+    //console.log(req.body.selectedFields)
 
     //fetch the list of fields user selected and form a Map
     let selectedFields = req.body.selectedFields
@@ -384,7 +360,7 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                 regGraphs.push(values[i])
             }
         }
-        console.log("Filtered graphs:", regGraphs)
+        //console.log("Filtered graphs:", regGraphs)
         var graphOfPromises = regGraphs.map(function(graph){
             return new Promise(function(resolve){
                 store.execute(getInstrumentFields(req.params.projectId,req.params.instrument_name,"<"+graph+">"), function(err,results){
@@ -399,22 +375,19 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                     //console.log("--------results:----------", results)
                     if(typeof results !== 'undefined'  && results !== []){
                         let entity = {}
-                        let exportdata = {}
                         if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("entity")){
-                            //console.log("looking for own property")
+                            console.log("looking for own property")
                             entity[results[0].entity.value] = []
-                            let earr =[]
-                            let subjectValue = ''
                             for(let i = 0; i< results.length; i++){
-
+                                let earr =[]
                                 if(entity.hasOwnProperty(results[i].entity.value)){ //just picking fields of first entity
                                     if(results[i].v.token === 'literal'){
                                         let fieldNameStr = results[i].p.value
                                         let fieldValue = results[i].v.value
                                         let fieldNameArray = fieldNameStr.split('#')
                                         let fieldName = fieldNameArray[1]
+                                        earr = entity[results[i].entity.value]
                                         if(selectedFieldNameArray.includes(fieldName)) {
-                                            // earr = entity[results[i].entity.value]
                                             let vObj = {}
                                             vObj[fieldName] = fieldValue
                                             earr.push(vObj)
@@ -426,28 +399,24 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                                     }
                                     //*** deal with participants
                                     if(results[i].p.token==='uri' && results[i].p.value === 'http://www.w3.org/ns/prov#wasAttributedTo'){
-                                        let fieldName = "http://purl.org/nidash/nidm#subject"
+                                        let fieldName = "Subject"
                                         let subjectValueStr = results[i].v.value
                                         let subjectValueArr = subjectValueStr.split('#')
-                                        subjectValue = subjectValueArr[1]
-                                        if(! subjectArray.includes(results[i].p.value)){
-                                            subjectArray.push(results[i].v.value)
-                                        }
+                                        let subjectValue = subjectValueArr[1]
+                                        earr = entity[results[i].entity.value]
+                                        let vObj = {}
+                                        vObj[fieldName] = subjectValue
+                                        earr.splice(0,0, vObj) // insert subject at first position of array
+                                        entity[results[i].entity.value] = earr
                                     }
-
                                 }
-
-
-                            }//End For loop
-
-                            if(subjectValue !=''){
-                                exportdata[subjectValue] = []
-                                exportdata[subjectValue] = earr
+                                else{
+                                    entity[results[i].entity.value] = []
+                                    earr = []
+                                }
                             }
-                            console.log("field_subjects", exportdata)
-
                             resolve({
-                                "field_subjects": exportdata
+                                "field_subjects": entity
                             })
                         }else{
                             resolve({})
@@ -458,19 +427,23 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                     }
                     //  }
                 })//execute
+
             })//promise
         })//graph of promises
         return Promise.all(graphOfPromises)
     }).then(function(objs){
         let attrVal = ''
-        //let attrVal2 = ''
+        let attrVal2 = ''
         //let attrVal3 = ''
         for(let i=0; i<objs.length; i++){
             if(objs[i].hasOwnProperty('field_subjects')){
                 attrVal = objs[i].field_subjects
             }
+            if(objs[i].hasOwnProperty('subjectArray')){
+                attrVal2 = objs[i].subjectArray
+            }
         }
-        res.json({ 'field_subjects':attrVal})
+        res.json({ 'field_subjects':attrVal, 'subjectArray': attrVal2 })
     }).catch(function(error){
         console.log("error:", error)
     })
