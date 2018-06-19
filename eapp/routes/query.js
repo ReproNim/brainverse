@@ -195,7 +195,7 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
 
               for(let i = 0; i< results.length; i++){
 
-                console.log('JOBI '+ results[i].instrument.value)
+                //console.log(results[i].instrument.value)
                 instrumentArray.push(results[i].instrument.value)
               }
               resolve({
@@ -215,7 +215,6 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
     })//graph of promises
     return Promise.all(graphOfPromises)
   }).then(function(objs){
-    console.log('JOBIN BABU '+objs.length)
     let attrVal = []
     for(let i=0; i<objs.length; i++){
       if(objs[i] !== []){
@@ -237,7 +236,7 @@ app.get('/query/graphs/projects/:projectId/instruments',ensureAuthenticated, fun
 })
 
 app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticated, function(req, res){
-  console.log("-----*********------------^^^^^^^^^---------------------------projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
+  console.log("projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
   var listOfGraphs = new Promise(function(resolve){
     store.registeredGraphs(function(results, graphs) {
       var values = []
@@ -343,12 +342,6 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
     let attrVal = ''
     let attrVal2 = ''
     for(let i=0; i<objs.length; i++){
-        //console.log("object-------->", i, objs[i])
-        if(objs[i] !== []){
-            //console.log(i, "----------objs[i].projectId: ", objs[i].projectId," objs[i].instrumentName: ", objs[i].instrumentName, "objs[i].instrument_fields:", objs[i].instrument_fields)
-            //console.log("objs[i].subjects:", objs[i].subjects)
-            //console.log("field value", objs[i].subjects)
-        }
         if(objs[i].hasOwnProperty('instrument_fields')){
             attrVal = objs[i].instrument_fields
             //break
@@ -364,7 +357,7 @@ app.get('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticat
 })
 
 app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthenticated, function(req, res){
-    console.log("-----*********------------^^^^^^^^^---------------------------projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
+    console.log("projectId: ", req.params.projectId, "  instrumentName: ", req.params.instrument_name)
     console.log(req.body)
     console.log(req.body.selectedFields)
 
@@ -405,21 +398,15 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                     }
                     //console.log("--------results:----------", results)
                     if(typeof results !== 'undefined'  && results !== []){
-                        //console.log("results value undefined? ", typeof(results) === 'undefined')
-                        //console.log("[if] results is defined: [0]", results[0])
                         let entity = {}
                         let exportdata = {}
                         if(typeof results[0]!=='undefined' && results[0].hasOwnProperty("entity")){
                             //console.log("looking for own property")
                             entity[results[0].entity.value] = []
-
-                            //let prev_entity = results[0].entity.value
                             let earr =[]
                             let subjectValue = ''
                             for(let i = 0; i< results.length; i++){
 
-                                //console.log("---results[i].entity.value---", results[i].entity.value)
-                                //console.log("--^^-results[i].entity.value type-^^--", typeof(results[i].entity.value))
                                 if(entity.hasOwnProperty(results[i].entity.value)){ //just picking fields of first entity
                                     if(results[i].v.token === 'literal'){
                                         let fieldNameStr = results[i].p.value
@@ -443,25 +430,12 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                                         let subjectValueStr = results[i].v.value
                                         let subjectValueArr = subjectValueStr.split('#')
                                         subjectValue = subjectValueArr[1]
-
-                                        //earr = entity[results[i].entity.value]
-                                        // let vObj = {}
-                                        // vObj[fieldName] = subjectValue
-                                        //
-                                        // earr.push(vObj)
-                                        //entity[subjectValue] = earr
                                         if(! subjectArray.includes(results[i].p.value)){
                                             subjectArray.push(results[i].v.value)
                                         }
-                                        //console.log("field name: ", earr)
                                     }
-                                    //******
-                                }
-                                /*else{
-                                  entity[results[i].entity.value] = []
-                                  earr = []
 
-                                }*/
+                                }
 
 
                             }//End For loop
@@ -470,17 +444,9 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
                                 exportdata[subjectValue] = []
                                 exportdata[subjectValue] = earr
                             }
-                            //console.log("projectId", req.params.projectId)
-                            //console.log("instrumentName", req.params.instrument_name,)
-                            //console.log("instrument_fields", fieldsArray,)
-                            //console.log("subjects", subjectArray,)
                             console.log("field_subjects", exportdata)
 
                             resolve({
-                                //"projectId": req.params.projectId,
-                                //"instrumentName": req.params.instrument_name,
-                                //"instrument_fields": fieldsArray,
-                                //"subjects": subjectArray,
                                 "field_subjects": exportdata
                             })
                         }else{
@@ -500,19 +466,6 @@ app.post('/query/graphs/instrument/:projectId/:instrument_name',ensureAuthentica
         //let attrVal2 = ''
         //let attrVal3 = ''
         for(let i=0; i<objs.length; i++){
-            //console.log("object-------->", i, objs[i])
-            if(objs[i] !== []){
-                //console.log(i, "----------objs[i].projectId: ", objs[i].projectId," objs[i].instrumentName: ", objs[i].instrumentName, "objs[i].instrument_fields:", objs[i].instrument_fields)
-                //console.log("objs[i].subjects:", objs[i].subjects)
-                //console.log("field value", objs[i].subjects)
-            }
-            /*if(objs[i].hasOwnProperty('instrument_fields')){
-                attrVal = objs[i].instrument_fields
-                //break
-            }
-            if(objs[i].hasOwnProperty('subjects')){
-                attrVal2 = objs[i].subjects
-            }*/
             if(objs[i].hasOwnProperty('field_subjects')){
                 attrVal = objs[i].field_subjects
             }
