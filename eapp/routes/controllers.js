@@ -145,6 +145,7 @@ module.exports = () => {
     })
   })
 
+   // api to update a particular project plan
   app.put('/project-plans/:id', ensureAuthenticated, jsonParser, function(req,res){
     if (!req.body) return res.sendStatus(400)
     console.log("update obj received at server:", req.body)
@@ -194,10 +195,11 @@ module.exports = () => {
     console.log('loading project-plan file:',req.params.name )
     //loadJsonFile(path.join(__dirname, '/../../../uploads/plansdocs/'+req.params.name)).then(ob => {
       loadJsonFile(path.join(userData, '/uploads/plansdocs/'+req.params.name)).then(ob => {
-      console.log("ob:==>", ob)
+      console.log("[/project-plans/:name] ob:==>", ob)
       res.json(ob)
     })
   })
+
   app.get('/project-plans', ensureAuthenticated, function(req, res){
     var listOfGraphs = new Promise(function(resolve){
       store.registeredGraphs(function(results, graphs) {
