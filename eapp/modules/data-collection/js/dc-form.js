@@ -67,7 +67,7 @@ queryGraph(actionObj['subjectId'],'gender').then(function(value){
 
 
 /**
-Add fields to the acquistion form UI using a specified JSON file
+Add fields to the acquisition form UI using a specified JSON file
 */
 let selectedFields = []
 
@@ -345,7 +345,7 @@ function saveDCFormData(e){
 }
 $('#btn-aqInfoSave').click(function(e){
   saveDCFormData(e)
-  actionObj['status'] = 'completed'
+  //actionObj['status'] = 'completed'
 
   let numSessions = planObjSelected["Sessions"].length
   let sessions = planObjSelected["Sessions"]
@@ -375,6 +375,3 @@ $('#btn-back-dc-form-2').click(function(){
     window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
 
-$('#btn-back-dc-form-2').click(function(){
-    window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
-})
