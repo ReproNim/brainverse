@@ -487,21 +487,20 @@ function projectListPage(){
   window.location.href = serverUrl + "/nda/html/acquistionForm.html"
 }
 
+$(document).keypress(function (e) {
+        if(e.which ==13){
+            console.log('Enter key pressed')
+            getDataDictionary(e)
+        }
+})
+
 $("#btn-dd-selected").click(getDataDictionary)
-/*$("h4").click(function(){
-  window.location.href = serverUrl + "/nda-editor/html/nda-editor3.html"
-})*/
 
 $(document).on('click', '#btn-preview', function() {
     //$('#import').removeClass("col-xs-12").addClass("col-xs-7")
     if(document.getElementById('preview') != null) {
       $('#preview').remove()
     }
-    /*$('#import').after('<div class="col-xs-5" id="preview">\
-      <p><h3>Preview Form</h3></p>\
-      <br>\
-        <div id="form1" style="overflow:scroll;overflow:auto"></div>\
-    </div>');*/
     $('#import').append('<div class="col-xs-12" id="preview">\
       <p><h3>Preview/Editor</h3></p>\
       <div id="form1" style="overflow:scroll;overflow:auto"></div>\
