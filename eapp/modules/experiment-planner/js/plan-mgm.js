@@ -3,12 +3,12 @@ let serverURL = "http://127.0.0.1:3000"
 let planObj = {}
 
 function createPlan(){
-  $('#btn-newPlan').remove()
-  $('#div-planList').remove()
-  form.inputForm('Name', 'Name', 'planName', 'string', undefined, null, false)
-  form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, null, false)
-  form.submitBtnForm('Save Plan',sAction)
-  form.alpacaGen()
+    $('#btn-newPlan').remove()
+    $('#div-planList').remove()
+    form.inputForm('Name', 'Name', 'planName', 'string', undefined, null, false)
+    form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, null, false)
+    form.submitBtnForm('Save Plan',sAction)
+    form.alpacaGen()
 }
 
 function sAction(){
