@@ -18,6 +18,8 @@ function getDCObj(dc){
       })
     })
 }
+
+
 getDCObj(collectionObj['ID']).then(function(values){
   console.log("[dc-list.js: getDCOBj] values: ", values)
   loadDataCollections(values)
@@ -162,3 +164,14 @@ function loadDataCollections(values){
       }]
   })
 }
+
+$('#btn-export').click(exportCollection);
+
+function exportCollection(e){
+    e.preventDefault()
+    console.log("-----------inside export Button-----------")
+    window.location.href = serverURL+"/data-collection/html/dc-export.html"
+}
+
+
+

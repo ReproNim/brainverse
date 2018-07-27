@@ -2,3 +2,18 @@
   margin-left:20px;
   padding-left: 10px;
 }
+
+.th-head-1 {
+  width: 60px;
+}
+.th-head-2 {
+  width: 200px;
+}
+
+.td-chk {
+  width: 60px;
+}
+
+.td-term {
+  width:200px;
+}

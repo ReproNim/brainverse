@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,9 +10,9 @@
     <script src='/lib/jquery/jquery.min.js'>
     </script>
     <script>
-      try{
-      $ = jQuery = module.exports
-      }catch(e){}
+        try{
+            $ = jQuery = module.exports
+        }catch(e){}
     </script>
 
     <!-- Bootstrap -->
@@ -93,58 +93,60 @@
     <link href="/experiment-planner/css/plan.css" rel="stylesheet">
     <link href="/css/brainverse.css" rel="stylesheet" />
     <link href="/data-collection/css/dc.css" />
-  </head>
-  <body>
+</head>
+<body>
     <div id="nav">
     </div>
     <div class="container-fluid">
-      <div class="row">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <div class="col-xs-12">
-              <div class="col-xs-4" id="projectId"></div>
-              <!--div class="col-xs-4" id="planId"></div-->
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-xs-12">
+                        <div class="col-xs-4" id="projectId"></div>
+                        <!--div class="col-xs-4" id="planId"></div-->
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="col-xs-12">
+                <div class="form-group row">
+                    <label for="dc-export" class="col-xs-2 col-form-label">Select Instrument</label>
+                    <div class="col-xs-7">
+                        <select class="form-control" id="dc-export" style="width: 100%">
+                            <option value="dc-src">Select an instrument</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class = "row">
-        <div class="col-xs-12">
-          <div class="col-xs-4" id="div-addSubject">
-            <button id="btn-addSubject" class="btn btn-default"> Start Subject Data Acquisition </button>
-          </div>
+        <hr>
+        <br>
+        <!--<div id="div-instrumentFields">
+        </div>-->
+        <div id="div-fieldsTable">
         </div>
-      </div>
-      <hr>
-      <br>
-      <div id="activityTable">
-      </div>
-      <hr>
-      <br>
-      <br>
-      <div id="back">
-        <button id="btn-back-dc" class="btn btn-default"> Back To Data Collection Page </button>
-        <button id="btn-back-mn" class="btn btn-default"> Back To Main Page </button>
-        <button id="btn-export"  class="btn btn-primary"> Export </button>
-      </div>
-      <div id="div-instrumentList">
-      </div>
+        <hr>
+        <br>
+        <br>
+        <div id="back">
+            <button id="btn-back-dc" class="btn btn-default"> Back </button>
+            <button id="btn-export-csv" class="btn btn-primary"> Export to CSV </button>
+        </div>
     </div>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxcore.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxsortable.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxkanban.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxsplitter.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdata.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxbuttons.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxscrollbar.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxlistbox.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdropdownlist.js"></script>
-  <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdatatable.js"></script>
-  <script src='/js/form-gen.js'></script>
-  <script src='/js/templates/template.js'></script>
-  <script src='/js/userAccount.js'></script>
-  <script type="text/javascript" src="/data-collection/js/dc-utils.js"></script>
-  <script src='/data-collection/js/dc-list.js'></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxsortable.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxkanban.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxsplitter.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxlistbox.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdropdownlist.js"></script>
+    <script type="text/javascript" src="/dist/jqwidgets-framework/jqwidgets/jqxdatatable.js"></script>
+    <script src='/js/form-gen.js'></script>
+    <script src='/js/templates/template.js'></script>
+    <script src='/js/userAccount.js'></script>
+    <script type="text/javascript" src="/data-collection/js/dc-utils.js"></script>
+    <script src='/data-collection/js/dc-export.js'></script>
 
-  </body>
+</body>
 </html>
