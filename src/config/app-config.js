@@ -1,2 +1,0 @@
-exports.clientId = ''
-exports.clientSecret = ''
