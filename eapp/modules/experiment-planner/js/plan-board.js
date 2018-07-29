@@ -9,8 +9,13 @@ newPlanObj = JSON.parse(localStorage.getItem("newPlanObj"))
 var sessionColumnTitle=''
 
 console.log("[plan-board.js] newPlanObj:--- ", newPlanObj)
-
-$('#planInfo').append('<h4 id="pname">'+ newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
+var backButton = ' <a href="/experiment-planner/html/plan-mgm.html"><span class="glyphicon glyphicon-backward"' +
+    ' style="float:right;"></span></a>'
+/*
+* Setting up the UI for experiment plan information - Name and description
+* and update Modal for the plan
+*/
+$('#planInfo').append('<h4 id="pname">'+ newPlanObj['Name']+ backButton + ' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a></h4><hr>')
 $('#planInfo').append(createModal('updatePlanInfoModal', 'Update Plan Info', 'Update'))
 let expInfoForm = new AlpacaForm('#body-updatePlanInfoModal')
 createPlanInfoForm(expInfoForm,"updatePlanInfoModal", newPlanObj["Name"],newPlanObj["Description"])
@@ -46,10 +51,10 @@ $(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
     newPlanObj["Description"] = $("#planDescription").val()
   }
   localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
-  $('#pname').html(newPlanObj['Name']+' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
+  $('#pname').html(newPlanObj['Name']+ backButton + ' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
   updatePlanInfo()
   submitPlan().then(function(){
-    console.log("[update info - name, desc] Plan Submited and Saved!")
+    console.log("[update info - name, desc] Plan Submitted and Saved!")
   })
 })
 
