@@ -359,6 +359,16 @@ class AlpacaForm {
       }
     }
   }
+
+    backBtnForm(title, backAction){
+        this.form["buttons"] = {
+            "back": {
+                'title': title,
+                'click': backAction
+            }
+        }
+    }
+
   alpacaGen() {
     //Generates the alpaca form
     $(this.element).alpaca(this.baseForm);
