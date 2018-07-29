@@ -459,3 +459,12 @@ function setTerm(schema, key, field,position){
      return null
    }
  }
+
+$('#btn-back-ie').click(function(){
+    window.location.href = serverURL+"/instrument-editor/html/ie-mgm.html"
+})
+
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})
+
