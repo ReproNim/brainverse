@@ -3,12 +3,12 @@ let serverURL = "http://127.0.0.1:3000"
 let planObj = {}
 
 function createPlan(){
-  $('#btn-newPlan').remove()
-  $('#div-planList').remove()
-  form.inputForm('Name', 'Name', 'planName', 'string', undefined, null, false)
-  form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, null, false)
-  form.submitBtnForm('Save Plan',sAction)
-  form.alpacaGen()
+    $('#btn-newPlan').remove()
+    $('#div-planList').remove()
+    form.inputForm('Name', 'Name', 'planName', 'string', undefined, null, false)
+    form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, null, false)
+    form.submitBtnForm('Save Plan',sAction)
+    form.alpacaGen()
 }
 
 function sAction(){
@@ -33,7 +33,7 @@ function displayPlanList(){
       url: serverURL +"/project-plans",
       accept: "application/json",
       success: function(data){
-        console.log('acquistions forms:success', data)
+        console.log('[display] acquistions forms:success', data)
         let pforms = data.list
         if(pforms.length == 0){
           console.log("no forms to display")
@@ -55,7 +55,7 @@ displayPlanList().then(function(planList){
           url: url,
           accept: "application/json",
           success: function(data){
-            console.log('acquisitions term forms:success', data)
+            console.log('[display.then1] acquisitions term forms:success', data)
             resolve(data)
           }//data
         })
@@ -63,7 +63,7 @@ displayPlanList().then(function(planList){
   })
   return Promise.all(values)
 }).then(function(planObjs){
-  console.log("all plan obj: ", planObjs)
+  console.log("[display.then2] all plan obj: ", planObjs)
   if(planObjs.length !== 0){
     $('#div-planList').append('<table class="table table-striped" id="tab1"></table>')
     let planTable = document.getElementById("tab1")
