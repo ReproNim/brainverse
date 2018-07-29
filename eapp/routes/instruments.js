@@ -43,6 +43,7 @@ module.exports = () => {
             for (let i = 0; i < obs.length; i++) {
                 recentObjs[obs[i].shortName] = obs[i]
             }
+            console.log("recentObjs----------------", recentObjs)
             for (let j = 0; j < obs.length; j++) {
                 let k = 0
                 let sname = obs[j].shortName
@@ -76,7 +77,7 @@ module.exports = () => {
                 console.log("[/instruments/local/list] filename: -->", fileName)
 
                 if (!hashObj.hasOwnProperty(ob.DerivedFrom)) {
-                    ob.DerivedFrom = 'SANU'+key
+                    ob.DerivedFrom = key
                     hashObj[ob.DerivedFrom] = ob
                     console.log("----Case 1:---- DerivedFrom", hashObj);
                 } else {
@@ -87,6 +88,7 @@ module.exports = () => {
                     }
                 }
             } //end of for loop
+            console.log("hashobj ----------", hashObj)
             for (var key in hashObj) {
                 let ob = hashObj[key]
                 let title = ob.Name.split(' ')[0]
@@ -97,7 +99,8 @@ module.exports = () => {
                 }
                 //let fileName = 'terms-'+ob.shortName+'-'+title+".json"
                 let fileName = 'terms-' + shortName + '-' + title + ".json"
-                nameList.push({"shortName": ob.shortName, "Name": ob.Name, "author": ob.author, "filename": fileName, "Description": ob.Description})
+                nameList.push({"shortName": ob.shortName, "Name": ob.Name, "author": ob.author, "filename": fileName, "Description": ob.Description
+                ,"DictionaryID":ob.DictionaryID, "version":ob.version})
             }
             console.log("[2-/instruments/local/list/] response nameList:--> ", nameList)
             res.json({"list": nameList})
@@ -112,40 +115,7 @@ module.exports = () => {
             console.log("[/instruments/local/:shortName] ob:==>", ob)
             res.json(ob)
         })
-    //     var listOfFiles = new Promise(function (resolve) {
-    //         fs.readdir(termDirPath, function (err, list) {
-    //             if (err) throw err
-    //             let instList = []
-    //             for (let i = 0; i < list.length; i++) {
-    //                 if (list[i] !== ".DS_Store") {
-    //                     instList.push(list[i])
-    //                 }
-    //             }
-    //
-    //             resolve(instList)
-    //         })
-    //     })
-    //     listOfFiles.then(function (list) {
-    //         console.log("then 1 - [/instruments/local/:shortName]file list:---> ", list)
-    //         let namesArr = list.map(function (fname) {
-    //             return loadJsonFile(path.join(userData, '/uploads/termforms/' + fname))
-    //         })
-    //         return Promise.all(namesArr)
-    //     }).then(function (obs) {
-    //         let ob = {}
-    //         for (let i = 0; i < obs.length; i++) {
-    //
-    //             if (obs[i].shortName === req.params.shortName) {
-    //                 console.log("shortName from list:", obs[i].shortName)
-    //                 ob = obs[i]
-    //                 break;
-    //             }
-    //         }
-    //         //res.send(JSON.stringify(ob))
-    //         res.send(ob)
-    //         //res.json(ob)
-    //     })
-     })
+    })
 
     // api to update a particular instrument
     app.put('/instruments/local/:id', ensureAuthenticated, jsonParser, function (req, res) {

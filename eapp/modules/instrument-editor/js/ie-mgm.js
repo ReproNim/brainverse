@@ -14,7 +14,7 @@ function submitAction(){
   console.log("New Instrument Being Added Action performed")
   instObj["Name"] = $("#instName").val()
   instObj["Description"] = $("#instDescription").val()
-  instObj["version"]=0
+  instObj["version"]= 0
   console.log("[submitAction] instObj: ", instObj)
   localStorage.setItem("instObj", JSON.stringify(instObj))
   form.alpacaDestroy()

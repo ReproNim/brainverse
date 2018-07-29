@@ -71,8 +71,7 @@ function submitInstrument(){
                 instObj['DictionaryID'] = data.tid
                 //instObj['version'] = instObj["version"] + 1
                 console.log("[submitInstrument Success]updating instObj: ----->", instObj)
-                resolve()
-
+                resolve([])
             }
         })
     })
