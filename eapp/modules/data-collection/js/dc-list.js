@@ -138,17 +138,37 @@ function loadDataCollections(values){
           text: 'Instrument Name',
           dataField: 'instrumentName',
           width: 300
-          //cellsAlign: 'right',
-          //align: 'right'
       }, {
           text: 'Status',
           dataField: 'status',
           width: 100
-          //cellsAlign: 'right',
-          //align: 'right',
-          //cellsFormat: 'c2'
       }]
   })
+
+    $('#activityTable').on('rowClick', function (event) {
+        var args = event.args
+        var row = args.row
+        var index = args.index;
+        // row key
+        var rowKey = args.key;
+        console.log("row clicked:", row)
+        console.log("index: ", index)
+        console.log("rowKey: ", rowKey)
+        event.stopPropagation()
+        if (row['status'] === 'completed') {
+            console.log('true')
+            return true
+        }
+        else {
+            console.log("inside else --")
+            // row['subjectId'] = $("#subjectId").val()
+            localStorage.setItem("action", JSON.stringify(row))
+            window.location.href = serverURL + "/data-collection/html/dc-form.html"
+        }
+        /*row['subjectId'] = $("#subjectId").val()
+        localStorage.setItem("action", JSON.stringify(row))
+        window.location.href = serverURL + "/data-collection/html/dc-form.html"*/
+    })
 }
 
 $('#btn-back-dc').click(function(){
