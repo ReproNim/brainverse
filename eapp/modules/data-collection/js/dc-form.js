@@ -327,7 +327,7 @@ function saveDCFormData(e){
     localStorage.setItem("saveObj", JSON.stringify(saveObj))
 
 
-    //Save the data entered
+    //Save the data entered to database
     $.ajax({
       type: "POST",
       url: serverURL +"/acquisitions/new",
@@ -346,7 +346,7 @@ function saveDCFormData(e){
 $('#btn-aqInfoSave').click(function(e){
   saveDCFormData(e)
   //actionObj['status'] = 'completed'
-
+  console.log("action obj after save click------", actionObj)
   let numSessions = planObjSelected["Sessions"].length
   let sessions = planObjSelected["Sessions"]
   let m=0

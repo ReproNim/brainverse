@@ -19,28 +19,14 @@ function getDCObj(dc){
     })
 }
 
-
 getDCObj(collectionObj['ID']).then(function(values){
-  console.log("[dc-list.js: getDCOBj] values: ", values)
+  console.log("[dc-list.js: getDCOBj values: ", values)
   loadDataCollections(values)
 })
 
-
-//let dcObjs = JSON.parse(localStorage.getItem("dcObjs"))
-
 $('#projectId').append('<h5> Project Name: '+ collectionObj['Name'] +'</h5>')
-//$('#planId').append('<h5> Plan: '+ cObj['Project Name'] +'</h5>')
-
-
 
 $('#btn-addSubject').click(addSubjectDataToCollection)
-
-$('#btn-back-dc').click(function(){
-  window.location.href = serverURL+"/data-collection/html/dc-mgm.html"
-})
-$('#btn-back-mn').click(function(){
-  window.location.href = serverURL+"/main"
-})
 
 function addSubjectDataToCollection(e){
   e.preventDefault()
@@ -164,6 +150,13 @@ function loadDataCollections(values){
       }]
   })
 }
+
+$('#btn-back-dc').click(function(){
+    window.location.href = serverURL+"/data-collection/html/dc-mgm.html"
+})
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})
 
 $('#btn-export').click(exportCollection);
 
