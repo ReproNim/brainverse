@@ -39,23 +39,23 @@ if(projPlanObj["Number Of Sessions"]!==0){
 /*
 * Update Plan Info - Name and Description
 */
-$(document).on('hidden.bs.modal','#updatePlanInfoModal', function(e){
-  console.log("plan name",  $("#updatePlanInfoModal-name").val())
-  console.log("desc: ", $("#planDescription").val())
-  let name = $("#updatePlanInfoModal-name").val()
-  let desc = $("#planDescription").val()
-  if(name != ""){
-    newPlanObj["Name"] = $("#updatePlanInfoModal-name").val()
-  }
-  if(desc!= ""){
-    newPlanObj["Description"] = $("#planDescription").val()
-  }
-  localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
-  $('#pname').html(newPlanObj['Name']+ backButton + ' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
-  updatePlanInfo()
-  submitPlan().then(function(){
-    console.log("[update info - name, desc] Plan Submitted and Saved!")
-  })
+$('#btn-close-updatePlanInfoModal').on("click", function() {
+    console.log("plan name",  $("#updatePlanInfoModal-name").val())
+    console.log("desc: ", $("#planDescription").val())
+    let name = $("#updatePlanInfoModal-name").val()
+    let desc = $("#planDescription").val()
+    if(name != ""){
+        newPlanObj["Name"] = $("#updatePlanInfoModal-name").val()
+    }
+    if(desc!= ""){
+        newPlanObj["Description"] = $("#planDescription").val()
+    }
+    localStorage.setItem("newPlanObj", JSON.stringify(newPlanObj))
+    $('#pname').html(newPlanObj['Name']+ backButton + ' <a data-toggle="modal" href="#updatePlanInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
+    updatePlanInfo()
+    submitPlan().then(function(){
+        console.log("[update info - name, desc] Plan Submitted and Saved!")
+    })
 })
 
 $('#div-addColumn').append(addSessionColumn())
