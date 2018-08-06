@@ -145,7 +145,7 @@ function createForm(form, modalID,name){
 * Alpaca form for Plan Information
 */
 function createPlanInfoForm(form, modalID, name, desc){
-  form.inputForm('Name', 'Name', modalID+'-name', 'string', false, name, false)
+  form.inputText('Name', 'Name', modalID+'-name', 'string', false, false, name)
   form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, desc, false)
   //form.submitBtnForm('Update Plan',sAction)
   form.alpacaGen()

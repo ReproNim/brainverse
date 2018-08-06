@@ -366,7 +366,7 @@ $('#btn-aqInfoSave').click(function(e){
   dataTS[actionObj['uid']]["status"] = 'completed'
   console.log('[dc-form: save]dataTableSource:', dataTS)
   console.log("[dc-form: save]planObjSelected: ", planObjSelected)
-  currentsubjectDTSource = []
+  var currentsubjectDTSource = []
   for (let i = 0; i< dataTS.length; i++) {
     // select only current subject data acquisition tasks
        if (dataTS[i]['subjectId'] === actionObj['subjectId']) {
