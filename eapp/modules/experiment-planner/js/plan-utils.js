@@ -134,18 +134,12 @@ function createModal2(modalID, title,modalFooter1, modalFooter2){
     </div>'
   return htmlStr
 }
-/*
-* Alpaca form with Name field only
-*/
-function createForm(form, modalID,name){
-  form.inputForm('Name', 'Name', modalID-'name', 'string', undefined, name, false)
-  form.alpacaGen()
-}
+
 /*
 * Alpaca form for Plan Information
 */
 function createPlanInfoForm(form, modalID, name, desc){
-  form.inputText('Name', 'Name', modalID+'-name', 'string', false, false, name)
+  form.inputForm('Name', 'Name', modalID+'-name', 'string', undefined, false, name, false, false)
   form.textAreaForm('Description', 'Description', 'planDescription','string', undefined, desc, false)
   //form.submitBtnForm('Update Plan',sAction)
   form.alpacaGen()
