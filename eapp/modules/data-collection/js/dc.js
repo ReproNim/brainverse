@@ -257,3 +257,7 @@ function convert2jqxTableSource(plan) {
     console.log("---dataTableSource:--- ", dataTableSource)
     localStorage.setItem('dataTableSource', JSON.stringify(dataTableSource))
 }
+
+$('#btn-back-dc').click(function () {
+    window.location.href = serverURL + "/data-collection/html/dc-list.html"
+})
