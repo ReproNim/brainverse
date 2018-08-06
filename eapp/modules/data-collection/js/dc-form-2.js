@@ -135,7 +135,7 @@ function saveDCFormData(e, subjectData){
     console.log("[dc-form-2] saveObj: ", saveObj)
     localStorage.setItem("saveObj", JSON.stringify(saveObj))
 
-    /*//Save the data entered to database
+    //Save the data entered to database
     $.ajax({
         type: "POST",
         url: serverURL +"/acquisitions/new",
@@ -147,6 +147,6 @@ function saveDCFormData(e, subjectData){
             console.log("[dc-form: ajax] saveObj: ", saveObj)
             console.log('done')
         }
-    })*/
+    })
 }
 

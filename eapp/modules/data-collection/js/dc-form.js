@@ -366,9 +366,17 @@ $('#btn-aqInfoSave').click(function(e){
   dataTS[actionObj['uid']]["status"] = 'completed'
   console.log('[dc-form: save]dataTableSource:', dataTS)
   console.log("[dc-form: save]planObjSelected: ", planObjSelected)
+  currentsubjectDTSource = []
+  for (let i = 0; i< dataTS.length; i++) {
+    // select only current subject data acquisition tasks
+       if (dataTS[i]['subjectId'] === actionObj['subjectId']) {
+          currentsubjectDTSource.push(dataTS[i])
+       }
+  }
+  console.log("subjectDT ---- ", currentsubjectDTSource)
   localStorage.setItem('action',JSON.stringify(actionObj))
   localStorage.setItem('planObjSelected',JSON.stringify(planObjSelected))
-  localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
+  localStorage.setItem('dataTableSource', JSON.stringify(currentsubjectDTSource))
   window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
 

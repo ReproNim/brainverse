@@ -172,6 +172,7 @@ function loadDataCollections(values) {
 $('#btn-back-dc').click(function () {
     window.location.href = serverURL + "/data-collection/html/dc-mgm.html"
 })
+
 $('#btn-back-mn').click(function () {
     window.location.href = serverURL + "/main"
 })
