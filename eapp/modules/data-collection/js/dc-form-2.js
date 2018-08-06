@@ -50,7 +50,7 @@ function loadPlan(plan){
   var dataAdapter = new $.jqx.dataAdapter(source)
 
   $("#activityTable").jqxDataTable({
-      width: 1000,
+      width: '100%',
       theme: 'energyblue',
       //pageable: true,
       //pagerMode: 'advanced',
@@ -59,29 +59,24 @@ function loadPlan(plan){
       columns: [{
           text: 'Session Number',
           dataField: 'sessionNumber',
-          width: 120
+          width: '10%'
       }, {
           text: 'Session Name',
           dataField: 'sessionName',
-          width: 200
+          width: '20%'
       }, {
           text: 'Task Name',
           editable: false,
           dataField: 'taskName',
-          width: 280
+          width: '20%'
       }, {
           text: 'Instrument Name',
           dataField: 'instrumentName',
-          width: 300
-          //cellsAlign: 'right',
-          //align: 'right'
+          width: '40%'
       }, {
           text: 'Status',
           dataField: 'status',
-          width: 100
-          //cellsAlign: 'right',
-          //align: 'right',
-          //cellsFormat: 'c2'
+          width: '10%'
       }]
   })
 }
@@ -89,13 +84,10 @@ function loadPlan(plan){
   $('#activityTable').on('rowClick', function (event) {
     var args = event.args
     var row = args.row
-    var index = args.index;
     // row key
     var rowKey = args.key;
-
     console.log("args: ", args)
     console.log("row clicked:", row)
-    console.log("index: ", index)
     console.log("rowKey: ", rowKey)
     event.stopPropagation()
     row['subjectId'] = actionObj['subjectId']
@@ -103,13 +95,6 @@ function loadPlan(plan){
     localStorage.setItem("action",JSON.stringify(row))
     window.location.href = serverURL+"/data-collection/html/dc-form.html"
   })
-
-$('#btn-back-pj').click(function(){
-    window.location.href = serverURL+"/data-collection/html/dc-list.html"
-})
-$('#btn-back-mn').click(function(){
-    window.location.href = serverURL+"/data-collection/html/dc-mgm.html"
-})
 
 $('#btn-subjDCSave').click(function(e){
 
@@ -140,11 +125,12 @@ function saveDCFormData(e, subjectData){
     saveObj['AcquisitionActivity'] = {
         'AcquisitionActivityID':subjectData['taskId'],
         'AcquisitionName': subjectData['taskName'],
-        'Status': subjectData['status']
+        'Status': 'not completed'
     }
     saveObj['InstrumentName'] = subjectData['instrumentName']
     saveObj['PlanID'] = planObjSelected['ProjectPlanID']
     saveObj['SubjectID'] = actionObj['subjectId']
+    saveObj['version'] = 0 // for not-completed
 
     console.log("[dc-form-2] saveObj: ", saveObj)
     localStorage.setItem("saveObj", JSON.stringify(saveObj))

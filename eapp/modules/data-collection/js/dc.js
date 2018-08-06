@@ -118,6 +118,8 @@ $("#div-planListMenu").change(function () {
 
 function loadPlan(plan) {
     convert2jqxTableSource(plan)
+
+    console.log("datatable source inside load plan -------", dataTableSource)
     var source = {
         localData: dataTableSource,
         dataType: "array",
@@ -196,9 +198,9 @@ function loadPlan(plan) {
         console.log("rowKey: ", rowKey)
         event.stopPropagation()
         row['subjectId'] = $("#subjectId").val()
+        //row['version'] = dataAdapter
         localStorage.setItem("action", JSON.stringify(row))
         window.location.href = serverURL + "/data-collection/html/dc-form.html"
-
 
         /*$("#activityTable").jqxDataTable('updateRow', index, {
             sessionNumber: row.sessionNumber,
@@ -207,7 +209,6 @@ function loadPlan(plan) {
             instrumentName:row.instrumentName,
             status: "completed"
         });*/
-
     })
 }
 
@@ -244,9 +245,6 @@ function convert2jqxTableSource(plan) {
         }
     }
     console.log("[dc:convert2jqxTableSource]:planObjSelected", planObjSelected)
-
-    //localStorage.setItem('statuses', JSON.stringify(statuses))
-    //localStorage.setItem('planObjSelected', JSON.stringify(planObjSelected))
 
     for (let k = 0; k < sessionNames.length; k++) {
         let row = {}

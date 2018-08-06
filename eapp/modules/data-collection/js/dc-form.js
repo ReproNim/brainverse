@@ -322,6 +322,7 @@ function saveDCFormData(e){
     saveObj['InstrumentName'] = actionObj['instrumentName']
     saveObj['PlanID'] = planObjSelected['ProjectPlanID']
     saveObj['SubjectID'] = actionObj['subjectId']
+    saveObj['version'] = 1 // when completed
 
     console.log("[dc-form] saveObj: ", saveObj)
     localStorage.setItem("saveObj", JSON.stringify(saveObj))

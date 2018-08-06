@@ -10,6 +10,7 @@ let statuses = []
 let sessionIds = []
 let taskIds = []
 let subjectIds = []
+let versions = []
 //let saveObj = {}
 
 let dataTableSource = new Array()

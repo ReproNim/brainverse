@@ -191,6 +191,7 @@ module.exports = () => {
     })
   })
 
+  // api to get json object of a particular plan
   app.get('/project-plans/:name', ensureAuthenticated, function(req,res){
     console.log('loading project-plan file:',req.params.name )
     //loadJsonFile(path.join(__dirname, '/../../../uploads/plansdocs/'+req.params.name)).then(ob => {
@@ -200,6 +201,7 @@ module.exports = () => {
     })
   })
 
+  // api to get the list of all the experiment plans available
   app.get('/project-plans', ensureAuthenticated, function(req, res){
     var listOfGraphs = new Promise(function(resolve){
       store.registeredGraphs(function(results, graphs) {
@@ -213,7 +215,7 @@ module.exports = () => {
       })
     })
     listOfGraphs.then(function(values){
-      console.log("Registered graphs: ", values)
+      // console.log("Registered graphs: ", values)
       let regGraphs = []
       for(let i=0;i<values.length; i++){
         if(values[i].indexOf('plan')!== -1){
