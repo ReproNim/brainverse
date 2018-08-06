@@ -149,6 +149,7 @@ function getDDcallbk(data){
     termsKey = dE.fields
   }
   console.log("testing termsKey[0]: ", termsKey[0])
+    $("#div-projectFields").html("")
   $("#div-projectFields").append('<div><table class="table  table-striped"">\
   <thead><tr><th class="th-head-1">Select</th><th class="th-head-2">Term</th><th>Description</th></tr></thead>\
   <tbody>')
@@ -215,7 +216,7 @@ function getDDcallbk(data){
       if(exists1){
         $('#designerDiv').alpaca("destroy")
         console.log("After designerDiv form destory: ",$('#designerDiv').alpaca("exist"))
-      }btn-dd-selected
+      }
       $('#designer').empty()
       $('#designer').append('<div class="row">\
         <div class="col-md-7">\
