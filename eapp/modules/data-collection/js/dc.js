@@ -151,7 +151,7 @@ function loadPlan(plan) {
 
     var dataAdapter = new $.jqx.dataAdapter(source)
     $("#activityTable").jqxDataTable({
-        width: 1000,
+        width: '100%',
         theme: 'energyblue',
         //pageable: true,
         //pagerMode: 'advanced',
@@ -160,29 +160,26 @@ function loadPlan(plan) {
         columns: [{
             text: 'Session Number',
             dataField: 'sessionNumber',
-            width: 120
+            width: '10%'
         }, {
             text: 'Session Name',
             dataField: 'sessionName',
-            width: 200
+            width: '20%'
         }, {
             text: 'Task Name',
             editable: false,
             dataField: 'taskName',
-            width: 280
+            width: '20%'
         }, {
             text: 'Instrument Name',
             dataField: 'instrumentName',
-            width: 300
+            width: '40%'
             //cellsAlign: 'right',
             //align: 'right'
         }, {
             text: 'Status',
             dataField: 'status',
-            width: 100
-            //cellsAlign: 'right',
-            //align: 'right',
-            //cellsFormat: 'c2'
+            width: '10%'
         }]
     })
     $('#activityTable').on('rowClick', function (event) {
