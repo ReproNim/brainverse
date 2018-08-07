@@ -35,7 +35,7 @@ function submitAction(){
       console.log('[dc-mgm]success:', data, "  data['tid']: ",data['tid'])
     }
   })
-  window.location.href = serverURL+"/data-collection/html/dc.html"
+  window.location.href = serverURL+"/data-collection/html/dc-list.html"
 }
 
 
