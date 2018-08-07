@@ -21,19 +21,7 @@ function submitAction(){
   window.location.href = serverURL+"/instrument-editor/html/ie.html"
 }
 
-/*
-function backAction() {
-    form.alpacaDestroy()
-    window.location.href = serverURL+"/instrument-editor/html/ie-mgm.html"
-}
-*/
-
-
 $('#btn-newInstrument').click(createInstrument)
-
-$('#btn-back-mn').click(function(){
-    window.location.href = serverURL+"/main"
-})
 
 function displayInstrumentList(){
   return new Promise(function(resolve){
