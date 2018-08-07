@@ -123,7 +123,8 @@ function loadPlan(plan) {
     var source = {
         localData: dataTableSource,
         dataType: "array",
-        dataFields: [{
+        dataFields: [
+            {
                 name: 'sessionId',
                 type: 'string'
             },
@@ -145,6 +146,10 @@ function loadPlan(plan) {
                 type: 'string'
             }, {
                 name: 'status',
+                type: 'string'
+            },
+            {
+                name: 'subjectId',
                 type: 'string'
             }]
     }
@@ -252,6 +257,7 @@ function convert2jqxTableSource(plan) {
         row['status'] = statuses[k]
         row['sessionId'] = sessionIds[k]
         row['taskId'] = taskIds[k]
+        row['subjectId'] = $("#subjectId").val()
         dataTableSource[k] = row
     }
     console.log("---dataTableSource:--- ", dataTableSource)
