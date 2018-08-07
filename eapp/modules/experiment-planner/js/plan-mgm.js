@@ -108,3 +108,7 @@ displayPlanList().then(function(planList){
 })
 
 $('#btn-newPlan').click(createPlan)
+
+$('#btn-back-mn').click(function(){
+    window.location.href = serverURL+"/main"
+})

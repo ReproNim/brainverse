@@ -21,12 +21,8 @@ module.exports = () => {
       return res.sendStatus(400)
     console.log('recieved at server side')
     let obj_info = req.body
-    //obj_info['objID'] = obj_info['CurrentObjID']
-
     let pname = obj_info['Project']['Name'].split(' ')
-    //let jsonFile = 'exp-'+ pname[0]+'-'+ obj_info['Project']['ID'] +'.json'
     let jsonFile = 'exp-'+ pname[0]+'-'+ obj_info['objID'] +'.json'
-    //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/'+ jsonFile)
     let cpath = path.join(userData, '/uploads/experimentdocs/'+ jsonFile)
 
     /**
@@ -158,20 +154,79 @@ module.exports = () => {
     })
   })
 
+    // api to get list of acquisitions in a data collection
+    app.get('/acquisitions/local/list/:dcId', ensureAuthenticated,jsonParser, function(req,res){
+        console.log("dcId: --", req.params.dcId)
+        let termDirPath = path.join(userData, '/uploads/experimentdocs/')
+        var listOfFiles = new Promise(function(resolve){
+            fs.readdir(termDirPath, function(err,list){
+                if(err) throw err
+                let dcList = []
+                for(let i=0;i< list.length;i++){
+                    if(list[i]!==".DS_Store"){
+                        dcList.push(list[i])
+                    }
+                }
+                console.log("[1-/acquisitions/local/list/dcId]experiment project lists:---> ", dcList)
+                resolve(dcList)
+            })
+        })
+        listOfFiles.then(function(list){
+            //console.log("lists: then---> ", list)
+            let namesArr = list.map(function(fname){
+                return loadJsonFile(path.join(userData, '/uploads/experimentdocs/'+fname))
+            })
+            return Promise.all(namesArr)
+        }).then(function(obs){
+            let recentObjs = {}
+            let acqObj = {}
+            // Getting the chain of derivation and getting the recent version
+            for(let i = 0; i< obs.length;i++){
+                if (obs[i]['Project'].ID === req.params.dcId && obs[i].hasOwnProperty('AcquisitionActivity')) { // for
+                    // current data collection only
+                    console.log(i, "----obs[i]-----", obs[i])
+                    if(recentObjs.hasOwnProperty(obs[i]['AcquisitionActivity'].AcquisitionActivityID)){
+                        var acquisitionActivityID = obs[i]['AcquisitionActivity'].AcquisitionActivityID
+                        if(obs[i]['AcquisitionActivity'].Status =='completed'){
+
+                            // obs[i]['version'] = obs[i]['Project']['version']
+                            recentObjs[obs[i]['AcquisitionActivity'].AcquisitionActivityID] = []
+                            recentObjs[obs[i]['AcquisitionActivity'].AcquisitionActivityID].push(obs[i])
+                        }
+                    }else{
+                        recentObjs[obs[i]['AcquisitionActivity'].AcquisitionActivityID] = []
+                        // var versionObj = {'version' : obs[i]['Project']['version']}
+                        // obs[i]['version'] = obs[i]['Project']['version']
+                        recentObjs[obs[i]['AcquisitionActivity'].AcquisitionActivityID].push(obs[i])
+                    }
+                }
+
+            }
+            acqObj[req.params.dcId] = []
+            for (key in recentObjs) { // assign acquisition objects to the project id
+              acqObj[req.params.dcId].push(recentObjs[key][0])
+            }
+
+            console.log("recentObjs: ", recentObjs)
+            console.log("acqObj", acqObj)
+            res.json(acqObj[req.params.dcId])
+        })
+    })
+
   app.get('/acquisitions/local/:dcId', ensureAuthenticated,jsonParser, function(req,res){
     console.log("dcId: --", req.params.dcId)
     let termDirPath = path.join(userData, '/uploads/experimentdocs/')
     var listOfFiles = new Promise(function(resolve){
       fs.readdir(termDirPath, function(err,list){
         if(err) throw err
-        let instList = []
+        let dcList = []
         for(let i=0;i< list.length;i++){
           if(list[i]!==".DS_Store"){
-            instList.push(list[i])
+            dcList.push(list[i])
           }
         }
-        console.log("[1-/acquisitions/local/dcId]experiment project lists:---> ", instList)
-        resolve(instList)
+        console.log("[1-/acquisitions/local/dcId]experiment project lists:---> ", dcList)
+        resolve(dcList)
       })
     })
     listOfFiles.then(function(list){
@@ -186,6 +241,7 @@ module.exports = () => {
 
       // Getting the chain of derivation and getting the recent version
       for(let i = 0; i< obs.length;i++){
+        console.log("----obs[i]-----", obs[i])
         if(recentObjs.hasOwnProperty(obs[i]['Project'].ID)){
           recentObjs[obs[i]['Project'].ID].push(obs[i])
         }else{
@@ -194,13 +250,6 @@ module.exports = () => {
         }
 
       }
-      //for(var key in recentObjs){
-      //  let ob = recentObjs[key]
-
-      //  nameList.push({"Name":ob[0]['Project']['Name'],"Description": ob[0]['Project']['Description'], "author":ob[0]['Project']['ID']})
-      //}
-      //console.log("[2-/acquisitions/local/list]experiment project lists--> ", nameList)
-      //res.json({"list":nameList})
       console.log("recentObjs: ", recentObjs)
       res.json({"list":recentObjs[req.params.dcId]})
       //res.send(recentObjs[dcId])
