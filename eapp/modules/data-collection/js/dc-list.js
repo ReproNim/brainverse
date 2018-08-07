@@ -32,7 +32,6 @@ getDCObj(collectionObj['ID']).then(function (values) {
 
 function convertObjs2dataTableSource(dcObjs) {
     console.log("[dc-list.js] array dcObjs:", dcObjs)
-    //let dcObj = dcObjs.list
     for (j = 0; j < dcObjs.length; j++) {
         let sObj = dcObjs[j]
         console.log("[dc-lists: converObj2]sObj: ", sObj)
@@ -63,7 +62,6 @@ function convertObjs2dataTableSource(dcObjs) {
         row['taskId'] = taskIds[k]
         row['subjectId'] = subjectIds[k]
         row['version'] = versions[k]
-        console.log("~~~~~~~row ~.~.~.~. ", row)
         dataTableSource[k] = row
     }
     console.log("[dc-list.js]---dataTableSource:--- ", dataTableSource)
@@ -171,10 +169,6 @@ function loadDataCollections(values) {
 
 $('#btn-back-dc').click(function () {
     window.location.href = serverURL + "/data-collection/html/dc-mgm.html"
-})
-
-$('#btn-back-mn').click(function () {
-    window.location.href = serverURL + "/main"
 })
 
 $('#btn-export').click(exportCollection);
