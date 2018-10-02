@@ -104,7 +104,7 @@ $('#btn-subjDCSave').click(function(e){
     for (let i=0; i< subjectDataCollection.length; i++) {
         if (subjectDataCollection[i]['status'] !== 'completed') {
             console.log("subject" + i + "data---" , subjectDataCollection[i]['status'])
-            saveDCFormData(e, subjectDataCollection[i])
+            saveDCFormData(e, subjectDataCollection[i]) // save non-complete tasks
         }
     }
     window.location.href = serverURL+"/data-collection/html/dc-list.html"

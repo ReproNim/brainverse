@@ -132,7 +132,7 @@ function setTerm(schema, key, field,position){
     term['filterElement'] = termsIndex[termId].filterElement
     term['position'] = termsIndex[termId].position
     term['dataElementId'] = termsIndex[termId].dataElementId
-    term['name'] = key
+    term['name'] = field.label
     term['type'] = termsIndex[termId].type
     term['renderType'] = field.type
     term['size'] = termsIndex[termId].size
@@ -161,9 +161,9 @@ function setTerm(schema, key, field,position){
     term['position'] = position
     term['dataElementId'] = position
     if(field.hasOwnProperty('name')){
-      term['name'] = field.name
+      term['name'] = field.label
     }else{
-      term['name'] = termId
+      term['name'] = field.label
     }
     term['description'] = field.label
     if(schema.properties[key].enum === undefined){
