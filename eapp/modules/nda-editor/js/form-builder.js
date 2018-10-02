@@ -680,6 +680,7 @@ var setup = function(){
         else if (parentField.getType() === "object")
         {
             itemKey = "new" + new Date().getTime();
+            console.log(" --this is the culprit key ---",itemKey)
         }
 
         var insertAfterId = null;
