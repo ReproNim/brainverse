@@ -7,9 +7,16 @@ Brainverse is an open-source, cross-platform desktop application to enable resea
 - Intercept the research workflow at planning stage, curating (raw, processed, results) data at the source and helping users to annotate every step of the process.
 
 ## The App
-![brainverse_dashboard](brainverse/eapp/public/images/BrainVerse_dashboard.png)
-![curate_NDA](brainverse/eapp/public/images/CurateNDA.png)
-![experiment_planner](brainverse/eapp/public/images/ExperimentPlanner.png)
+Dashboard:
+![brainverse_dashboard](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/BrainVerse_dashboard.png)
+
+NDA Editor:
+![curate_NDA](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/CurateNDA.png)
+
+Experiment Planner:
+![experiment_planner](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/ExperimentPlanner.png)
+
+Data Acquisition:
 ![data_acquisition](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/DataAcquisition.png)
 
 ## Installation
