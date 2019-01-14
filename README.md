@@ -10,7 +10,7 @@ Brainverse is an open-source, cross-platform desktop application to enable resea
 ![brainverse_dashboard](brainverse/eapp/public/images/BrainVerse_dashboard.png)
 ![curate_NDA](brainverse/eapp/public/images/CurateNDA.png)
 ![experiment_planner](brainverse/eapp/public/images/ExperimentPlanner.png)
-![data_acquisition](brainverse/eapp/public/images/DataAcquisition.png)
+![data_acquisition](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/DataAcquisition.png)
 
 ## Installation
 The App for different OSes can be found in the [releases here](https://github.com/ReproNim/brainverse/releases)
