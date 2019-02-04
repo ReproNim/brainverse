@@ -67,7 +67,7 @@ queryGraph(actionObj['subjectId'],'gender').then(function(value){
 
 
 /**
-Add fields to the acquistion form UI using a specified JSON file
+Add fields to the acquisition form UI using a specified JSON file
 */
 let selectedFields = []
 
@@ -322,12 +322,13 @@ function saveDCFormData(e){
     saveObj['InstrumentName'] = actionObj['instrumentName']
     saveObj['PlanID'] = planObjSelected['ProjectPlanID']
     saveObj['SubjectID'] = actionObj['subjectId']
+    saveObj['version'] = 1 // when completed
 
     console.log("[dc-form] saveObj: ", saveObj)
     localStorage.setItem("saveObj", JSON.stringify(saveObj))
 
 
-    //Save the data entered
+    //Save the data entered to database
     $.ajax({
       type: "POST",
       url: serverURL +"/acquisitions/new",
@@ -345,8 +346,8 @@ function saveDCFormData(e){
 }
 $('#btn-aqInfoSave').click(function(e){
   saveDCFormData(e)
-  actionObj['status'] = 'completed'
-
+  //actionObj['status'] = 'completed'
+  console.log("action obj after save click------", actionObj)
   let numSessions = planObjSelected["Sessions"].length
   let sessions = planObjSelected["Sessions"]
   let m=0
@@ -365,9 +366,17 @@ $('#btn-aqInfoSave').click(function(e){
   dataTS[actionObj['uid']]["status"] = 'completed'
   console.log('[dc-form: save]dataTableSource:', dataTS)
   console.log("[dc-form: save]planObjSelected: ", planObjSelected)
+  var currentsubjectDTSource = []
+  for (let i = 0; i< dataTS.length; i++) {
+    // select only current subject data acquisition tasks
+       if (dataTS[i]['subjectId'] === actionObj['subjectId']) {
+          currentsubjectDTSource.push(dataTS[i])
+       }
+  }
+  console.log("subjectDT ---- ", currentsubjectDTSource)
   localStorage.setItem('action',JSON.stringify(actionObj))
   localStorage.setItem('planObjSelected',JSON.stringify(planObjSelected))
-  localStorage.setItem('dataTableSource', JSON.stringify(dataTS))
+  localStorage.setItem('dataTableSource', JSON.stringify(currentsubjectDTSource))
   window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
 
@@ -375,6 +384,3 @@ $('#btn-back-dc-form-2').click(function(){
     window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
 })
 
-$('#btn-back-dc-form-2').click(function(){
-    window.location.href = serverURL+"/data-collection/html/dc-form-2.html"
-})

@@ -23,7 +23,6 @@ function submitAction(){
   localStorage.setItem("collectionObj", JSON.stringify(collectionObj))
   form.alpacaDestroy()
   let saveObj = {}
-  //saveObj['objID'] = collectionObj["CurrentObjID"]
   saveObj['objID'] = uuid()
   saveObj['Project'] = collectionObj
   console.log("[dc-mgm.js]saveObj: ", saveObj)
@@ -34,14 +33,9 @@ function submitAction(){
     data: JSON.stringify(saveObj),
     success: function(data){
       console.log('[dc-mgm]success:', data, "  data['tid']: ",data['tid'])
-      //saveObj['ObjID'] = data['tid']
-      //localStorage.setItem("saveObj", JSON.stringify(saveObj))
-      //console.log("[dc-mgm.js] saveObj: ", JSON.parse(localStorage.getItem('saveObj')))
     }
   })
-
-  //window.location.href = serverURL+"/data-collection/html/dc-list.html"
-  window.location.href = serverURL+"/data-collection/html/dc.html"
+  window.location.href = serverURL+"/data-collection/html/dc-list.html"
 }
 
 
