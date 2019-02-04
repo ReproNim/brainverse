@@ -1,9 +1,6 @@
 let collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("[dc-list] collectionObj: ", collectionObj)
 
-//let cObj = JSON.parse(localStorage.getItem('saveObj'))
-//console.log("cObj::saveObj ", cObj)
-
 function getDCObj(dc){
     return new Promise(function(resolve){
       let url = serverURL+"/acquisitions/local/" + dc
@@ -174,4 +171,10 @@ function exportCollection(e){
 }
 
 
+$('#btn-backup').click(exportDatabase);
 
+function exportDatabase(e){
+    e.preventDefault()
+    console.log("---inside backup Button---");
+    window.location.href = serverURL+'/zip'
+}
