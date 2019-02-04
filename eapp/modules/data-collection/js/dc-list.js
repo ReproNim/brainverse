@@ -1,7 +1,28 @@
 let collectionObj = JSON.parse(localStorage.getItem("collectionObj"))
 console.log("[dc-list] collectionObj: ", collectionObj)
 
-$('#projectId').append('<h5> Project Name: ' + collectionObj['Name'] + '</h5>')
+function getDCObj(dc){
+    return new Promise(function(resolve){
+      let url = serverURL+"/acquisitions/local/" + dc
+      $.ajax({
+        type: "GET",
+        url: url,
+        accept: "application/json",
+        success: function(data){
+          console.log('project DC received :success', data)
+          resolve(data)
+        }//data
+      })
+    })
+}
+
+
+getDCObj(collectionObj['ID']).then(function(values){
+  console.log("[dc-list.js: getDCOBj] values: ", values)
+  loadDataCollections(values)
+})
+
+$('#projectId').append('<h5> Project Name: '+ collectionObj['Name'] +'</h5>')
 
 $('#btn-addSubject').click(addSubjectDataToCollection)
 
@@ -180,4 +201,10 @@ function exportCollection(e) {
 }
 
 
+$('#btn-backup').click(exportDatabase);
 
+function exportDatabase(e){
+    e.preventDefault()
+    console.log("---inside backup Button---");
+    window.location.href = serverURL+'/zip'
+}
