@@ -25,9 +25,6 @@ module.exports = () => {
   const GITHUB_CLIENT_ID = config.clientId
   const GITHUB_CLIENT_SECRET = config.clientSecret
 
-  console.log("clientId: ", GITHUB_CLIENT_ID)
-  console.log("clientSecret", GITHUB_CLIENT_SECRET)
-
   passport.serializeUser(function(user, done) {
     //console.log("user:",user)
     done(null, user);
@@ -50,9 +47,9 @@ module.exports = () => {
         // represent the logged-in user.  In a typical application, you would want
         // to associate the GitHub account with a user record in your database,
         // and return that user instead.
-        console.log("accessToken: ", accessToken)
+        // console.log("accessToken: ", accessToken)
         github_token = accessToken
-        console.log("profile: ", profile)
+        // console.log("profile: ", profile)
         return done(null, profile)
       })
     }
@@ -81,7 +78,7 @@ module.exports = () => {
   app.use(passport.session());
 
   app.get('/', function(req, res){
-    console.log("user from request:",req.user)
+    // console.log("user from request:",req.user)
     res.render('index',{user:req.user})
   })
   app.get('/main', ensureAuthenticated, function(req, res){

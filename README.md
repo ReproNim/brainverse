@@ -6,6 +6,19 @@ Brainverse is an open-source, cross-platform desktop application to enable resea
 - Adds semantic annotation to data with relevant metadata based on NeuroImaging data Model (NIDM) making experimental neuroimaging study more reproducible, and making data FAIR
 - Intercept the research workflow at planning stage, curating (raw, processed, results) data at the source and helping users to annotate every step of the process.
 
+## The App
+Dashboard:
+![brainverse_dashboard](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/BrainVerse_dashboard.png)
+
+NDA Editor:
+![curate_NDA](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/CurateNDA.png)
+
+Experiment Planner:
+![experiment_planner](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/ExperimentPlanner.png)
+
+Data Acquisition:
+![data_acquisition](https://github.com/ReproNim/brainverse/blob/master/eapp/public/images/DataAcquisition.png)
+
 ## Installation
 The App for different OSes can be found in the [releases here](https://github.com/ReproNim/brainverse/releases)
 ### macOS
