@@ -36,7 +36,7 @@ before_script:
   - sed -i -e "s/exports.clientId = ''/exports.clientId = \"$clientId\"/g" app-config.js
   - sed -i -e "s/exports.clientSecret = ''/exports.clientSecret = \"$clientSecret\"/g" app-config.js
   - cd ../../
-  - echo ${GH_TOKEN_DJ}
+  - echo ${GH_TOKEN}
 
 script:
   - |
@@ -46,7 +46,7 @@ script:
         -e TRAVIS_SECURE_ENV_VARS=$TRAVIS_SECURE_ENV_VARS \
         -e clientId=${clientId} \
         -e clientSecret=${clientSecret} \
-        -e GH_TOKEN=${GH_TOKEN_DJ} \
+        -e GH_TOKEN=${GH_TOKEN} \
         -v $(pwd):/project \
         -v ~/.cache/electron:/root/.cache/electron \
         -v ~/.cache/electron-builder:/root/.cache/electron-builder \
