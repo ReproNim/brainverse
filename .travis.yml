@@ -36,6 +36,7 @@ before_script:
   - sed -i -e "s/exports.clientId = ''/exports.clientId = \"$clientId\"/g" app-config.js
   - sed -i -e "s/exports.clientSecret = ''/exports.clientSecret = \"$clientSecret\"/g" app-config.js
   - cd ../../
+  - echo ${GH_TOKEN_DJ}
 
 script:
   - |
