@@ -1,35 +1,34 @@
 let collectionObj = JSON.parse(localStorage.getItem("collectionObj"));
 
-$("#dc-export").select2()
+$("#dc-export").select2();
 
-function getInstruments(dc){
-    return new Promise(function(resolve){
+function getInstruments(dc) {
+    return new Promise(function (resolve) {
         $.ajax({
             type: "GET",
-            url: serverURL + "/query/graphs/projects/"+ dc +"/instruments",
+            url: serverURL + "/query/graphs/projects/" + dc + "/instruments",
             accept: "application/json",
-            success: function(data){
+            success: function (data) {
                 console.log('instrument list received :success', data);
-                resolve(data)
+                resolve(data);
             }//data
         })
     })
 }
 
-getInstruments(collectionObj['ID']).then(function(values){
+getInstruments(collectionObj['ID']).then(function (values) {
     console.log("[dc-export.js: getInstruments] values: ", values);
-    //$("#dc-export").empty();
-    $.each(values.instruments, function(i, instrument) {
+    $.each(values.instruments, function (i, instrument) {
         let splittedValues = instrument.split("#");
-        $("#dc-export").append('<option value="splittedValues[1]">'+ splittedValues[1] +'</option>')
+        $("#dc-export").append('<option value="splittedValues[1]">' + splittedValues[1] + '</option>');
     })
 
 });
 
-$("#dc-export").change(function(){
+$("#dc-export").change(function () {
     let sourceUrl = serverURL + '/query/graphs/instrument/' + collectionObj['ID'] + '/' + $('#dc-export :selected').text();
     console.log("sourceurl", sourceUrl);
-    getInstrumentFields(sourceUrl)
+    getInstrumentFields(sourceUrl);
 });
 
 function getInstrumentFields(sourceUrl) {
@@ -41,11 +40,11 @@ function getInstrumentFields(sourceUrl) {
             console.log('getInstrumentFields: success', data);
             if (data) {
                 let tabledata = '';
-                $.each(data["instrument fields"], function(i, field) {
+                $.each(data["instrument fields"], function (i, field) {
                     let fieldValues = field.split("#");
                     tabledata += '<tr>\
-                  <td class="td-chk"><input class="form-check-input"  value=\"'+ fieldValues[1] + '\" type="checkbox" name="insfield-checkbox" id="insfield"></td>\
-                  <td class="td-term"> '+ fieldValues[1] +'</td>\
+                  <td class="td-chk"><input class="form-check-input"  value=\"' + fieldValues[1] + '\" type="checkbox" name="insfield-checkbox" id="insfield"></td>\
+                  <td class="td-term"> ' + fieldValues[1] + '</td>\
                   </tr>';
                 });
 
@@ -54,22 +53,22 @@ function getInstrumentFields(sourceUrl) {
                 <thead><tr>\
                 <th class="th-head-1"><input class="form-check-input"  type="checkbox" name="selectall-checkbox" id="selectall-checkbox">&nbsp;Select</th>\
                 <th class="th-head-2">Instrument Fields</th>\
-                </tr></thead><tbody>'+ tabledata +'</tbody></table></div> ');
+                </tr></thead><tbody>' + tabledata + '</tbody></table></div> ');
                 // end for each
 
                 //select all checkboxes
-                $('input[id="selectall-checkbox"]').change(function(){  //"select all" change
+                $('input[id="selectall-checkbox"]').change(function () {  //"select all" change
                     $('input[id="insfield"]').prop('checked', $(this).prop("checked")); //change all into checked status
                 });
 
                 //".checkbox" change
-                $('input[id="insfield"]').change(function(){
+                $('input[id="insfield"]').change(function () {
                     //uncheck "select all", if one of the listed checkbox item is unchecked
-                    if(false == $(this).prop("checked")){ //if this item is unchecked
+                    if (false == $(this).prop("checked")) { //if this item is unchecked
                         $('input[id="selectall-checkbox"]').prop('checked', false); //change "select all" checked status to false
                     }
                     //check "select all" if all checkbox items are checked
-                    if ($('input[id="insfield"]:checked').length == $('input[id="insfield"]').length ){
+                    if ($('input[id="insfield"]:checked').length == $('input[id="insfield"]').length) {
                         $('input[id="selectall-checkbox"]').prop('checked', true);
                     }
                 });
@@ -78,13 +77,12 @@ function getInstrumentFields(sourceUrl) {
     }) // ajax call
 }
 
-$('#btn-export-csv').click(function() {
-    var selectedValues =  $('input[id="insfield"]:checked').map(function(){
+$('#btn-export-csv').click(function () {
+    var selectedValues = $('input[id="insfield"]:checked').map(function () {
         return this.value;
     }).toArray().join("|");
 
-    if (!selectedValues)
-    {
+    if (!selectedValues) {
         alert("Select atleast one field!");
         return false;
     }
@@ -98,7 +96,7 @@ $('#btn-export-csv').click(function() {
         success: function (data) {
             if (data) {
                 console.log('Going to Export to CSV ', data);
-                downloadCSV({ filename: "data-acquisition.csv", data: data.field_subjects });
+                downloadCSV({filename: "data-acquisition.csv", data: data.field_subjects});
 
             } // end if
 
@@ -106,43 +104,43 @@ $('#btn-export-csv').click(function() {
     }) // ajax call
 });
 
-$('#projectId').append('<h5> Project Name: '+ collectionObj['Name'] +'</h5>');
+$('#projectId').append('<h5> Project Name: ' + collectionObj['Name'] + '</h5>');
 
-$('#btn-back-dc').click(function(){
-    window.location.href = serverURL+"/data-collection/html/dc-list.html"
+$('#btn-back-dc').click(function () {
+    window.location.href = serverURL + "/data-collection/html/dc-list.html";
 });
-$('#btn-back-mn').click(function(){
-    window.location.href = serverURL+"/main"
+$('#btn-back-mn').click(function () {
+    window.location.href = serverURL + "/main";
 });
 
 function convertObjectsToCSV(data) {
     //console.log("inside convert array", data)
-    var result, headerStr='', valueStr='', columnDelimiter, lineDelimiter, inputData;
+    var result, headerStr = '', valueStr = '', columnDelimiter, lineDelimiter, inputData;
     inputData = data || null;
     if (inputData == null || !Object.keys(inputData).length) {
-        console.log("data null")
+        console.log("data null");
         return null;
     }
     columnDelimiter = data.columnDelimiter || ',';
     lineDelimiter = data.lineDelimiter || '\n';
     let totalEntities = Object.keys(inputData);
-    if(totalEntities.length>0) {
-        headerStr = ''
+    if (totalEntities.length > 0) {
+        headerStr = '';
         for (let i = 0; i < totalEntities.length; i++) {
             let fieldsAndSubject = inputData[totalEntities[i]];
             for (let j = 0; j < fieldsAndSubject.length; j++) {
-                let fieldObj = fieldsAndSubject[j]
-                let fieldValue = Object.values(fieldObj)[0]
-                let fieldKey = Object.keys(fieldObj)[0]
-                if(i==0) {//Do only for the first subject since header is same for all subjects
-                    headerStr +=   fieldKey + columnDelimiter
+                let fieldObj = fieldsAndSubject[j];
+                let fieldValue = Object.values(fieldObj)[0];
+                let fieldKey = Object.keys(fieldObj)[0];
+                if (i == 0) {//Do only for the first subject since header is same for all subjects
+                    headerStr += fieldKey + columnDelimiter;
                 }
-                valueStr += fieldValue + columnDelimiter
+                valueStr += fieldValue + columnDelimiter;
             }
-            valueStr +=lineDelimiter
+            valueStr += lineDelimiter;
         } //end for
     } //end if
-    result = headerStr + lineDelimiter + valueStr
+    result = headerStr + lineDelimiter + valueStr;
     return result;
 }
 
