@@ -25,7 +25,11 @@
     }
   },
   "keywords": [],
-  "author": ["Smruti Padhy <smruti@mit.edu>", "Sanu Ann Abraham <sanuann@mit.edu>"],
+  "author": "Smruti Padhy <smruti@mit.edu>",
+  "contributors": [
+    "Smruti Padhy <smruti@mit.edu>",
+    "Sanu Ann Abraham <sanuann@mit.edu>"
+  ],
   "license": "Apache 2",
   "devDependencies": {
     "chai": "^3.5.0",
