@@ -14,7 +14,7 @@ let termsIndex = {}
 instObj = JSON.parse(localStorage.getItem("instObj"))
 if(instObj['shortName'] === undefined){
   //a new instrument is being created
-  shortName = instObj["Name"].trim() + "-m" + getRandomIntInclusive(10,99)
+  shortName = instObj["Name"].trim() + getRandomIntInclusive(10,99)
 }else{
   //an existing form is loaded
   shortName = instObj['shortName']
@@ -40,56 +40,35 @@ $(document).on('hidden.bs.modal','#updateInstrumentInfoModal', function(e){
   let name = $("#updateInstrumentInfoModal-name").val()
   let desc = $("#instDescription").val()
   if(name != ""){
-      instObj["Name"] = $("#updateInstrumentInfoModal-name").val()
+    instObj["Name"] = $("#updateInstrumentInfoModal-name").val()
   }
   if(desc!= ""){
-      instObj["Description"] = $("#instDescription").val()
+    instObj["Description"] = $("#instDescription").val()
   }
-  submitInstrument().then(function(result){
-      if(result){
-          localStorage.setItem("instObj", JSON.stringify(instObj))
-          $('#iname').html(instObj['Name']+ backButton + ' <a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
-      }
-      console.log("[update info - name, desc] Instrument Submitted and Saved!")
-  })
+  localStorage.setItem("instObj", JSON.stringify(instObj))
+  $('#iname').html(instObj['Name']+ backButton + ' <a data-toggle="modal" href="#updateInstrumentInfoModal"><span class="fa fa-pencil" style="float:right;"></span></a>')
+  updateInstrumentInfo()
 })
 
 /**
- ** Submit the updated Instrument information
- **/
-function submitInstrument(){
-    return new Promise(function(resolve){
-        //instObj = JSON.parse(localStorage.getItem("instObj"))
-        $.ajax({
-            type: "PUT",
-            url: serverURL+"/instruments/local/"+ instObj["shortName"], // to be checked
-            contentType: "application/json",
-            data: JSON.stringify(instObj), // change
-            success: function(data){
-                console.log('success put api --------: response:', data)
-                //instObj = JSON.parse(localStorage.getItem("instObj"))
-                instObj['DictionaryID'] = data.tid
-                //instObj['version'] = instObj["version"] + 1
-                console.log("[submitInstrument Success]updating instObj: ----->", instObj)
-                resolve([])
-            }
-        })
-    })
+** Updating and Saving the updated instrument info into the format for rdf serialization
+**/
+function updateInstrumentInfo(){
+  localStorage.setItem("instObj", JSON.stringify(instObj))
+  console.log("[ie] update inst obj info: ", instObj)
 }
-
-
 setupForm()
 setup(instForm.properties,instForm.fields)
 $(".tab-item-designer").click()
 
 function setCommonFields(){
-  //let version = ''
-  //console.log("version number : ", version)
+  let version = ''
+  console.log("version number : ", version)
   saveObj['DictionaryID'] = ''
   //TODO: Need to have scheme to uniquely name the file
   if(instObj['shortName'] === undefined){
     saveObj['shortName'] = shortName
-    saveObj["DerivedFrom"] = 'none'
+    saveObj["DerivedFrom"] = ''
   }else{
     //editing an existing form
     if(shortName.indexOf('-m') === -1){
@@ -104,7 +83,6 @@ function setCommonFields(){
   saveObj["Name"] = instObj["Name"]
   saveObj["Description"] = instObj["Description"]
   saveObj["title"] = instObj["Name"]
-  saveObj['version'] = instObj['version']
   saveObj["author"]=''
 
 }
@@ -459,12 +437,3 @@ function setTerm(schema, key, field,position){
      return null
    }
  }
-
-$('#btn-back-ie').click(function(){
-    window.location.href = serverURL+"/instrument-editor/html/ie-mgm.html"
-})
-
-$('#btn-back-mn').click(function(){
-    window.location.href = serverURL+"/main"
-})
-

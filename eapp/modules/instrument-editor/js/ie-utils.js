@@ -28,7 +28,7 @@ function createModal(modalID, title,modalFooter){
 * Alpaca form for Instrument Information
 */
 function createInstrumentInfoForm(form, modalID, name, desc){
-  form.inputForm('Instrument Name', 'Instrument Name', modalID+'-name', 'string', undefined, false, name, false, false)
+  form.inputForm('Instrument Name', 'Instrument Name', modalID+'-name', 'string', false, name, false)
   form.textAreaForm('Description', 'Description', 'instDescription','string', undefined, desc, false)
   //form.submitBtnForm('Update Plan',sAction)
   form.alpacaGen()
