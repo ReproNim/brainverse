@@ -25,9 +25,9 @@ matrix:
 cache:
   yarn: true
   directories:
-  - node_modules
-  - $HOME/.cache/electron
-  - $HOME/.cache/electron-builder
+    - node_modules
+    - $HOME/.cache/electron
+    - $HOME/.cache/electron-builder
 
 before_script:
   # Replace clientId and clientSecret values in app-config.js with environment
