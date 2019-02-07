@@ -2,13 +2,13 @@
 * Setting Up form editor
 * This code is adapted from http://www.alpacajs.org/demos/form-builder/form-builder.html
 */
-var setup = function(){
-  //Alpaca.logLevel = Alpaca.DEBUG;
+var setup = function () {
+    //Alpaca.logLevel = Alpaca.DEBUG;
 
-  var MODAL_VIEW = "bootstrap-edit-horizontal";
-  //var MODAL_VIEW = "bootstrap-edit";
+    var MODAL_VIEW = "bootstrap-edit-horizontal";
+    //var MODAL_VIEW = "bootstrap-edit";
 
-  var MODAL_TEMPLATE = ' \
+    var MODAL_TEMPLATE = ' \
     <div class="modal fade"> \
       <div class="modal-dialog"> \
         <div class="modal-content"> \
@@ -25,270 +25,262 @@ var setup = function(){
     </div> \
   ';
 
-  //var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
-  //var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
-  var schema = {}
-  var options = {}
-  console.log("schema just during setup: ", schema)
-  var data ={}
+    //var schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
+    //var options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
+    var schema = {}
+    var options = {}
+    console.log("schema just during setup: ", schema)
+    var data = {}
 
-  console.log("--- Setting up Form Editor Space--- ")
-  var mainViewField = null;
-  var mainPreviewField = null;
-  var mainDesignerField = null;
+    console.log("--- Setting up Form Editor Space--- ")
+    var mainViewField = null;
+    var mainPreviewField = null;
+    var mainDesignerField = null;
 
-  var doRefresh = function(el, buildInteractionLayers, disableErrorHandling, cb){
-    var config = {}
-    schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
-    options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
+    var doRefresh = function (el, buildInteractionLayers, disableErrorHandling, cb) {
+        var config = {}
+        schema = JSON.parse(localStorage.getItem("alpacaDesignerSchema"))
+        options = JSON.parse(localStorage.getItem("alpacaDesignerOptions"))
 
-    if(schema){
-      config = {
-        "schema": schema
-      }
-      if(options){
-        config.options = options
-      }
-      if(data){
-        config.data = data
-      }
-      if(!config.options) {
-        config.options = {}
-      }
-      config.options.focus = false
-
-      config.postRender = function(form) {
-
-        if (buildInteractionLayers){
-          // cover every control with an interaction layer
-          form.getFieldEl().find(".alpaca-container-item").each(function(iCount) {
-          var $el = $(this)
-          var alpacaFieldId = $el.children().first().attr("data-alpaca-field-id")
-          $el.attr("icount", iCount)
-          var width = $el.outerWidth() - 22
-          var height = $el.outerHeight() + 25
-
-          // cover div
-          var cover = $("<div></div>")
-          $(cover).addClass("cover")
-          $(cover).attr("alpaca-ref-id", alpacaFieldId)
-          $(cover).css({
-            "position": "absolute",
-            "margin-top": "-" + height + "px",
-            "margin-left": "-10px",
-            "width": width,
-            "height": height + 10,
-            "opacity": 0,
-            "background-color": "white",
-            "z-index": 900
-          });
-          $(cover).attr("icount-ref", iCount)
-          $el.append(cover)
-
-          // interaction div
-          var interaction = $("<div class='interaction'></div>")
-          var buttonGroup = $("<div class='btn-group pull-right'></div>")
-          var schemaButton = $('<button class="btn btn-default btn-xs button-schema" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-list"></i></button>')
-          buttonGroup.append(schemaButton)
-          var optionsButton = $('<button class="btn btn-default btn-xs button-options" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-wrench"></i></button>')
-          buttonGroup.append(optionsButton);
-          var removeButton = $('<button class="btn btn-danger btn-xs button-remove" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-remove"></i></button>');
-          buttonGroup.append(removeButton);
-          interaction.append(buttonGroup);
-          interaction.append("<div style='clear:both'></div>");
-          $(interaction).addClass("interaction");
-          $(interaction).attr("alpaca-ref-id", alpacaFieldId);
-          $(interaction).css({
-            "position": "absolute",
-            "margin-top": "-" + height + "px",
-            "margin-left": "-10px",
-            "width": width,
-            "height": height + 10,
-            "opacity": 1,
-            "z-index": 901
-          });
-          $(interaction).attr("icount-ref", iCount)
-          $el.append(interaction)
-          $(buttonGroup).css({
-            "margin-top": 5 + (($(interaction).height() / 2) - ($(buttonGroup).height() / 2)),
-            "margin-right": "16px"
-          });
-          $(schemaButton).off().click(function(e) {
-            e.preventDefault()
-            e.stopPropagation()
-
-            var alpacaId = $(this).attr("alpaca-ref-id");
-
-            editSchema(alpacaId)
-          });
-          $(optionsButton).off().click(function(e) {
-            e.preventDefault()
-            e.stopPropagation()
-
-            var alpacaId = $(this).attr("alpaca-ref-id")
-            editOptions(alpacaId)
-          });
-          $(removeButton).off().click(function(e) {
-            e.preventDefault()
-            e.stopPropagation()
-            var alpacaId = $(this).attr("alpaca-ref-id")
-            removeField(alpacaId)
-          });
-
-          // when hover, highlight
-          $(interaction).hover(function(e) {
-            var iCount = $(interaction).attr("icount-ref")
-            $(".cover[icount-ref='" + iCount + "']").addClass("ui-hover-state")
-          }, function(e) {
-              var iCount = $(interaction).attr("icount-ref");
-              $(".cover[icount-ref='" + iCount + "']").removeClass("ui-hover-state")
-            })
-          })
-
-          // add dashed
-          form.getFieldEl().find(".alpaca-container").addClass("dashed")
-          form.getFieldEl().find(".alpaca-container-item").addClass("dashed")
-
-          // for every container, add a "first" drop zone element
-          // this covers empty containers as well as 0th index insertions
-          form.getFieldEl().find(".alpaca-container").each(function() {
-            var containerEl = this
-
-            // first insertion point
-            $(this).prepend("<div class='dropzone'></div>")
-
-            // all others
-            $(containerEl).children(".alpaca-container-item").each(function() {
-                $(this).after("<div class='dropzone'></div>")
-            })
-          })
-
-          form.getFieldEl().find(".dropzone").droppable({
-            "tolerance": "touch",
-            "drop": function( event, ui ) {
-
-              var draggable = $(ui.draggable)
-
-              if (draggable.hasClass("form-element")){
-                var dataType = draggable.attr("data-type")
-                var fieldType = draggable.attr("data-field-type")
-
-                // based on where the drop occurred, figure out the previous and next Alpaca fields surrounding
-                // the drop target
-
-                // previous
-                var previousField = null
-                var previousFieldKey = null
-                var previousItemContainer = $(event.target).prev()
-                if (previousItemContainer){
-                  var previousAlpacaId = $(previousItemContainer).children().first().attr("data-alpaca-field-id")
-                  previousField = Alpaca.fieldInstances[previousAlpacaId]
-                  previousFieldKey = $(previousItemContainer).attr("data-alpaca-container-item-name")
-                }
-
-                // next
-                var nextField = null
-                var nextFieldKey = null
-                var nextItemContainer = $(event.target).next()
-                if (nextItemContainer){
-                  var nextAlpacaId = $(nextItemContainer).children().first().attr("data-alpaca-field-id")
-                  nextField = Alpaca.fieldInstances[nextAlpacaId]
-
-                  nextFieldKey = $(nextItemContainer).attr("data-alpaca-container-item-name")
-                }
-
-                // parent field
-                var parentFieldAlpacaId = $(event.target).parent().parent().attr("data-alpaca-field-id");
-                var parentField = Alpaca.fieldInstances[parentFieldAlpacaId];
-
-                // now do the insertion
-                insertField(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey);
-
-              } else if (draggable.hasClass("interaction")){
-                var draggedIndex = $(draggable).attr("icount-ref");
-
-                // next
-                var nextItemContainer = $(event.target).next();
-                var nextItemContainerIndex = $(nextItemContainer).attr("data-alpaca-container-item-index");
-                var nextItemAlpacaId = $(nextItemContainer).children().first().attr("data-alpaca-field-id");
-                var nextField = Alpaca.fieldInstances[nextItemAlpacaId];
-
-                form.moveItem(draggedIndex, nextItemContainerIndex, false, function() {
-                  var top = findTop(nextField)
-                  regenerate(top)
-                })
-              }
-            },
-            "over": function (event, ui ) {
-                $(event.target).addClass("dropzone-hover")
-            },
-            "out": function (event, ui) {
-                $(event.target).removeClass("dropzone-hover")
+        if (schema) {
+            config = {
+                "schema": schema
             }
-          })
-
-          // init any in-place draggables
-          form.getFieldEl().find(".interaction").draggable({
-            "appendTo": "body",
-            "helper": function() {
-                var iCount = $(this).attr("icount-ref");
-                var clone = $(".alpaca-container-item[icount='" + iCount + "']").clone()
-                return clone;
-            },
-            "cursorAt": {
-                "top": 100
-            },
-            "zIndex": 300,
-            "refreshPositions": true,
-            "start": function(event, ui) {
-                $(".dropzone").addClass("dropzone-highlight")
-            },
-            "stop": function(event, ui) {
-                $(".dropzone").removeClass("dropzone-highlight")
+            if (options) {
+                config.options = options
             }
-          })
-        } //if buildInteractionLayers end
-        cb(null, form)
-      } //postRender function ends
-      config.error = function(err){
-          Alpaca.defaultErrorCallback(err)
-          cb(err);
-      }
-      if (disableErrorHandling){
-        Alpaca.defaultErrorCallback = function(error) {
-            console.log("Alpaca encountered an error while previewing form -> " + error.message)
-        }
-      }else{
-          Alpaca.defaultErrorCallback = Alpaca.DEFAULT_ERROR_CALLBACK
-      }
-      //Alpaca form generated
-      $(el).alpaca(config)
+            if (data) {
+                config.data = data
+            }
+            if (!config.options) {
+                config.options = {}
+            }
+            config.options.focus = false
 
-    }//if schema ends
-  } //doRefresh ends here
+            config.postRender = function (form) {
 
-    var removeFunctionFields = function(schema, options)
-    {
-        if (schema)
-        {
-            if (schema.properties)
-            {
+                if (buildInteractionLayers) {
+                    // cover every control with an interaction layer
+                    form.getFieldEl().find(".alpaca-container-item").each(function (iCount) {
+                        var $el = $(this)
+                        var alpacaFieldId = $el.children().first().attr("data-alpaca-field-id")
+                        $el.attr("icount", iCount)
+                        var width = $el.outerWidth() - 22
+                        var height = $el.outerHeight() + 25
+
+                        // cover div
+                        var cover = $("<div></div>")
+                        $(cover).addClass("cover")
+                        $(cover).attr("alpaca-ref-id", alpacaFieldId)
+                        $(cover).css({
+                            "position": "absolute",
+                            "margin-top": "-" + height + "px",
+                            "margin-left": "-10px",
+                            "width": width,
+                            "height": height + 10,
+                            "opacity": 0,
+                            "background-color": "white",
+                            "z-index": 900
+                        });
+                        $(cover).attr("icount-ref", iCount)
+                        $el.append(cover)
+
+                        // interaction div
+                        var interaction = $("<div class='interaction'></div>")
+                        var buttonGroup = $("<div class='btn-group pull-right'></div>")
+                        var schemaButton = $('<button class="btn btn-default btn-xs button-schema" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-list"></i></button>')
+                        buttonGroup.append(schemaButton)
+                        var optionsButton = $('<button class="btn btn-default btn-xs button-options" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-wrench"></i></button>')
+                        buttonGroup.append(optionsButton);
+                        var removeButton = $('<button class="btn btn-danger btn-xs button-remove" alpaca-ref-id="' + alpacaFieldId + '"><i class="glyphicon glyphicon-remove"></i></button>');
+                        buttonGroup.append(removeButton);
+                        interaction.append(buttonGroup);
+                        interaction.append("<div style='clear:both'></div>");
+                        $(interaction).addClass("interaction");
+                        $(interaction).attr("alpaca-ref-id", alpacaFieldId);
+                        $(interaction).css({
+                            "position": "absolute",
+                            "margin-top": "-" + height + "px",
+                            "margin-left": "-10px",
+                            "width": width,
+                            "height": height + 10,
+                            "opacity": 1,
+                            "z-index": 901
+                        });
+                        $(interaction).attr("icount-ref", iCount)
+                        $el.append(interaction)
+                        $(buttonGroup).css({
+                            "margin-top": 5 + (($(interaction).height() / 2) - ($(buttonGroup).height() / 2)),
+                            "margin-right": "16px"
+                        });
+                        $(schemaButton).off().click(function (e) {
+                            e.preventDefault()
+                            e.stopPropagation()
+
+                            var alpacaId = $(this).attr("alpaca-ref-id");
+
+                            editSchema(alpacaId)
+                        });
+                        $(optionsButton).off().click(function (e) {
+                            e.preventDefault()
+                            e.stopPropagation()
+
+                            var alpacaId = $(this).attr("alpaca-ref-id")
+                            editOptions(alpacaId)
+                        });
+                        $(removeButton).off().click(function (e) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            var alpacaId = $(this).attr("alpaca-ref-id")
+                            removeField(alpacaId)
+                        });
+
+                        // when hover, highlight
+                        $(interaction).hover(function (e) {
+                            var iCount = $(interaction).attr("icount-ref")
+                            $(".cover[icount-ref='" + iCount + "']").addClass("ui-hover-state")
+                        }, function (e) {
+                            var iCount = $(interaction).attr("icount-ref");
+                            $(".cover[icount-ref='" + iCount + "']").removeClass("ui-hover-state")
+                        })
+                    })
+
+                    // add dashed
+                    form.getFieldEl().find(".alpaca-container").addClass("dashed")
+                    form.getFieldEl().find(".alpaca-container-item").addClass("dashed")
+
+                    // for every container, add a "first" drop zone element
+                    // this covers empty containers as well as 0th index insertions
+                    form.getFieldEl().find(".alpaca-container").each(function () {
+                        var containerEl = this
+
+                        // first insertion point
+                        $(this).prepend("<div class='dropzone'></div>")
+
+                        // all others
+                        $(containerEl).children(".alpaca-container-item").each(function () {
+                            $(this).after("<div class='dropzone'></div>")
+                        })
+                    })
+
+                    form.getFieldEl().find(".dropzone").droppable({
+                        "tolerance": "touch",
+                        "drop": function (event, ui) {
+
+                            var draggable = $(ui.draggable)
+
+                            if (draggable.hasClass("form-element")) {
+                                var dataType = draggable.attr("data-type")
+                                var fieldType = draggable.attr("data-field-type")
+
+                                // based on where the drop occurred, figure out the previous and next Alpaca fields surrounding
+                                // the drop target
+
+                                // previous
+                                var previousField = null
+                                var previousFieldKey = null
+                                var previousItemContainer = $(event.target).prev()
+                                if (previousItemContainer) {
+                                    var previousAlpacaId = $(previousItemContainer).children().first().attr("data-alpaca-field-id")
+                                    previousField = Alpaca.fieldInstances[previousAlpacaId]
+                                    previousFieldKey = $(previousItemContainer).attr("data-alpaca-container-item-name")
+                                }
+
+                                // next
+                                var nextField = null
+                                var nextFieldKey = null
+                                var nextItemContainer = $(event.target).next()
+                                if (nextItemContainer) {
+                                    var nextAlpacaId = $(nextItemContainer).children().first().attr("data-alpaca-field-id")
+                                    nextField = Alpaca.fieldInstances[nextAlpacaId]
+
+                                    nextFieldKey = $(nextItemContainer).attr("data-alpaca-container-item-name")
+                                }
+
+                                // parent field
+                                var parentFieldAlpacaId = $(event.target).parent().parent().attr("data-alpaca-field-id");
+                                var parentField = Alpaca.fieldInstances[parentFieldAlpacaId];
+
+                                // now do the insertion
+                                insertField(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey);
+
+                            } else if (draggable.hasClass("interaction")) {
+                                var draggedIndex = $(draggable).attr("icount-ref");
+
+                                // next
+                                var nextItemContainer = $(event.target).next();
+                                var nextItemContainerIndex = $(nextItemContainer).attr("data-alpaca-container-item-index");
+                                var nextItemAlpacaId = $(nextItemContainer).children().first().attr("data-alpaca-field-id");
+                                var nextField = Alpaca.fieldInstances[nextItemAlpacaId];
+
+                                form.moveItem(draggedIndex, nextItemContainerIndex, false, function () {
+                                    var top = findTop(nextField)
+                                    regenerate(top)
+                                })
+                            }
+                        },
+                        "over": function (event, ui) {
+                            $(event.target).addClass("dropzone-hover")
+                        },
+                        "out": function (event, ui) {
+                            $(event.target).removeClass("dropzone-hover")
+                        }
+                    })
+
+                    // init any in-place draggables
+                    form.getFieldEl().find(".interaction").draggable({
+                        "appendTo": "body",
+                        "helper": function () {
+                            var iCount = $(this).attr("icount-ref");
+                            var clone = $(".alpaca-container-item[icount='" + iCount + "']").clone()
+                            return clone;
+                        },
+                        "cursorAt": {
+                            "top": 100
+                        },
+                        "zIndex": 300,
+                        "refreshPositions": true,
+                        "start": function (event, ui) {
+                            $(".dropzone").addClass("dropzone-highlight")
+                        },
+                        "stop": function (event, ui) {
+                            $(".dropzone").removeClass("dropzone-highlight")
+                        }
+                    })
+                } //if buildInteractionLayers end
+                cb(null, form)
+            } //postRender function ends
+            config.error = function (err) {
+                Alpaca.defaultErrorCallback(err)
+                cb(err);
+            }
+            if (disableErrorHandling) {
+                Alpaca.defaultErrorCallback = function (error) {
+                    console.log("Alpaca encountered an error while previewing form -> " + error.message)
+                }
+            } else {
+                Alpaca.defaultErrorCallback = Alpaca.DEFAULT_ERROR_CALLBACK
+            }
+            //Alpaca form generated
+            $(el).alpaca(config)
+
+        }//if schema ends
+    } //doRefresh ends here
+
+    var removeFunctionFields = function (schema, options) {
+        if (schema) {
+            if (schema.properties) {
                 var badKeys = [];
 
-                for (var k in schema.properties)
-                {
-                    if (schema.properties[k].type === "function")
-                    {
+                for (var k in schema.properties) {
+                    if (schema.properties[k].type === "function") {
                         badKeys.push(k);
-                    }
-                    else
-                    {
+                    } else {
                         removeFunctionFields(schema.properties[k], (options && options.fields ? options.fields[k] : null));
                     }
                 }
 
-                for (var i = 0; i < badKeys.length; i++)
-                {
+                for (var i = 0; i < badKeys.length; i++) {
                     delete schema.properties[badKeys[i]];
 
                     if (options && options.fields) {
@@ -299,8 +291,7 @@ var setup = function(){
         }
     };
 
-    var editSchema = function(alpacaFieldId, callback)
-    {
+    var editSchema = function (alpacaFieldId, callback) {
         var field = Alpaca.fieldInstances[alpacaFieldId];
 
         var fieldSchemaSchema = field.getSchemaOfSchema();
@@ -310,8 +301,7 @@ var setup = function(){
 
         delete fieldSchemaSchema.title;
         delete fieldSchemaSchema.description;
-        if (fieldSchemaSchema.properties)
-        {
+        if (fieldSchemaSchema.properties) {
             delete fieldSchemaSchema.properties.title;
             delete fieldSchemaSchema.properties.description;
             delete fieldSchemaSchema.properties.dependencies;
@@ -319,20 +309,17 @@ var setup = function(){
         var fieldConfig = {
             schema: fieldSchemaSchema
         };
-        if (fieldSchemaOptions)
-        {
+        if (fieldSchemaOptions) {
             fieldConfig.options = fieldSchemaOptions;
         }
-        if (fieldData)
-        {
+        if (fieldData) {
             fieldConfig.data = fieldData;
         }
         fieldConfig.view = {
             "parent": MODAL_VIEW,
             "displayReadonly": false
         };
-        fieldConfig.postRender = function(control)
-        {
+        fieldConfig.postRender = function (control) {
             var modal = $(MODAL_TEMPLATE.trim());
             modal.find(".modal-title").append(field.getTitle());
             modal.find(".modal-body").append(control.getFieldEl());
@@ -344,15 +331,14 @@ var setup = function(){
                 "keyboard": true
             });
 
-            $(modal).find(".okay").click(function() {
+            $(modal).find(".okay").click(function () {
                 console.log("---editSchema modal: Okay clicked -----")
                 field.schema = control.getValue();
 
                 var top = findTop(field);
                 regenerate(top);
 
-                if (callback)
-                {
+                if (callback) {
                     callback();
                 }
             });
@@ -366,8 +352,7 @@ var setup = function(){
         $(x).find(".fieldForm").alpaca(fieldConfig);
     };
 
-    var editOptions = function(alpacaFieldId, callback)
-    {
+    var editOptions = function (alpacaFieldId, callback) {
 
         var field = Alpaca.fieldInstances[alpacaFieldId];
 
@@ -378,15 +363,13 @@ var setup = function(){
 
         delete fieldOptionsSchema.title;
         delete fieldOptionsSchema.description;
-        if (fieldOptionsSchema.properties)
-        {
+        if (fieldOptionsSchema.properties) {
             delete fieldOptionsSchema.properties.title;
             delete fieldOptionsSchema.properties.description;
             delete fieldOptionsSchema.properties.dependencies;
             delete fieldOptionsSchema.properties.readonly;
         }
-        if (fieldOptionsOptions.fields)
-        {
+        if (fieldOptionsOptions.fields) {
             delete fieldOptionsOptions.fields.title;
             delete fieldOptionsOptions.fields.description;
             delete fieldOptionsOptions.fields.dependencies;
@@ -396,20 +379,17 @@ var setup = function(){
         var fieldConfig = {
             schema: fieldOptionsSchema
         };
-        if (fieldOptionsOptions)
-        {
+        if (fieldOptionsOptions) {
             fieldConfig.options = fieldOptionsOptions;
         }
-        if (fieldOptionsData)
-        {
+        if (fieldOptionsData) {
             fieldConfig.data = fieldOptionsData;
         }
         fieldConfig.view = {
             "parent": MODAL_VIEW,
             "displayReadonly": false
         };
-        fieldConfig.postRender = function(control)
-        {
+        fieldConfig.postRender = function (control) {
             var modal = $(MODAL_TEMPLATE.trim());
             modal.find(".modal-title").append(field.getTitle());
             modal.find(".modal-body").append(control.getFieldEl());
@@ -421,15 +401,14 @@ var setup = function(){
                 "keyboard": true
             });
 
-            $(modal).find(".okay").click(function() {
+            $(modal).find(".okay").click(function () {
                 console.log("--editOptions Modal: Okay clicked---")
                 field.options = control.getValue();
 
                 var top = findTop(field);
                 regenerate(top);
 
-                if (callback)
-                {
+                if (callback) {
                     callback();
                 }
             });
@@ -443,73 +422,61 @@ var setup = function(){
         $(x).find(".fieldForm").alpaca(fieldConfig);
     };
 
-    var refreshView = function(callback)
-    {
-        if (mainViewField)
-        {
+    var refreshView = function (callback) {
+        if (mainViewField) {
             mainViewField.getFieldEl().replaceWith("<div id='viewDiv'></div>");
             mainViewField.destroy();
             mainViewField = null;
         }
 
-        doRefresh($("#viewDiv"), false, false, function(err, form) {
+        doRefresh($("#viewDiv"), false, false, function (err, form) {
             console.log("doRefresh viewDiv ")
-            if (!err)
-            {
+            if (!err) {
                 mainViewField = form;
             }
 
-            if (callback)
-            {
+            if (callback) {
                 callback();
             }
 
         });
     };
 
-    var refreshDesigner = function(callback)
-    {
+    var refreshDesigner = function (callback) {
         $(".dropzone").remove();
         $(".interaction").remove();
         $(".cover").remove();
         console.log("refreshDesigner called")
-        if (mainDesignerField)
-        {
+        if (mainDesignerField) {
             mainDesignerField.getFieldEl().replaceWith("<div id='designerDiv'></div>");
             mainDesignerField.destroy();
             mainDesignerField = null;
         }
 
-        doRefresh($("#designerDiv"), true, false, function(err, form) {
+        doRefresh($("#designerDiv"), true, false, function (err, form) {
 
-            if (!err)
-            {
+            if (!err) {
                 mainDesignerField = form;
             }
 
-            if (callback)
-            {
+            if (callback) {
                 callback();
             }
 
         });
     };
 
-    var refresh = function(callback)
-    {
+    var refresh = function (callback) {
         var current = $("UL.nav.nav-tabs LI.active A.tab-item");
         $(current).click();
     };
 
-    var isCoreField = function(type)
-    {
+    var isCoreField = function (type) {
         var cores = ["any", "array", "checkbox", "file", "hidden", "number", "object", "radio", "select", "text", "textarea"];
 
         var isCore = false;
-        for (var i = 0; i < cores.length; i++)
-        {
-            if (cores[i] == type)
-            {
+        for (var i = 0; i < cores.length; i++) {
+            if (cores[i] == type) {
                 isCore = true;
             }
         }
@@ -539,26 +506,25 @@ var setup = function(){
         "title": "Array",
         "description": "An array of sub-properties"
     }];
-    function appendTypes(){
-      for (var i = 0; i < types.length; i++)
-      {
-          var title = types[i].title;
-          var type = types[i].type;
-          var description = types[i].description;
 
-          var div = $("<div class='form-element draggable ui-widget-content' data-type='" + type + "'></div>");
-          $(div).append("<div><span class='form-element-title'>" + title + "</span> (<span class='form-element-type'>" + type + "</span>)</div>");
-          $(div).append("<div class='form-element-field-description'>" + description + "</div>");
+    function appendTypes() {
+        for (var i = 0; i < types.length; i++) {
+            var title = types[i].title;
+            var type = types[i].type;
+            var description = types[i].description;
 
-          $("#types").append(div);
-      }
+            var div = $("<div class='form-element draggable ui-widget-content' data-type='" + type + "'></div>");
+            $(div).append("<div><span class='form-element-title'>" + title + "</span> (<span class='form-element-type'>" + type + "</span>)</div>");
+            $(div).append("<div class='form-element-field-description'>" + description + "</div>");
+
+            $("#types").append(div);
+        }
     }
+
     appendTypes()
-    var afterAlpacaInit = function()
-    {
+    var afterAlpacaInit = function () {
         // show all fields
-        for (var type in Alpaca.fieldClassRegistry)
-        {
+        for (var type in Alpaca.fieldClassRegistry) {
             var instance = new Alpaca.fieldClassRegistry[type]();
             //console.log("instance::: ",instance)
             var schemaSchema = instance.getSchemaOfSchema();
@@ -575,12 +541,9 @@ var setup = function(){
             $(div).append("<div class='form-element-field-description'>" + description + "</div>");
 
             var isCore = isCoreField(fieldType);
-            if (isCore)
-            {
+            if (isCore) {
                 $("#basic").append(div);
-            }
-            else
-            {
+            } else {
                 $("#advanced").append(div);
             }
 
@@ -590,10 +553,10 @@ var setup = function(){
                 "helper": "clone",
                 "zIndex": 300,
                 "refreshPositions": true,
-                "start": function(event, ui) {
+                "start": function (event, ui) {
                     $(".dropzone").addClass("dropzone-highlight");
                 },
-                "stop": function(event, ui) {
+                "stop": function (event, ui) {
                     $(".dropzone").removeClass("dropzone-highlight");
                 }
             });
@@ -603,40 +566,38 @@ var setup = function(){
     // lil hack to force compile
     $("<div></div>").alpaca({
         "data": "test",
-        "postRender": function(control)
-        {
+        "postRender": function (control) {
             afterAlpacaInit();
         }
     });
 
 
-    $(".tab-item-source").click(function() {
+    $(".tab-item-source").click(function () {
 
         // we have to monkey around a bit with ACE Editor to get it to refresh
 
         console.log(".tab item source: click: all editors getValue and Clear Selection")
 
-        setTimeout(function() {
+        setTimeout(function () {
             refreshPreview();
         }, 50);
     });
 
-    $(".tab-item-view").click(function() {
-      console.log("tab-item-view: clicked")
-      refreshView();
+    $(".tab-item-view").click(function () {
+        console.log("tab-item-view: clicked")
+        refreshView();
     });
 
-    $(".tab-item-designer").click(function() {
+    $(".tab-item-designer").click(function () {
         console.log(".tab item designer clicked")
-        if(document.getElementById('tfield') == null){
-          appendTypes()
-          $("<div></div>").alpaca({
-              "data": "test",
-              "postRender": function(control)
-              {
-                  afterAlpacaInit();
-              }
-          });
+        if (document.getElementById('tfield') == null) {
+            appendTypes()
+            $("<div></div>").alpaca({
+                "data": "test",
+                "postRender": function (control) {
+                    afterAlpacaInit();
+                }
+            });
 
         }
         refreshDesigner();
@@ -647,48 +608,38 @@ var setup = function(){
         }, 50);
     });*/
 
-    var insertField = function(schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey)
-    {
+    var insertField = function (schema, options, data, dataType, fieldType, parentField, previousField, previousFieldKey, nextField, nextFieldKey) {
         var itemSchema = {
             "type": dataType
         };
         var itemOptions = {};
-        if (fieldType)
-        {
+        if (fieldType) {
             itemOptions.type = fieldType;
         }
         itemOptions.label = "New ";
-        if (fieldType)
-        {
+        if (fieldType) {
             itemOptions.label += fieldType;
-        }
-        else if (dataType)
-        {
+        } else if (dataType) {
             itemOptions.label += dataType;
         }
         var itemData = null;
 
         var itemKey = null;
-        if (parentField.getType() === "array")
-        {
+        if (parentField.getType() === "array") {
             itemKey = 0;
-            if (previousFieldKey)
-            {
+            if (previousFieldKey) {
                 itemKey = previousFieldKey + 1;
             }
-        }
-        else if (parentField.getType() === "object")
-        {
+        } else if (parentField.getType() === "object") {
             itemKey = "new" + new Date().getTime();
         }
 
         var insertAfterId = null;
-        if (previousField)
-        {
+        if (previousField) {
             insertAfterId = previousField.id;
         }
 
-        parentField.addItem(itemKey, itemSchema, itemOptions, itemData, insertAfterId, function() {
+        parentField.addItem(itemKey, itemSchema, itemOptions, itemData, insertAfterId, function () {
 
             var top = findTop(parentField);
 
@@ -697,13 +648,10 @@ var setup = function(){
 
     };
 
-    var assembleSchema = function(field, schema)
-    {
+    var assembleSchema = function (field, schema) {
         // copy any properties from this field's schema into our schema object
-        for (var k in field.schema)
-        {
-            if (field.schema.hasOwnProperty(k) && typeof(field.schema[k]) !== "function")
-            {
+        for (var k in field.schema) {
+            if (field.schema.hasOwnProperty(k) && typeof (field.schema[k]) !== "function") {
                 schema[k] = field.schema[k];
             }
         }
@@ -712,10 +660,8 @@ var setup = function(){
         // reset properties, we handle that one at a time
         delete schema.properties;
         schema.properties = {};
-        if (field.children)
-        {
-            for (var i = 0; i < field.children.length; i++)
-            {
+        if (field.children) {
+            for (var i = 0; i < field.children.length; i++) {
                 var childField = field.children[i];
                 var propertyId = childField.propertyId;
 
@@ -725,13 +671,10 @@ var setup = function(){
         }
     };
 
-    var assembleOptions = function(field, options)
-    {
+    var assembleOptions = function (field, options) {
         // copy any properties from this field's options into our options object
-        for (var k in field.options)
-        {
-            if (field.options.hasOwnProperty(k) && typeof(field.options[k]) !== "function")
-            {
+        for (var k in field.options) {
+            if (field.options.hasOwnProperty(k) && typeof (field.options[k]) !== "function") {
                 options[k] = field.options[k];
             }
         }
@@ -740,10 +683,8 @@ var setup = function(){
         // reset fields, we handle that one at a time
         delete options.fields;
         options.fields = {};
-        if (field.children)
-        {
-            for (var i = 0; i < field.children.length; i++)
-            {
+        if (field.children) {
+            for (var i = 0; i < field.children.length; i++) {
                 var childField = field.children[i];
                 var propertyId = childField.propertyId;
 
@@ -753,20 +694,17 @@ var setup = function(){
         }
     };
 
-    var findTop = function(field)
-    {
+    var findTop = function (field) {
         // now get the top control
         var top = field;
-        while (top.parent)
-        {
+        while (top.parent) {
             top = top.parent;
         }
 
         return top;
     };
 
-    var regenerate = function(top)
-    {
+    var regenerate = function (top) {
         // walk the control tree and re-assemble the schema, options + data
         console.log("---Regenerating -----")
         var _schema = {};
@@ -787,16 +725,15 @@ var setup = function(){
         localStorage.setItem("alpacaDesignerSchema", JSON.stringify(schema))
         localStorage.setItem("alpacaDesignerOptions", JSON.stringify(options))
         //setTimeout(function() {
-            refresh();
+        refresh();
         //}, 100);
     };
 
-    var removeField = function(alpacaId)
-    {
+    var removeField = function (alpacaId) {
         var field = Alpaca.fieldInstances[alpacaId];
 
         var parentField = field.parent;
-        parentField.removeItem(field.propertyId, function() {
+        parentField.removeItem(field.propertyId, function () {
             var top = findTop(field);
             regenerate(top);
         });
@@ -805,56 +742,48 @@ var setup = function(){
     //$(".tab-item-source").click();
 
     // save button
-    $(".save-button").off().click(function(e) {
+    $(".save-button").off().click(function (e) {
         e.preventDefault()
-        if (!localStorage)
-        {
+        if (!localStorage) {
             alert("Your browser must support HTML5 local storage in order to use this feature")
             return;
         }
         var config = {}
-        if (schema)
-        {
+        if (schema) {
             config.schema = schema
         }
-        if (options)
-        {
+        if (options) {
             config.options = options
         }
-        if (data)
-        {
+        if (data) {
             config.data = data;
         }
         var configString = JSON.stringify(config)
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
         //convertAlpacaToNDA(schema,options)
-        saveCuratedForm(schema,options,'local')
+        saveCuratedForm(schema, options, 'local')
     })
-    $(".git-push-button").off().click(function(e) {
+    $(".git-push-button").off().click(function (e) {
         e.preventDefault()
-        if (!localStorage)
-        {
+        if (!localStorage) {
             alert("Your browser must support HTML5 local storage in order to use this feature")
             return;
         }
 
         var config = {}
-        if (schema)
-        {
+        if (schema) {
             config.schema = schema
         }
-        if (options)
-        {
+        if (options) {
             config.options = options
         }
-        if (data)
-        {
+        if (data) {
             config.data = data;
         }
         var configString = JSON.stringify(config)
         console.log("alpacaDesignerConfig: ", config)
         localStorage.setItem("alpacaDesignerConfig", configString)
-        saveCuratedForm(schema,options,'github')
+        saveCuratedForm(schema, options, 'github')
     })
 }
