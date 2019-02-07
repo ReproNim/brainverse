@@ -22,7 +22,7 @@ mixin nav_item(href, active)
 mixin nav_item_dropdown(href, active)
     li(class=["dropdown", active])
         a.dropdown-toggle( href=href, data-toggle="dropdown", role="button", aria-expanded="false" )= attributes.label
-            span.caret
+        span.caret
         ul.dropdown-menu( role="menu" )
             block
 
@@ -46,7 +46,7 @@ mixin button(style, href, size)
             - size = "btn-sm"
         when "mini"
             - size = "btn-xs"
- 
+
     a( class=["btn", "btn-" + style, size], href=href )
         block
 //- End of Button mixin
@@ -57,12 +57,12 @@ mixin checkbox(text,name,id,val)
         = text
 
 mixin showAlert(alerts)
-  for alert in alerts
-    div #{alert}
-    
+    for alert in alerts
+        div #{alert}
+
 //- Panel mixin
 mixin panel(heading, style)
-  div(class=["panel", "panel-" + style])
-    .panel-heading= heading
-    .panel-body
-          block 
+    div(class=["panel", "panel-" + style])
+        .panel-heading= heading
+        .panel-body
+            block
