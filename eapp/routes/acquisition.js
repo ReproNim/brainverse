@@ -211,24 +211,21 @@ module.exports = () => {
         })
     });
 
-    app.get('/zip', function(req, res) {
+    app.get('/zip', function (req, res) {
         console.log('zip api');
         const dirPaths = config.dirPaths;
-        const pathToDb = path.join(userData,dirPaths[0]);
+        const pathToDb = path.join(userData, dirPaths[0]);
         var zip = new easyzip.EasyZip();
-        zip.zipFolder(pathToDb,function(err){
-            if(err){
+        zip.zipFolder(pathToDb, function (err) {
+            if (err) {
                 console.log(err);
                 throw err;
             }
             console.log('success zipping');
-            zip.writeToResponse(res,'myUploads');
+            zip.writeToResponse(res, 'myUploads');
             res.end();
         });
     });
-
-
-
 
 
     app.get('/acquisitions/nda_forms', ensureAuthenticated, function (req, res) {
