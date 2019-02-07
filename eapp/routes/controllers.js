@@ -1,59 +1,57 @@
 module.exports = () => {
 
-    const path = require('path')
-    const fileUpload = require('express-fileupload')
-    const bodyParser = require('body-parser')
-    const writeJsonFile = require('write-json-file')
-    const uuid = require('uuid-random')
-    const loadJsonFile = require('load-json-file')
-    const fs = require('fs')
-    const moment = require('moment')
+    const path = require('path');
+    const fileUpload = require('express-fileupload');
+    const bodyParser = require('body-parser');
+    const writeJsonFile = require('write-json-file');
+    const uuid = require('uuid-random');
+    const loadJsonFile = require('load-json-file');
+    const fs = require('fs');
+    const moment = require('moment');
 
 
-    const jsonParser = bodyParser.json()
-    const rdfHelper = require('./../util/nidme-graph.js')
+    const jsonParser = bodyParser.json();
+    const rdfHelper = require('./../util/nidme-graph.js');
 
-    global.store = app.locals.store
+    global.store = app.locals.store;
 
-    app.use(fileUpload())
+    app.use(fileUpload());
 
     app.get('/account', ensureAuthenticated, function (req, res) {
-        res.send({'user': req.user})
-    })
+        res.send({'user': req.user});
+    });
 
     app.post('/projects/new', ensureAuthenticated, jsonParser, function (req, res) {
-        if (!req.body) return res.sendStatus(400)
-        console.log('recived at server side')
-        //console.log(req.body)
-        let pj_info = req.body
-        pj_info['ProjectID'] = uuid()
-        console.log(pj_info)
-        pid = pj_info['ProjectID'].split('-')
-        pname = pj_info['Name'].split(' ')
-        //let cpath = 'uploads/proj-info-'+ pname[0]+'-'+ pid[0] +'.json'
-        let cpath = path.join(userData, '/uploads/proj-info-' + pname[0] + '-' + pid[0] + '.json')
+        if (!req.body) return res.sendStatus(400);
+        console.log('recived at server side');
+        let pj_info = req.body;
+        pj_info['ProjectID'] = uuid();
+        console.log(pj_info);
+        pid = pj_info['ProjectID'].split('-');
+        pname = pj_info['Name'].split(' ');
+        let cpath = path.join(userData, '/uploads/proj-info-' + pname[0] + '-' + pid[0] + '.json');
         writeJsonFile(cpath, req.body).then(() => {
-            console.log('done')
-            res.json({'status': 'success'})
+            console.log('done');
+            res.json({'status': 'success'});
         })
-    })
+    });
 
     app.get('/projects/:id', ensureAuthenticated, function (req, res) {
-        res.send('TODO: project info for id:' + req.params.id)
-    })
+        res.send('TODO: project info for id:' + req.params.id);
+    });
 
     app.post('/projects/:id', ensureAuthenticated, jsonParser, function (req, res) {
-        res.send('TODO: project info updated!')
-    })
+        res.send('TODO: project info updated!');
+    });
 
     app.get('/projects/list', ensureAuthenticated, function (req, res) {
-        res.send('TODO: projects list')
-    })
+        res.send('TODO: projects list');
+    });
 
     app.get('/upload', ensureAuthenticated, function (req, res) {
-        console.log('server side')
+        console.log('server side');
         res.render('sampleUpload')
-    })
+    });
 
     app.post('/upload', ensureAuthenticated, function (req, res) {
         console.log(req.files);
@@ -66,75 +64,73 @@ module.exports = () => {
         // Use the mv() method to place the file somewhere on your server
         sampleFile.mv(path.join(__dirname, '/../../../uploads/', req.files.sampleFile.name), function (err) {
             if (err)
-                return res.status(500).send(err)
+                return res.status(500).send(err);
             res.json({'status': 'success'})
         })
-    })
+    });
 
     app.get('/experiments/new', ensureAuthenticated, function (req, res) {
-        res.send('TODO: create new experiment form')
-    })
+        res.send('TODO: create new experiment form');
+    });
 
     app.post('/experiments/new', ensureAuthenticated, jsonParser, function (req, res) {
-        res.send('TODO:received experiments info!')
-    })
+        res.send('TODO:received experiments info!');
+    });
 
     app.get('/experiments/:id', ensureAuthenticated, function (req, res) {
-        res.send('TODO:experiment info for id' + req.params.id)
-    })
+        res.send('TODO:experiment info for id' + req.params.id);
+    });
 
     app.post('/experiments/:id', ensureAuthenticated, jsonParser, function (req, res) {
-        res.send('TODO:experiment info updated!')
-    })
+        res.send('TODO:experiment info updated!');
+    });
 
     app.get('/query/terms', ensureAuthenticated, function (req, res) {
-        const loadJsonFile = require('load-json-file')
-        console.log('loading Terms file')
+        const loadJsonFile = require('load-json-file');
+        console.log('loading Terms file');
         loadJsonFile(path.join(__dirname, '/../public/terms/addProjectTerms.json')).then(ob => {
-            console.log(ob)
-            res.json(ob)
+            console.log(ob);
+            res.json(ob);
         })
-    })
+    });
 
     app.get('/query/instruments', ensureAuthenticated, function (req, res) {
-        const loadJsonFile = require('load-json-file')
-        console.log('loading Terms file')
+        const loadJsonFile = require('load-json-file');
+        console.log('loading Terms file');
         loadJsonFile(path.join(__dirname, '/../public/terms/instrumentsTerms.json')).then(ob => {
-            console.log(ob)
-            res.json(ob)
+            console.log(ob);
+            res.json(ob);
         })
-    })
+    });
 
     app.post('/project-plans/new', ensureAuthenticated, jsonParser, function (req, res) {
-        if (!req.body) return res.sendStatus(400)
-        console.log('[Recieved at server side]: ', req.body)
+        if (!req.body) return res.sendStatus(400);
+        console.log('[Recieved at server side]: ', req.body);
 
-        let pj_plan_info = req.body
-        pj_plan_info['ProjectPlanID'] = uuid()
-        console.log("[Project Plan Info]: ", pj_plan_info)
+        let pj_plan_info = req.body;
+        pj_plan_info['ProjectPlanID'] = uuid();
+        console.log("[Project Plan Info]: ", pj_plan_info);
 
-        let pname = pj_plan_info['Project Name'].split(' ')
-        let jsonFile = 'plan-' + pname[0] + '-' + pj_plan_info['ProjectPlanID'] + '.json'
-        //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/'+ jsonFile)
-        let cpath = path.join(userData, '/uploads/plansdocs/' + jsonFile)
+        let pname = pj_plan_info['Project Name'].split(' ');
+        let jsonFile = 'plan-' + pname[0] + '-' + pj_plan_info['ProjectPlanID'] + '.json';
+        let cpath = path.join(userData, '/uploads/plansdocs/' + jsonFile);
         /**
          ** Writing plan to JSON document
          **/
         writeJsonFile(cpath, req.body).then(() => {
             console.log('[Plan written to JSON Document]: ', jsonFile)
-        })
+        });
 
-        let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
-        let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"]
-        let nidmg = new rdfHelper.NIDMGraph()
-        nidmg.addPlan(pj_plan_info)
+        let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl';
+        let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"];
+        let nidmg = new rdfHelper.NIDMGraph();
+        nidmg.addPlan(pj_plan_info);
         /**
          ** Saving Graph to RDF Store
          **/
         rdfHelper.saveToRDFstore(nidmg, graphId, fName, function (graphId, tstring) {
-            console.log("savetTRDF callback fn: tstring: ", tstring)
-            //let cpath = path.join(__dirname, '/../../../uploads/acquisition/'+fName)
-            let cpath = path.join(userData, '/uploads/acquisition/' + fName)
+            console.log("savetTRDF callback fn: tstring: ", tstring);
+            let cpath = path.join(userData, '/uploads/acquisition/' + fName);
             fs.appendFile(cpath, tstring, function (err) {
                 if (err) {
                     return console.log(err);
@@ -143,105 +139,93 @@ module.exports = () => {
                 res.json({'pid': pj_plan_info['ProjectPlanID'], 'fid': fName})
             })
         })
-    })
+    });
 
     app.put('/project-plans/:id', ensureAuthenticated, jsonParser, function (req, res) {
-        if (!req.body) return res.sendStatus(400)
-        console.log("update obj received at server:", req.body)
+        if (!req.body) return res.sendStatus(400);
+        console.log("update obj received at server:", req.body);
 
-        let pj_plan_info = req.body
-        let previousProjectPlanID = pj_plan_info['ProjectPlanID']
-        let previousVersion = pj_plan_info['version']
-        pj_plan_info['ProjectPlanID'] = uuid()
-        pj_plan_info['created'] = moment().format()
-        pj_plan_info['wasDerivedFrom'] = previousProjectPlanID
-        pj_plan_info['version'] = previousVersion + 1
-        console.log("pj_plan_info: ", pj_plan_info)
+        let pj_plan_info = req.body;
+        let previousProjectPlanID = pj_plan_info['ProjectPlanID'];
+        let previousVersion = pj_plan_info['version'];
+        pj_plan_info['ProjectPlanID'] = uuid();
+        pj_plan_info['created'] = moment().format();
+        pj_plan_info['wasDerivedFrom'] = previousProjectPlanID;
+        pj_plan_info['version'] = previousVersion + 1;
+        console.log("pj_plan_info: ", pj_plan_info);
 
-        let pname = pj_plan_info['Project Name'].split(' ')
-        //let cpath = path.join(__dirname, '/../../../uploads/plansdocs/plan-'+ pname[0]+'-'+pj_plan_info['ProjectPlanID'] +'.json')
-        let cpath = path.join(userData, '/uploads/plansdocs/plan-' + pname[0] + '-' + pj_plan_info['ProjectPlanID'] + '.json')
-        console.log("cpath for file update: ", cpath)
+        let pname = pj_plan_info['Project Name'].split(' ');
+        let cpath = path.join(userData, '/uploads/plansdocs/plan-' + pname[0] + '-' + pj_plan_info['ProjectPlanID'] + '.json');
+        console.log("cpath for file update: ", cpath);
         /**
          ** Writing plan to JSON document
          **/
         writeJsonFile(cpath, req.body).then(() => {
             console.log('json document written done')
-        })
+        });
 
-        let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl'
-        let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"]
-        var nidmg = new rdfHelper.NIDMGraph()
-        nidmg.addPlan(pj_plan_info)
+        let fName = 'plans/plan-graph-' + pj_plan_info['ProjectPlanID'] + '.ttl';
+        let graphId = "nidm:plan-graph-" + pj_plan_info["ProjectPlanID"];
+        var nidmg = new rdfHelper.NIDMGraph();
+        nidmg.addPlan(pj_plan_info);
         /**
          ** Saving Graph to RDF Store
          **/
         rdfHelper.saveToRDFstore(nidmg, graphId, fName, function (graphId, tstring) {
-            console.log("[saveToRDF callback fn: tstring] : ", tstring)
-            //let cpath = path.join(__dirname, '/../../../uploads/acquisition/' + fName)
-            let cpath = path.join(userData, '/uploads/acquisition/' + fName)
+            console.log("[saveToRDF callback fn: tstring] : ", tstring);
+            let cpath = path.join(userData, '/uploads/acquisition/' + fName);
             fs.appendFile(cpath, tstring, function (err) {
                 if (err) {
                     return console.log(err);
                 }
                 console.log("[The new updated turtle file was saved!]");
-                res.json({'pid': pj_plan_info['ProjectPlanID'], 'fid': fName})
+                res.json({'pid': pj_plan_info['ProjectPlanID'], 'fid': fName});
             })
         })
-    })
+    });
 
     app.get('/project-plans/:name', ensureAuthenticated, function (req, res) {
-        console.log('loading project-plan file:', req.params.name)
-        //loadJsonFile(path.join(__dirname, '/../../../uploads/plansdocs/'+req.params.name)).then(ob => {
+        console.log('loading project-plan file:', req.params.name);
         loadJsonFile(path.join(userData, '/uploads/plansdocs/' + req.params.name)).then(ob => {
-            console.log("ob:==>", ob)
-            res.json(ob)
+            console.log("ob:==>", ob);
+            res.json(ob);
         })
-    })
+    });
+
     app.get('/project-plans', ensureAuthenticated, function (req, res) {
         var listOfGraphs = new Promise(function (resolve) {
             store.registeredGraphs(function (results, graphs) {
-                var values = []
+                var values = [];
                 for (var i = 0; i < graphs.length; i++) {
                     if (graphs[i].valueOf() !== undefined) {
-                        values.push(graphs[i].valueOf())
+                        values.push(graphs[i].valueOf());
                     }
                 }
-                resolve(values)
+                resolve(values);
             })
-        })
+        });
         listOfGraphs.then(function (values) {
-            console.log("Registered graphs: ", values)
-            let regGraphs = []
+            console.log("Registered graphs: ", values);
+            let regGraphs = [];
             for (let i = 0; i < values.length; i++) {
                 if (values[i].indexOf('plan') !== -1) {
-                    regGraphs.push(values[i])
+                    regGraphs.push(values[i]);
                 }
             }
-            console.log("Filtered graphs:", regGraphs)
-            var graphOfPromises = regGraphs.map(function (graph) {
+            console.log("Filtered graphs:", regGraphs);
+            let graphOfPromises = regGraphs.map(function (graph) {
                 return new Promise(function (resolve) {
                     store.execute(queryFunction("<" + graph + ">"), function (err, results) {
-                        console.log('[execute] for graph: ', graph)
+                        console.log('[execute] for graph: ', graph);
                         if (err) {
-                            console.log("err: ", err)
-                            console.log(" err: graph: ", graph, "  results: ", results)
-                            resolve({})
+                            console.log("err: ", err);
+                            console.log(" err: graph: ", graph, "  results: ", results);
+                            resolve({});
                         }
-                        /*if(results == []){
-                          console.log(" []: graph: ", graph, "  results: \n", results)
-                          resolve({})
-                        }else if(results === undefined){
-                          console.log(" undefined: graph: ", graph, "  results: \n", results)
-                          resolve({})
-                        }else{*/
-                        //console.log("graph: ", graph, "  results: \n", results)
-                        //if(results!==undefined){
-                        console.log("results: ", results)
-                        console.log("check typeof results === 'undefined': ", typeof results === 'undefined')
+                        console.log("results: ", results);
+                        console.log("check typeof results === 'undefined': ", typeof results === 'undefined');
                         if (typeof results !== 'undefined' && results !== []) {
-                            //console.log("results value undefined? ", typeof(results) === 'undefined')
-                            console.log("[if] results is defined: ", results)
+                            console.log("[if] results is defined: ", results);
                             resolve({
                                 "origin": results[0].s.value,
                                 "derivedFrom": results[0].derivedFrom.value,
@@ -249,58 +233,56 @@ module.exports = () => {
                                 "pjname": results[0].pjname.value
                             })
                         } else {
-                            console.log("[else] resolving for undefined/empty:--- ", results)
-                            resolve({})
+                            console.log("[else] resolving for undefined/empty:--- ", results);
+                            resolve({});
                         }
-                        //  }
                     })//execute
                 })//promise
-            })//graph of promises
-            return Promise.all(graphOfPromises)
+            }); //graph of promises
+            return Promise.all(graphOfPromises);
         }).then(function (obj) {
-            console.log("obj:", obj)
-            let unique = []
-            if (obj != {}) {
+            console.log("obj:", obj);
+            let unique = [];
+            if (obj !== {}) {
                 for (i = 0; i < obj.length; i++) {
-                    let flag = true
+                    let flag = true;
                     for (j = 0; j < obj.length; j++) {
                         if (obj[i]["origin"] === obj[j]["derivedFrom"]) {
-                            flag = false
+                            flag = false;
                             break;
                         }
                     }
                     if (flag) {
-                        unique.push(obj[i])
+                        unique.push(obj[i]);
                     }
                 }
             }
-            console.log("unique array", unique)
-            let list = []
+            console.log("unique array", unique);
+            let list = [];
             for (i = 0; i < unique.length; i++) {
-                let parr = unique[i]["origin"].split("#")
-                let pf = parr[1].split("_")[1]
-                let pname = unique[i]["pjname"].split(' ')
-                //list.push("plan-"+unique[i]["pjname"]+"-"+pf+".json")
-                list.push("plan-" + pname[0] + "-" + pf + ".json")
+                let parr = unique[i]["origin"].split("#");
+                let pf = parr[1].split("_")[1];
+                let pname = unique[i]["pjname"].split(' ');
+                list.push("plan-" + pname[0] + "-" + pf + ".json");
             }
-            console.log("[Get /project-plans/]list: ", list)
-            res.json({'list': list})
+            console.log("[Get /project-plans/]list: ", list);
+            res.json({'list': list});
         }).catch(function (error) {
-            console.log("error:", error)
+            console.log("error:", error);
         })
-    })
+    });
 
     app.get('/history/project-plans/:name', ensureAuthenticated, function (req, res) {
         var listOfGraphs = new Promise(function (resolve) {
             store.registeredGraphs(function (results, graphs) {
-                var values = []
+                var values = [];
                 for (var i = 0; i < graphs.length; i++) {
-                    values.push(graphs[i].valueOf())
+                    values.push(graphs[i].valueOf());
                 }
-                console.log("Registered graphs: ", values)
-                resolve(values)
+                console.log("Registered graphs: ", values);
+                resolve(values);
             })
-        })
+        });
         listOfGraphs.then(function (values) {
             var graphOfPromises = values.map(function (graph) {
                 return new Promise(function (resolve) {
@@ -313,76 +295,69 @@ module.exports = () => {
                         })
                     })//execute
                 })//promise
-            })//graph of promises
+            }); //graph of promises
             return Promise.all(graphOfPromises)
         }).then(function (objArr) {
-            let unique = {}
-            let obj = {}
+            let unique = {};
+            let obj = {};
             for (i = 0; i < objArr.length; i++) {
-                let flag = true
+                let flag = true;
                 for (j = 0; j < objArr.length; j++) {
                     if (objArr[i]["origin"] === objArr[j]["derivedFrom"]) {
-                        flag = false
+                        flag = false;
                         break;
                     }
                 }
                 if (flag) {
-                    unique[objArr[i]["origin"]] = objArr[i]
+                    unique[objArr[i]["origin"]] = objArr[i];
                 }
-                obj[objArr[i]["origin"]] = objArr[i]
+                obj[objArr[i]["origin"]] = objArr[i];
             }
-            console.log("unique obj", unique)
-            console.log("obj: ~~~", obj)
-            let dirGraph = {}
+            let dirGraph = {};
             for (k of Object.keys(unique)) {
-                let list = []
-                let node = obj[k]
-                let i = 0
-                console.log("key", k);
-                console.log("node: ", node["derivedFrom"])
-                let parent = node["derivedFrom"]
+                let list = [];
+                let node = obj[k];
+                let i = 0;
+                let parent = node["derivedFrom"];
                 while (parent != "http://purl.org/nidash/nidm#plan_None") {
-                    list[i] = node
-                    node = {}
-                    node = obj[parent]
-                    console.log("node: ", node["derivedFrom"])
-                    parent = node["derivedFrom"]
-                    i++
+                    list[i] = node;
+                    node = {};
+                    node = obj[parent];
+                    parent = node["derivedFrom"];
+                    i++;
                 }
-                list[i] = node
-                dirGraph[obj[k]["origin"]] = list
+                list[i] = node;
+                dirGraph[obj[k]["origin"]] = list;
             }
-            let name = req.params.name
-            let history = []
+            let name = req.params.name;
+            let history = [];
             for (m of Object.keys(dirGraph)) {
-                let parr = m.split("#")
-                let pf = parr[1].split("_")[1]
-                name1 = "plan-" + dirGraph[m][0]["pjname"] + "-" + pf + ".json"
-                console.log("name: ", name, " name1: ", name1, " dirgraph: ", dirGraph[m][0]["pjname"])
-                if (name == name1) {
-                    history = dirGraph[m]
+                let parr = m.split("#");
+                let pf = parr[1].split("_")[1];
+                name1 = "plan-" + dirGraph[m][0]["pjname"] + "-" + pf + ".json";
+                if (name === name1) {
+                    history = dirGraph[m];
                 }
             }
-            res.json(history)
-            //res.json(dirGraph)
+            res.json(history);
         }).catch(function (error) {
-            console.log(error)
+            console.log(error);
         })
-    })
+    });
 
     app.post('/query', jsonParser, function (req, res) {
-        res.send('TODO: query is called')
-    })
+        res.send('TODO: query is called');
+    });
 
     app.get('/queries', function (req, res) {
-        res.send('TODO:Queries list')
-    })
+        res.send('TODO:Queries list');
+    });
 
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
-            return next()
+            return next();
         }
-        res.redirect('/')
+        res.redirect('/');
     }
 
 
@@ -395,7 +370,7 @@ module.exports = () => {
     {GRAPH ' + graphId + '{ ?s prov:wasDerivedFrom ?derivedFrom ; \
       nidm:ProjectName ?pjname; \
       dc:created ?date.\
-    } }'
+    } }';
         return query
     }
-}
+};
